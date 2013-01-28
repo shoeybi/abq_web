@@ -1,15 +1,19 @@
 <html>
-
-<!-- use block extrahead for later extension of the head  -->
-<head>
-{% block extrahead %}
-{% endblock %}
-</head>
-
-<!-- use block content for later extention of the body  -->
-<body>
-{% block content %}
-{% endblock %}
-</body>
-
+  
+  <head>
+    <!-- style sheet -->
+    <link rel="stylesheet" type="text/css" href="/static/css/demo.css" />
+    <!-- use block extrahead for later extension of the head  -->    
+    {% block extrahead %}
+    {% endblock %}
+  </head>
+  
+  <body>
+    <div id="pageContainer">
+      <!-- use block content for later extention of the body  -->
+      {% block content %}
+      {% endblock %}
+    </div>
+  </body>
+  
 </html>

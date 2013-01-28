@@ -1,0 +1,10 @@
+body {
+     background-attachment: fixed;
+     background-color: #000000;
+     background-image: url(/static/images/abqLogo_300dpi.png);
+     background-position: center top;
+     background-repeat: no-repeat;
+     color: #FFFFFF;
+     margin: 0;
+     padding: 0;
+}
