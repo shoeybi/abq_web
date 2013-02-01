@@ -108,6 +108,16 @@ TEMPLATE_DIRS = (
     '/Users/mohammadshoeybi/Documents/Abaqual/repos/abq_web/demo/templates/',    #(PATH)
 )
 
+# provide get_profile()
+AUTH_PROFILE_MODULE = 'expert.Expert'
+
+# URL for @login_required decorator to use
+LOGIN_URL = '/login/'
+
+# redirect authenticated users
+LOGIN_REDIRECT_URL = '/profile/'
+
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -116,6 +126,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
+    'expert',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
