@@ -9,6 +9,10 @@
   </head>
   
   <body>
+    <div id="nav_top_right">
+      {% if user.is_authenticated %}<p><a href="/logout">Logout</a></p>{% endif %}
+    </div>
+    
     <div id="pageContainer">
       <!-- use block content for later extention of the body  -->
       {% block content %}

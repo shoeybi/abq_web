@@ -13,13 +13,17 @@ def ExpertRegistration(request):
         if request.method == 'POST':
 		form = RegistrationForm(request.POST)
 		if form.is_valid():
-                        user = User.objects.create_user(username=form.cleaned_data['username'], email=form.cleaned_data['username'], password=form.cleaned_data['password'])
+                        username = form.cleaned_data['username']
+                        password = form.cleaned_data['password']
+                        user = User.objects.create_user(username=username, email=form.cleaned_data['username'], password=password)
 			user.first_name = form.cleaned_data['first_name']
 			user.last_name  = form.cleaned_data['last_name']
                         user.save()
                         expert = Expert(user=user)
                         expert.save()
-                        return HttpResponseRedirect('/profile/')
+			context = {'expert': expert}
+			return render_to_response('profile.html', context, context_instance=RequestContext(request))
+                        #return HttpResponseRedirect('/profile/')
                 else:
                         return render_to_response('register.html', {'form': form}, context_instance=RequestContext(request))
 		

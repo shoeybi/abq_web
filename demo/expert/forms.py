@@ -24,9 +24,9 @@ class RegistrationForm(ModelForm):
     
     def clean(self):
         if self.cleaned_data['password'] != self.cleaned_data['password1']:
-            raise forms.ValidationError("The passwords did not match.  Please try again.")
+            raise forms.ValidationError("The passwords did not match, please try again.")
         return self.cleaned_data
     
 class LoginForm(forms.Form):
-        username        = forms.EmailField(label=(u'User Name'))
-        password        = forms.CharField(label=(u'Password'), widget=forms.PasswordInput(render_value=False))
+        username = forms.EmailField(label=(u'User Name'))
+        password = forms.CharField(label=(u'Password'), widget=forms.PasswordInput(render_value=False))
