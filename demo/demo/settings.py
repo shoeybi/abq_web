@@ -1,5 +1,6 @@
 # Django settings for demo project.
 
+ABQ_PATH = '/Users/mohammadshoeybi/Documents/Abaqual/repos/abq_web'
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -14,7 +15,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '/Users/mohammadshoeybi/Documents/Abaqual/repos/abq_web/demo/demo.db', #(PATH)      # Or path to database file if using sqlite3.
+        'NAME': ABQ_PATH+"/demo/demo.db", #(PATH)      # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -128,7 +129,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'expert',
-    'desktop',
+    #'desktop',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
