@@ -3,8 +3,9 @@ from django.conf.urls import patterns, include, url
 from django.views.generic.simple import direct_to_template
 # for admin tools
 from django.contrib import admin
+from django.conf import settings
 admin.autodiscover()
-PLUGIN_DIR =ABQ_PATH+"/demo/desktop/static"
+PLUGIN_DIR = settings.ABQ_PATH + "/demo/desktop/static"
 urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'demo.views.home', name='home'),
