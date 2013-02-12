@@ -9,7 +9,8 @@ class RegistrationForm(ModelForm):
     last_name   = forms.CharField(label=(u'Last Name'))
     password    = forms.CharField(label=(u'Password'), widget=forms.PasswordInput(render_value=False))
     password1   = forms.CharField(label=(u'Verify Password'), widget=forms.PasswordInput(render_value=False))
-    
+#    desktopname = username.replace("@","_")
+
     class Meta:
         model = Expert
         exclude = ('user',)
