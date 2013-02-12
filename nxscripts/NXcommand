@@ -3,6 +3,6 @@
 ## run a NX command
 
 if [ "$NXset" != "set" ]; then
-    source $NXHOME/NXsetup
+    source $NXDIR/NXsetup
 fi
 ssh $DSKaccount sudo /usr/NX/bin/nxserver --$1

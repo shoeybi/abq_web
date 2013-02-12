@@ -5,6 +5,6 @@
 ## NXdeluser username 
 
 if [ "$NXset" != "set" ]; then
-    source $NXHOME/NXsetup
+    source $NXDIR/NXsetup
 fi
 ssh $DSKaccount "sudo /usr/NX/bin/nxserver --userdel $1; sudo userdel -rf $1"

@@ -7,6 +7,7 @@ from expert.models import Expert
 from expert.forms import RegistrationForm, LoginForm
 from django.contrib.auth import authenticate, login, logout
 import os
+from django.conf import settings
 def ExpertRegistration(request):
         if request.user.is_authenticated():
                 return HttpResponseRedirect('/profile/')
@@ -23,7 +24,7 @@ def ExpertRegistration(request):
                         expert.save()
 			context = {'expert': expert}
 			expert.desktopname = form.cleaned_data['username'].replace("@","at").replace(".","dot")
-			os.system(ABQ_PATH+'/nxscripts/NXadduser ' + expert.desktopname + ' ' + form.cleaned_data['password'])
+			os.system(settings.ABQ_PATH+'/nxscripts/NXadduser ' + expert.desktopname + ' ' + form.cleaned_data['password'])
 			return render_to_response('profile.html', context, context_instance=RequestContext(request))
                         #return HttpResponseRedirect('/profile/')
                 else:
