@@ -22,8 +22,8 @@ def ExpertRegistration(request):
                         expert = Expert(user=user)
                         expert.save()
 			context = {'expert': expert}
-			expert.desktopname = form.cleaned_data['username'].replace("@","_")
-			os.system('/home/khalighi/abaqual/abq_dev/NXscripts/NXadduser ' + expert.desktopname + ' ' + form.cleaned_data['password'])
+			expert.desktopname = form.cleaned_data['username'].replace("@","at").replace(".","dot")
+			os.system('/home/khalighi/abaqual/abq_dev/abq_web/nxscripts/NXadduser ' + expert.desktopname + ' ' + form.cleaned_data['password'])
 			return render_to_response('profile.html', context, context_instance=RequestContext(request))
                         #return HttpResponseRedirect('/profile/')
                 else:
