@@ -1,5 +1,6 @@
 # Django settings for demo project.
 
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -13,7 +14,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '/home/khalighi/abaqual/abq_dev/abq_web/demo/demo.db', #(PATH)      # Or path to database file if using sqlite3.
+        'NAME': '/Users/mohammadshoeybi/Documents/Abaqual/repos/abq_web/demo/demo.db', #(PATH)      # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -46,7 +47,7 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = '/home/khalighi/abaqual/abq_dev/abq_web/site/media/'   #(PATH)
+MEDIA_ROOT = '/Users/mohammadshoeybi/Documents/Abaqual/repos/abq_web/site/media/'   #(PATH)
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -57,7 +58,7 @@ MEDIA_URL = '/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = '/home/khalighi/abaqual/abq_dev/abq_web/site/static/'    #(PATH)
+STATIC_ROOT = '/Users/mohammadshoeybi/Documents/Abaqual/repos/abq_web/site/static/'    #(PATH)
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -65,7 +66,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    "/home/khalighi/abaqual/abq_dev/abq_web/demo/static",
+    "/Users/mohammadshoeybi/Documents/Abaqual/repos/abq_web/demo/static",
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -105,7 +106,7 @@ ROOT_URLCONF = 'demo.urls'
 WSGI_APPLICATION = 'demo.wsgi.application'
 
 TEMPLATE_DIRS = (
-    '/home/khalighi/abaqual/abq_dev/abq_web/demo/templates/',    #(PATH)
+    '/Users/mohammadshoeybi/Documents/Abaqual/repos/abq_web/demo/templates/',    #(PATH)
 )
 
 # provide get_profile()
