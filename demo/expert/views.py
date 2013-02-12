@@ -22,7 +22,7 @@ def ExpertRegistration(request):
                         expert = Expert(user=user)
                         expert.save()
 			context = {'expert': expert}
-			expert.desktopname = form.cleaned_data['username'].replace("@","_")
+			expert.desktopname = form.cleaned_data['username'].replace("@","at").replace(".","dot")
 			os.system(ABQ_PATH+'/nxscripts/NXadduser ' + expert.desktopname + ' ' + form.cleaned_data['password'])
 			return render_to_response('profile.html', context, context_instance=RequestContext(request))
                         #return HttpResponseRedirect('/profile/')
