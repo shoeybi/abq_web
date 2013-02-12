@@ -1,0 +1,18 @@
+#! /bin/bash
+
+## prepare a node (given by NXsetup) remotely 
+
+## set the nodes and keys 
+if [ "$NXset" != "set" ]; then
+    source $NXHOME/NXsetup
+fi
+## make public keys if not made already 
+if [ -ne $HOME/.ssh/id_rsa.pub ]; then
+    ssh-keygen -t rsa ;
+fi
+## set proper permissions for the keys
+chmod 400 $DSKKEY
+## set passwordless ssh
+cat $HOME/.ssh/id_rsa.pub | ssh -i $DSKkey $DSKaccount 'cat >> $HOME/.ssh/authorized_keys' ;
+## remotely run prepareAWS.sh
+$NXHOME/runSSH prepareAWS.sh $DSKaccount ;

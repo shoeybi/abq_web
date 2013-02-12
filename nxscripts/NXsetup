@@ -1,0 +1,17 @@
+#! /bin/bash
+
+## set up the machines and keys
+
+export NXDIR="$(dirname "$(readlink -f "$BASH_SOURCE")")"
+
+export DSKmachine=ec2-50-18-244-56.us-west-1.compute.amazonaws.com ;
+export DSKaccount=ubuntu@$DSKmachine ;
+export DSKkey=$NXDIR/keys/AWS_desktop_hosts.pem
+
+export WEBmachine=ec2-54-241-70-19.us-west-1.compute.amazonaws.com ;
+export WEBaccount=ubuntu@$WEBmachine ;
+export WEBkey=$NXDIR/keys/AWS_webserver_hosts.pem
+export SESSIONDIR=/home/khalighi/abaqual/abq_dev/abq_web/demo/desktop/static/session
+
+export NXset=set ;
+
