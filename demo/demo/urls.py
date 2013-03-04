@@ -13,6 +13,8 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$',direct_to_template,{'template': 'home.html'}),
+    url(r'^contactus/$',direct_to_template,{'template': 'contactus.html'}),
+    url(r'^vcompanies/$',direct_to_template,{'template': 'vcompany.html'}),
     url(r'^register/$', 'expert.views.ExpertRegistration'),
     url(r'^login/$', 'expert.views.LoginRequest'),
     url(r'^logout/$', 'expert.views.LogoutRequest'),

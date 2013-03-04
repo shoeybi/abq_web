@@ -9,15 +9,66 @@
   </head>
   
   <body>
-    <div id="nav_top_right">
-      {% if user.is_authenticated %}<p><a href="/logout">Logout</a></p>{% endif %}
+
+    <div id="header">
+
+      <img src="/static/images/abqLogo_300dpi.png" style="float:left" width="300" height="100" />
+
+      <div id="navbar">
+	<ul>
+	  <li>
+	    {% if user.is_authenticated %}
+	    <a href="/profile">My Profile</a>
+	    {% else %}
+	    <a href="/">Home</a>
+	    {% endif %}
+	  </li>
+	  <li>
+	    <a href="/vcompanies">Vcompany Profiles</a>
+	  </li>
+	  <li>
+	    <a href="/contactus">Contact Us</a>
+	  </li>
+	</ul>
+	<div class="clear">  </div>
+      </div>
+            
+      {% if user.is_authenticated %}
+      <div id="logoutbutton">      
+	<p><a href="/logout"><button type="button">logout</button></a></p>
+      </div>
+      {% else %}
+      <div id="loginform">
+	<form action="" method="post">
+	  {% csrf_token %}
+	  <label for="username">Email:</label>
+	  {{ form.username }}
+	  <label for="password">Password:</label>
+	  {{ form.password }}
+	  <div id="loginformbutton">
+	    <input type="submit" value="login" alt="register" />
+	  </div>
+	</form>
+      </div>
+      {% endif %}
+            
+      {% block extraheader %}
+      {% endblock %}
+
     </div>
+    
+
     
     <div id="pageContainer">
       <!-- use block content for later extention of the body  -->
       {% block content %}
       {% endblock %}
     </div>
+    
+    <div id="footer">
+      Abaqual© 2013
+    </div>
+    
   </body>
   
 </html>
