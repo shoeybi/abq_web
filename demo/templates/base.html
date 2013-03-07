@@ -37,19 +37,6 @@
       <div id="logoutbutton">      
 	<p><a href="/logout"><button type="button">logout</button></a></p>
       </div>
-      {% else %}
-      <div id="loginform">
-	<form action="" method="post">
-	  {% csrf_token %}
-	  <label for="username">Email:</label>
-	  {{ form.username }}
-	  <label for="password">Password:</label>
-	  {{ form.password }}
-	  <div id="loginformbutton">
-	    <input type="submit" value="login" alt="register" />
-	  </div>
-	</form>
-      </div>
       {% endif %}
             
       {% block extraheader %}

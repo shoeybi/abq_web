@@ -21,12 +21,14 @@ def ExpertRegistration(request):
 			user.last_name  = form.cleaned_data['last_name']
                         user.save()
                         expert = Expert(user=user)
+			expert.desktopname = form.cleaned_data['username'].replace("@","at").replace(".","dot")
                         expert.save()
 			context = {'expert': expert}
-			expert.desktopname = form.cleaned_data['username'].replace("@","at").replace(".","dot")
 			os.system(settings.ABQ_PATH+'/nxscripts/NXadduser ' + expert.desktopname + ' ' + form.cleaned_data['password'])
-			return render_to_response('profile.html', context, context_instance=RequestContext(request))
-                        #return HttpResponseRedirect('/profile/')
+                        expert = authenticate(username=username, password=password)
+                        if expert is not None:
+				login(request, expert)
+				return HttpResponseRedirect('/profile/')
                 else:
                         return render_to_response('register.html', {'form': form}, context_instance=RequestContext(request))
 		
@@ -40,7 +42,7 @@ def ExpertRegistration(request):
 @login_required
 def Profile(request):
         if not request.user.is_authenticated():
-                return HrttpResponseRedirect('/login/')
+                return HrttpResponseRedirect('/')
         expert = request.user.get_profile
         context = {'expert': expert}
         return render_to_response('profile.html', context, context_instance=RequestContext(request))
@@ -58,14 +60,14 @@ def LoginRequest(request):
                                 login(request, expert)
                                 return HttpResponseRedirect('/profile/')
                         else:
-                                return render_to_response('login.html', {'form': form}, context_instance=RequestContext(request))
+                                return render_to_response('home.html', {'form': form}, context_instance=RequestContext(request))
                 else:
-                        return render_to_response('login.html', {'form': form}, context_instance=RequestContext(request))
+                        return render_to_response('home.html', {'form': form}, context_instance=RequestContext(request))
         else:
                 ''' user is not submitting the form, show the login form '''
                 form = LoginForm()
                 context = {'form': form}
-                return render_to_response('login.html', context, context_instance=RequestContext(request))
+                return render_to_response('home.html', context, context_instance=RequestContext(request))
 
 def LogoutRequest(request):
         logout(request)
