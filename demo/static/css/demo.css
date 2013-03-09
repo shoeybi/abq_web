@@ -116,6 +116,22 @@ body {
 	      color:#E25822;
 }
 
+#registerbutton button {
+		display:inline-block;
+		width: 140px;
+		height: 55px;
+		padding:5px;
+		text-align:center;
+		font-size: 1.1em;
+		text-decoration:none;
+		color:#E25822;
+}
+
+#registerbutton p {
+		padding: 20px;
+		text-align: center;
+}
+
 ul {
    margin: 0;
    padding: 0;
@@ -152,6 +168,19 @@ ul {
        clear:both;
 }
 
+#homeleft {
+	  width: 530px;
+	  float: left;
+	  padding: 10px;
+	  font-size: 1.65em;
+	  text-align: left;
+}
+
+#homeright {
+	   width: 450px;
+	   float: right;
+	   padding: 10px;
+}
 
 
 /* example
