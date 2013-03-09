@@ -1,4 +1,9 @@
 {% extends "base.html" %}
+
+{% block extrahead %}
+   <title> My Profile </title>
+{% endblock %}
+
 {% block content %}
 	<p>User Name : {{ expert.user.username }} , Desktop Name: {{ expert.desktopname }}</p>
         <p>First Name: {{ expert.user.first_name }} , Last Name: {{ expert.user.last_name }}</p>
