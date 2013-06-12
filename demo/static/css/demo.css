@@ -140,7 +140,7 @@ ul {
 #navbar {
 	font-size:1.2em;
 	margin-top: 90px;
-	margin-left: 500px;
+	margin-left: 430px;
 }
 
 #navbar ul {
@@ -160,8 +160,8 @@ ul {
 }
 
 #navbar ul li a:hover {
-	background: #000;
-	color: #fff;
+    background: #000;
+    color: #fff;
 }
 
 .clear {
