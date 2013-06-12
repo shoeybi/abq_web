@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, include, url
 # for direct use of template
-from django.views.generic.simple import direct_to_template
+from django.views.generic import TemplateView
 # for admin tools
 from django.contrib import admin
 from django.conf import settings
@@ -14,9 +14,9 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     #url(r'^$',direct_to_template,{'template': 'home.html'}),
     url(r'^$', 'expert.views.LoginRequest'),
-    url(r'^seetools/$',direct_to_template,{'template': 'seetools.html'}),
-    url(r'^contactus/$',direct_to_template,{'template': 'contactus.html'}),
-    url(r'^viewprofiles/$',direct_to_template,{'template': 'viewprofiles.html'}),
+    url(r'^seetools/$',TemplateView.as_view(template_name="seetools.html")),
+    url(r'^contactus/$',TemplateView.as_view(template_name="contactus.html")),
+    url(r'^viewprofiles/$',TemplateView.as_view(template_name="viewprofiles.html")),
     url(r'^register/$', 'expert.views.ExpertRegistration'),
     #url(r'^login/$', 'expert.views.LoginRequest'),
     url(r'^logout/$', 'expert.views.LogoutRequest'),
