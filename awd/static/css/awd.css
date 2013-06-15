@@ -1,0 +1,37 @@
+
+/* main body */
+body {
+     font:      1.1em Calibri;
+     width:     1020px;
+     padding:   10px;
+     margin:    auto;
+     word-wrap: break-word;
+}	 
+
+
+/* main header */
+#header {
+	width:       1000px;
+	padding:     10px;
+	background:  #ccc;
+	height:      110px;
+}
+
+#header img {
+	padding: 8px;   
+}
+
+
+/* main footer */
+#footer {
+	position:   absolute;
+	bottom:     2px;
+	width:      1000px;
+	height:     25px;
+	padding:    10px;
+	background: #ccc;
+	text-align: left;
+}
+
+
+

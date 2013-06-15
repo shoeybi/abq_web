@@ -1,0 +1,38 @@
+<html>
+  
+  
+  <head>
+    
+    <!-- style sheet -->
+    <link rel="stylesheet" type="text/css" href="/static/css/awd.css" />
+    <!-- use a block for later extension of the head  -->    
+    {% block extrahead_base %}
+    {% endblock %}
+    
+  </head>
+  
+  
+  <body>
+    
+    <div id="header">
+      <img src="/static/images/abqLogo_300dpi.png" style="float:left" width="300" height="100" />
+      <!-- use block content for later extention of the extra header  -->
+
+      {% block extraheader_base %}
+      {% endblock %}
+    </div>
+    
+    <div id="content">
+      <!-- use block content for later extention of the body  -->
+      {% block content_base %}
+      {% endblock %}
+    </div>
+    
+    <div id="footer">
+      Abaqual© 2013
+    </div>
+    
+  </body>
+  
+  
+</html>
