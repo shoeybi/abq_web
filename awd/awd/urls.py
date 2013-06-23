@@ -15,6 +15,12 @@ urlpatterns = patterns(
     # base
     url(r'^base/$',TemplateView.as_view(template_name="base.html")),
 
+    # home
+    url(r'^home/$','abq.views.LoginRequest'),
+
+    # logout
+    url(r'^logout/$','abq.views.LogoutRequest'),
+
     # Examples:
     # url(r'^$', 'awd.views.home', name='home'),
     # url(r'^awd/', include('awd.foo.urls')),
