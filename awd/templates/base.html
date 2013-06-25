@@ -15,11 +15,19 @@
   <body>
     
     <div id="header">
+      
       <img src="/static/images/abqLogo_300dpi.png" style="float:left" width="300" height="100" />
-      <!-- use block content for later extention of the extra header  -->
+      
+      {% if user.is_authenticated %}
+      <div id="logoutbutton">      
+	<p><a href="/logout/"><button type="button">logout</button></a></p>
+      </div>
+      {% endif %}
 
+      <!-- use block content for later extention of the extra header  -->
       {% block extraheader_base %}
       {% endblock %}
+
     </div>
     
     <div id="content">

@@ -15,6 +15,9 @@ urlpatterns = patterns(
     # base
     url(r'^base/$',TemplateView.as_view(template_name="base.html")),
 
+    # base
+    url(r'^profile/$',TemplateView.as_view(template_name="profile.html")),
+
     # home
     url(r'^home/$','abq.views.LoginRequest'),
 

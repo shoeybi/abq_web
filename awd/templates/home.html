@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block extrahead_base %}
+<title> Abaqual </title>
+{% endblock %}
+
+{% block extraheader_base %}
+{% if not user.is_authenticated %}
+<div id="loginform">
+  <form method="post">
+    {% csrf_token %}
+    <label for="username">Email    </label> {{ form.username }}
+    <label for="password">Password </label> {{ form.password }}
+    <div id="loginbutton">
+      <input type="submit" value="login" />
+    </div>
+    {% if form.errors %} 
+    <p class="error"> {{ form.non_field_errors.as_text }} </p> 
+    {% endif %}
+  </form>
+</div>
+{% endif %}
+{% endblock %}

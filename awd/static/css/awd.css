@@ -69,9 +69,15 @@ body {
 	      margin-left: 510px;
 }
 
-#loginbutton input {
+#logoutbutton {
+	margin-top: -10px;
+	margin-left: 908px;
+}
+
+#loginbutton input, #logoutbutton button {
+	     cursor:           pointer;
 	     display:          inline-block;
-	     width:            80px;
+	     width:            82px;
 	     height:           35px;
 	     padding:          5px;
 	     text-align:       center;
