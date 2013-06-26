@@ -74,7 +74,9 @@ body {
 	margin-left: 908px;
 }
 
-#loginbutton input, #logoutbutton button {
+
+
+#loginbutton input, #logoutbutton button, #registrationbutton input {
 	     cursor:           pointer;
 	     display:          inline-block;
 	     width:            82px;
@@ -84,4 +86,26 @@ body {
 	     font-size:        1.1em;
 	     text-decoration:  none;
 	     color:            #E25822;	  
+}
+
+#registrationbutton input {
+		    width:  100px;
+		    height: 40px;
+}
+
+
+#registrationform {
+		  clear:        both;
+		  text-align:   right;
+		  padding:      20px;
+		  margin-right: 610px;
+		  margin-top:   50px;
+		  font-size:    1.1em;	   
+}
+
+.register_div input {
+		  padding:   5px;
+		  font-size: 0.7em;
+		  height:    35px;
+		  width:     160px;
 }
