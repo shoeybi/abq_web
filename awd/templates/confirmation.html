@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block extrahead_base %}
+<title> Confirmation </title>
+{% endblock %}
+   
+{% block extraheader_base %}
+
+<div id="confirmation" >
+
+  {% if has_account %}
+  <p> has account </p>
+  {% endif %}
+
+  {% if no_account %}
+  <p> no account </p>
+  {% endif %}
+
+  {% if active %}
+  <p> active </p>
+  {% endif %}
+
+  {% if expired %}
+  <p> expired </p>
+  {% endif %}
+
+  {% if error %}
+  <p> error </p>
+  {% endif %}
+
+</div>  
+
+{% endblock %}
