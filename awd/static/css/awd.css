@@ -109,3 +109,18 @@ body {
 		  height:    35px;
 		  width:     160px;
 }
+
+.clear {
+       clear: both;
+}
+
+#registrationThankyou {
+		      padding:   50px;
+		      font-size: 1.3em;
+}
+
+#confirmation {
+	      padding:    50px;
+	      font-size:  1.3em;
+	      color:      red;
+}

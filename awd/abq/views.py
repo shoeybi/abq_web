@@ -68,7 +68,8 @@ def Confirmation(request,activation_key):
     
     # if user is already authenticated, then they cannot confirm a new account
     if request.user.is_authenticated():
-        return render_to_response('confirmation.html',{'has_account': True},
+        return render_to_response('confirmation.html',
+                                  {'has_account': True, 'username': request.user.username},
                                   context_instance=RequestContext(request))
     # if not then try to get the abaqual user based on the activation key
     try:
@@ -79,10 +80,11 @@ def Confirmation(request,activation_key):
                                   context_instance=RequestContext(request))
     # otherwise check the time 
     else:
-        # check if user is already activated, then tell them that their account is already active
+        # check if user is already activated, then jutr redirect them to their profile
         if ( abqUser.user.is_active ):
-            return render_to_response('confirmation.html',{'active': True},
-                                      context_instance=RequestContext(request))
+            # log in the user and redirect them to their profile
+            login_user_no_credentials(request,abqUser.user)
+            return HttpResponseRedirect('/profile/')
         # if the key has expired, delete the user and redirect them to expiration
         if abqUser.key_expires_on < timezone.now():
             abqUser.user.delete()
