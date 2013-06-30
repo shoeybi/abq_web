@@ -20,6 +20,10 @@ urlpatterns = patterns(
 
     # registration
     url(r'^register/$','abq.views.UserRegistration'),
+    # and followup thank you
+    url(r'^thankyou/$',TemplateView.as_view(template_name="registerThankyou.html")),
+    # confirmation
+    url(r'^confirm/(?P<activation_key>\w+)/$','abq.views.Confirmation'),
 
     # home
     url(r'^home/$','abq.views.LoginRequest'),
