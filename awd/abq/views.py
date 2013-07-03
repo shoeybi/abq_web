@@ -1,16 +1,17 @@
-from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
-from django.template import RequestContext
-from django.contrib.auth import authenticate, login, logout
-from abq.forms import LoginForm, RegistrationForm
-from abq.models import AbqUser
-from django.contrib.auth.models import User
+from django.http                  import HttpResponseRedirect
+from django.shortcuts             import render_to_response
+from django.template              import RequestContext
+from django.contrib.auth          import authenticate, login, logout
+from django.contrib.auth.models   import User
+from django.core.mail             import send_mail
+from django.core.exceptions       import ObjectDoesNotExist
+from django.utils                 import timezone
+from django.conf                  import settings
+from abq.misc                     import login_user_no_credentials
+from abq.forms                    import LoginForm, RegistrationForm
+from abq.models                   import AbqUser
 import datetime, random, sha
-from django.core.mail import send_mail
-from django.utils import timezone
-from django.core.exceptions import ObjectDoesNotExist
-from misc import login_user_no_credentials
-from django import forms
+
 
 def UserRegistration(request):
     # if the user is already authenticated, redirect them to his/her profile
@@ -49,7 +50,7 @@ def UserRegistration(request):
                            'To activate your account, click this link within 48 hours:\n\n' \
                            'http://127.0.0.1:8000/confirm/%s' \
                            %(abqUser.user.first_name,abqUser.activation_key)
-            send_mail(email_subject,email_body,'abaqualinc@gmail.com',[abqUser.user.email])
+            send_mail(email_subject,email_body,settings.EMAIL_HOST_USER,[abqUser.user.email])
             # and redirect them to thank you page
             return HttpResponseRedirect('/thankyou/')
         # if the form is not valid show then the form again
