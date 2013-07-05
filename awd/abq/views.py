@@ -41,7 +41,7 @@ def UserRegistration(request):
             # set the activation key and expiration date
             salt                   = sha.new(str(random.random())).hexdigest()[:5]
             abqUser.activation_key = sha.new(salt+username).hexdigest()
-            abqUser.key_expires_on = timezone.now() + datetime.timedelta(hours=48)
+            abqUser.key_expiration = timezone.now() + datetime.timedelta(hours=48)
             # save abaqual user into database
             abqUser.save()
             # email the user activation link
@@ -87,7 +87,7 @@ def Confirmation(request,activation_key):
             login_user_no_credentials(request,abqUser.user)
             return HttpResponseRedirect('/profile/')
         # if the key has expired, delete the user and redirect them to expiration
-        if abqUser.key_expires_on < timezone.now():
+        if abqUser.key_expiration < timezone.now():
             abqUser.user.delete()
             abqUser.delete()
             return render_to_response('confirmation.html',{'expired': True},
