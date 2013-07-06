@@ -40,25 +40,7 @@ class Company(models.Model):
 
 
 
-class Hardware(models.Model):
-
-    name           = models.CharField(max_length=100)
-    type           = models.CharField(max_length=100)
-    price_per_hour = models.FloatField()
-    virtual_cpu    = models.IntegerField()
-    memory_GiB     = models.FloatField()
-    storage_GiB    = models.FloatField()
-
-    def __unicode__(self):
-        return self.name
-    
-    class Meta:
-        verbose_name = 'Hardware'
-
-
-
-
-class OperatingSystem(models.Model):
+class OS(models.Model):
 
     name           = models.CharField(max_length=100)
     type           = models.CharField(max_length=100)
@@ -73,10 +55,29 @@ class OperatingSystem(models.Model):
 
 
 
+class Hardware(models.Model):
+
+    name           = models.CharField(max_length=100)
+    type           = models.CharField(max_length=100)
+    price_per_hour = models.FloatField()
+    virtual_cpu    = models.IntegerField()
+    memory_GiB     = models.FloatField()
+    storage_GiB    = models.FloatField()
+    os             = models.ManyToManyField(OS,related_name='Hardware_os') 
+
+    def __unicode__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = 'Hardware'
+
+
+
+
 class Software(models.Model):
 
     name           = models.CharField(max_length=100)
-    supported_os   = models.ManyToManyField(OperatingSystem,related_name='software_supported_os')
+    supported_os   = models.ManyToManyField(OS,related_name='software_supported_os')
     price_per_hour = models.FloatField()
     
     def __unicode__(self):
@@ -88,25 +89,11 @@ class Software(models.Model):
 
 
 
-class LaunchedSoftware(models.Model):
-
-    software      = models.ForeignKey(Software,related_name='launched_software')
-    launched_date = models.DateTimeField()
-
-    def __unicode__(self):
-        return self.name
-    
-    class Meta:
-        verbose_name = 'Launched software'
-
-
-
-
 class InstallScript(models.Model):
 
-    name             = models.CharField(max_length=100)
-    operating_system = models.ForeignKey(OperatingSystem,related_name='install_script_os')    
-    software         = models.ForeignKey(Software,related_name='install_script_software')    
+    name     = models.CharField(max_length=100)
+    os       = models.ForeignKey(OS,related_name='install_script_os')    
+    software = models.ForeignKey(Software,related_name='install_script_software')    
 
     def __unicode__(self):
         return self.name
@@ -119,9 +106,9 @@ class InstallScript(models.Model):
 
 class UninstallScript(models.Model):
 
-    name             = models.CharField(max_length=100)
-    operating_system = models.ForeignKey(OperatingSystem,related_name='uninstall_script_os')    
-    software         = models.ForeignKey(Software,related_name='uninstall_script_software')    
+    name     = models.CharField(max_length=100)
+    os       = models.ForeignKey(OS,related_name='uninstall_script_os')    
+    software = models.ForeignKey(Software,related_name='uninstall_script_software')    
 
     def __unicode__(self):
         return self.name
@@ -134,15 +121,13 @@ class UninstallScript(models.Model):
 
 class Workspace(models.Model):
     
-    name             = models.CharField(max_length=100)
-    company          = models.ForeignKey(Company,related_name='workspace_owner')
-    hardware         = models.ForeignKey(Hardware,related_name='workspace_hardware')    
-    operating_system = models.ForeignKey(OperatingSystem,related_name='workspace_os')
-    software         = models.ManyToManyField(LaunchedSoftware,
-                                              related_name='workspace_software',blank=True)    
-    region           = models.CharField(max_length=100)
-    instance_id      = models.CharField(max_length=100)
-    launch_date      = models.DateTimeField() 
+    name         = models.CharField(max_length=100)
+    company      = models.ForeignKey(Company,related_name='workspace_owner')
+    hardware     = models.ForeignKey(Hardware,related_name='workspace_hardware')    
+    os           = models.ForeignKey(OS,related_name='workspace_os')
+    region       = models.CharField(max_length=100)
+    instance_id  = models.CharField(max_length=100)
+    launch_date  = models.DateTimeField() 
     
     def __unicode__(self):
         return self.name
@@ -153,13 +138,43 @@ class Workspace(models.Model):
 
 
 
+class LaunchedSoftware(models.Model):
+
+    software      = models.ForeignKey(Software,related_name='launched_software')
+    workspace     = models.ForeignKey(Workspace,related_name='launched_software_workspace')
+    launched_date = models.DateTimeField()
+
+    def __unicode__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = 'Launched software'
+
+
+
+
 class Storage(models.Model):
 
-    workspace      = models.ForeignKey(Workspace,related_name='storage_workspace')
-    type           = models.CharField(max_length=100)
-    price_per_hour = models.FloatField()
-    capacity_GiB   = models.FloatField()  
-    launch_date    = models.DateTimeField() 
+    name             = models.CharField(max_length=100)
+    type             = models.CharField(max_length=100)
+    price_per_hour   = models.FloatField()
+    max_capacity_GiB = models.FloatField()  
+    
+    def __unicode__(self):
+        return self.type
+    
+    class Meta:
+        verbose_name = 'Storage'
+
+
+
+
+class LaunchdStorage(models.Model):
+
+    storage      = models.ForeignKey(Storage,related_name='launched_storage')
+    workspace    = models.ForeignKey(Workspace,related_name='storage_workspace')
+    capacity_GiB = models.FloatField()  
+    launch_date  = models.DateTimeField() 
 
     def __unicode__(self):
         return self.type

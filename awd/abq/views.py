@@ -10,7 +10,7 @@ from django.conf                  import settings
 from abq.misc                     import login_user_no_credentials
 from abq.forms                    import LoginForm, RegistrationForm
 from abq.models                   import AbqUser
-import datetime, random, sha
+import datetime, random, hashlib
 
 
 def UserRegistration(request):
@@ -39,8 +39,8 @@ def UserRegistration(request):
             # now create an abaqual user
             abqUser = AbqUser(user=user,abaqual_status='PR')
             # set the activation key and expiration date
-            salt                   = sha.new(str(random.random())).hexdigest()[:5]
-            abqUser.activation_key = sha.new(salt+username).hexdigest()
+            salt                   = hashlib.sha1(str(random.random())).hexdigest()[:5]
+            abqUser.activation_key = hashlib.sha1(salt+username).hexdigest()
             abqUser.key_expiration = timezone.now() + datetime.timedelta(hours=48)
             # save abaqual user into database
             abqUser.save()
