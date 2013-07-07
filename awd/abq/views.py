@@ -8,11 +8,50 @@ from django.core.exceptions       import ObjectDoesNotExist
 from django.utils                 import timezone
 from django.conf                  import settings
 from abq.misc                     import login_user_no_credentials
-from abq.forms                    import LoginForm, RegistrationForm
-from abq.models                   import AbqUser
+from abq.forms                    import LoginForm, RegistrationForm, CompanyRegistrationForm
+from abq.models                   import AbqUser, Company
 import datetime, random, hashlib
 
 
+def Profile(request):
+    # if the user is not authenticated, then redirect them to the home page where they can lon in
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect('/home/')
+    # if user is posting
+    if request.method == 'POST':
+        # first check if we have a company registration form
+        form = CompanyRegistrationForm(request.POST)
+        if form.is_valid():
+            # get the compnay name
+            name = form.cleaned_data['name']
+            # create a new company
+            abqUser = AbqUser.objects.get(user=request.user)
+            company = Company.objects.create(name=name,owner=abqUser)
+            company.save()
+            # get all the compnaies that user has
+            companies = Company.objects.filter(owner=abqUser)
+            # and pass it to the template
+            return render_to_response('profile.html', {'companies':companies}, 
+                                      context_instance=RequestContext(request))
+        # if the form is not valid show then the form again
+        else:
+            # create a new company
+            abqUser = AbqUser.objects.get(user=request.user)
+            # get all the compnaies that user has
+            companies = Company.objects.filter(owner=abqUser)
+            return render_to_response('profile.html', {'form':form, 'companies':companies}, 
+                                      context_instance=RequestContext(request))
+        
+    # create a new company
+    abqUser = AbqUser.objects.get(user=request.user)
+    # get all the compnaies that user has
+    companies = Company.objects.filter(owner=abqUser)
+    form = CompanyRegistrationForm()
+    return render_to_response('profile.html', {'form':form, 'companies':companies}, 
+                              context_instance=RequestContext(request))
+    
+
+    
 def UserRegistration(request):
     # if the user is already authenticated, redirect them to his/her profile
     if request.user.is_authenticated():

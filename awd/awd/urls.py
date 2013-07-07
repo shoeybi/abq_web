@@ -15,8 +15,9 @@ urlpatterns = patterns(
     # base
     url(r'^base/$',TemplateView.as_view(template_name="base.html")),
 
-    # base
-    url(r'^profile/$',TemplateView.as_view(template_name="profile.html")),
+    # prifile
+    #url(r'^profile/$',TemplateView.as_view(template_name="profile.html")),
+    url(r'^profile/$','abq.views.Profile'),
 
     # registration
     url(r'^register/$','abq.views.UserRegistration'),

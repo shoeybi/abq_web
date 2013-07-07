@@ -5,5 +5,23 @@
 {% endblock %}
    
 {% block extraheader_base %}
-{{ user.username}}
+
+<div id="profilename" >
+  <p> {{user.first_name}} {{user.last_name}} </p>
+</div>
+
+
+<p> {{form.errors.as_text}}</p>
+<div id="companyregistration" >
+  <form method="post">
+    {% csrf_token %}
+    <label for="name"> Company name </label> {{ form.name }}
+    <div id="companyregistrationbutton">
+      <input type="submit" value="register" />
+    </div>
+  </form>
+  <p> {% for company in companies %} {{company}} {% endfor %} <p>
+</div>
+
+
 {% endblock %}

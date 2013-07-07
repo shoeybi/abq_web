@@ -74,8 +74,6 @@ body {
 	margin-left: 908px;
 }
 
-
-
 #loginbutton input, #logoutbutton button, #registrationbutton input {
 	     cursor:           pointer;
 	     display:          inline-block;
@@ -87,6 +85,22 @@ body {
 	     text-decoration:  none;
 	     color:            #E25822;	  
 }
+
+
+#companyregistration {
+		     margin-top: 100px;
+		     font-size: 1.3em;
+}
+
+#companyregistrationbutton input {
+			   width: 120px;
+			   height: 40px;
+                           color: black;
+			   font-size: 1.0em; 
+}
+
+
+
 
 #registrationbutton input {
 		    width:  100px;
@@ -123,4 +137,16 @@ body {
 	      padding:    50px;
 	      font-size:  1.3em;
 	      color:      red;
+}
+
+#profilename {
+	     margin-top: -70px;
+	     margin-right: 120px;
+	     width: 300px;
+	     float: right;
+	     text-align: right;
+}
+
+#profilename p {
+	     font-size: 1.3em;
 }

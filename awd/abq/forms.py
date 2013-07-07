@@ -1,5 +1,27 @@
 from django import forms
 from django.contrib.auth.models import User
+from abq.models import Company
+
+
+
+class CompanyRegistrationForm(forms.Form):
+
+    # company only need a name
+    name = forms.CharField(label=(u'Company name'))
+
+    # check that the company name is unique
+    def clean_name(self):
+        # get the company name
+        name = self.cleaned_data['name']
+        # search the database
+        try: 
+            Company.objects.get(name=name)
+        # if the company name is not already taken, return the name
+        except Company.DoesNotExist:
+            return name            
+        # otherwise raise a validation error
+        raise forms.ValidationError('company name '+name+
+                                    ' is taken. Please select a different name.')
 
 
 
