@@ -27,9 +27,10 @@ class AbqUser(models.Model):
 
 class Company(models.Model):
     
-    name     = models.CharField(max_length=100)
-    owner    = models.ForeignKey(AbqUser,related_name='company_owner')
-    employee = models.ManyToManyField(AbqUser,related_name='company_employee', blank=True)
+    name        = models.CharField(max_length=100)
+    owner       = models.ForeignKey(AbqUser,related_name='company_owner')
+    employee    = models.ManyToManyField(AbqUser,related_name='company_employee', blank=True)
+    launch_date = models.DateTimeField()
         
     def __unicode__(self):
         return self.name

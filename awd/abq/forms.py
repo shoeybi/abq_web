@@ -4,7 +4,7 @@ from abq.models import Company
 
 
 
-class CompanyRegistrationForm(forms.Form):
+class CompanyForm(forms.Form):
 
     # company only need a name
     name = forms.CharField(label=(u'Company name'))

@@ -8,7 +8,7 @@ from django.core.exceptions       import ObjectDoesNotExist
 from django.utils                 import timezone
 from django.conf                  import settings
 from abq.misc                     import login_user_no_credentials
-from abq.forms                    import LoginForm, RegistrationForm, CompanyRegistrationForm
+from abq.forms                    import LoginForm, RegistrationForm, CompanyForm
 from abq.models                   import AbqUser, Company
 import datetime, random, hashlib
 
@@ -19,35 +19,33 @@ def Profile(request):
         return HttpResponseRedirect('/home/')
     # if user is posting
     if request.method == 'POST':
-        # first check if we have a company registration form
-        form = CompanyRegistrationForm(request.POST)
-        if form.is_valid():
-            # get the compnay name
-            name = form.cleaned_data['name']
-            # create a new company
-            abqUser = AbqUser.objects.get(user=request.user)
-            company = Company.objects.create(name=name,owner=abqUser)
-            company.save()
-            # get all the compnaies that user has
-            companies = Company.objects.filter(owner=abqUser)
-            # and pass it to the template
-            return render_to_response('profile.html', {'companies':companies}, 
-                                      context_instance=RequestContext(request))
-        # if the form is not valid show then the form again
-        else:
-            # create a new company
-            abqUser = AbqUser.objects.get(user=request.user)
-            # get all the compnaies that user has
-            companies = Company.objects.filter(owner=abqUser)
-            return render_to_response('profile.html', {'form':form, 'companies':companies}, 
-                                      context_instance=RequestContext(request))
-        
+        # if the user is launching a new company
+        if 'company_reg' in request.POST:
+            # get the company registration from
+            form_company = CompanyForm(request.POST)
+            if form_company.is_valid():
+                # get the compnay name
+                name = form_company.cleaned_data['name']
+                # create a new company
+                abqUser = AbqUser.objects.get(user=request.user)
+                company = Company(name=name,owner=abqUser)
+                company.launch_date = timezone.now()
+                # and add it to the database
+                company.save()
+                # the form has been successfully submitted so we should show a clean form
+                form_company = CompanyForm()
+                # otherwise there was an error and we should show just show the old form with errors
+    # if the user is not posting
+    else:
+        # company form is empty
+        form_company = CompanyForm()
+       
     # create a new company
     abqUser = AbqUser.objects.get(user=request.user)
     # get all the compnaies that user has
     companies = Company.objects.filter(owner=abqUser)
-    form = CompanyRegistrationForm()
-    return render_to_response('profile.html', {'form':form, 'companies':companies}, 
+    context = {'form_company':form_company, 'companies':companies} 
+    return render_to_response('profile.html', context,
                               context_instance=RequestContext(request))
     
 

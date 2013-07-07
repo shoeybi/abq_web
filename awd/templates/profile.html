@@ -11,17 +11,20 @@
 </div>
 
 
-<p> {{form.errors.as_text}}</p>
-<div id="companyregistration" >
+<p> {{form_company.errors.as_text}}</p>
+
+<div id="company_reg" >
   <form method="post">
     {% csrf_token %}
-    <label for="name"> Company name </label> {{ form.name }}
-    <div id="companyregistrationbutton">
-      <input type="submit" value="register" />
+    <label for="name"> Company name </label> {{ form_company.name }}
+    <div id="company_reg_button">
+      <input type="submit" name="company_reg" value="register" />
     </div>
   </form>
-  <p> {% for company in companies %} {{company}} {% endfor %} <p>
+  <p> Companies: </p>
+  {% for company in companies %} <p> {{company}} </p> {% endfor %} <p> 
 </div>
+
 
 
 {% endblock %}
