@@ -62,59 +62,63 @@ abquser.save();
 
 
 
+
+
+hardware1                = Hardware()
+hardware1.name           = 'EC2 micro instance'
+hardware1.type           = 't1.micro'
+hardware1.price_per_hour = 0.02
+hardware1.virtual_cpu    = 1
+hardware1.memory_GiB     = 0.615
+hardware1.storage_GiB    = 8.
+hardware1.save()
+
+
+hardware2                = Hardware()
+hardware2.name           = 'EC2 small instance'
+hardware2.type           = 'm1.small'
+hardware2.price_per_hour = 0.06
+hardware2.virtual_cpu    = 1
+hardware2.memory_GiB     = 1.7
+hardware2.storage_GiB    = 160.
+hardware2.save()
+
+
+hardware3                = Hardware()
+hardware3.name           = 'EC2 medium instance'
+hardware3.type           = 'm1.medium'
+hardware3.price_per_hour = 0.12
+hardware3.virtual_cpu    = 1
+hardware3.memory_GiB     = 3.75
+hardware3.storage_GiB    = 410.
+hardware3.save()
+
+
+hardware4                = Hardware()
+hardware4.name           = 'EC2 large instance'
+hardware4.type           = 'm1.large'
+hardware4.price_per_hour = 0.24
+hardware4.virtual_cpu    = 2
+hardware4.memory_GiB     = 7.5
+hardware4.storage_GiB    = 840.
+hardware4.save()
+
+
+
+
 osU                = OS()
 osU.name           = 'Ubuntu 12.04 LTS'
 osU.type           = 'ami-d0f89fb9'
 osU.price_per_hour = 0.0
 osU.save()
+osU.hardware.add(hardware1, hardware2, hardware3, hardware4)
 
 osC                = OS()
 osC.name           = 'CentOs 6.0'
 osC.type           = 'ami-03559b6a'
 osC.price_per_hour = 0.0
 osC.save()
-
-
-
-hardware                = Hardware()
-hardware.name           = 'EC2 micro instance'
-hardware.type           = 't1.micro'
-hardware.price_per_hour = 0.02
-hardware.virtual_cpu    = 1
-hardware.memory_GiB     = 0.615
-hardware.storage_GiB    = 8.
-hardware.save()
-hardware.os.add(osU)
-
-hardware                = Hardware()
-hardware.name           = 'EC2 small instance'
-hardware.type           = 'm1.small'
-hardware.price_per_hour = 0.06
-hardware.virtual_cpu    = 1
-hardware.memory_GiB     = 1.7
-hardware.storage_GiB    = 160.
-hardware.save()
-hardware.os.add(osU)
-
-hardware                = Hardware()
-hardware.name           = 'EC2 medium instance'
-hardware.type           = 'm1.medium'
-hardware.price_per_hour = 0.12
-hardware.virtual_cpu    = 1
-hardware.memory_GiB     = 3.75
-hardware.storage_GiB    = 410.
-hardware.save()
-hardware.os.add(osU,osC)
-
-hardware                = Hardware()
-hardware.name           = 'EC2 large instance'
-hardware.type           = 'm1.large'
-hardware.price_per_hour = 0.24
-hardware.virtual_cpu    = 2
-hardware.memory_GiB     = 7.5
-hardware.storage_GiB    = 840.
-hardware.save()
-hardware.os.add(osU,osC)
+osC.hardware.add(hardware3,hardware4)
 
 
 

@@ -8,8 +8,9 @@ from django.core.exceptions       import ObjectDoesNotExist
 from django.utils                 import timezone
 from django.conf                  import settings
 from abq.misc                     import login_user_no_credentials
-from abq.forms                    import LoginForm, RegistrationForm, CompanyForm
-from abq.models                   import AbqUser, Company
+from abq.forms                    import LoginForm, RegistrationForm, \
+    CompanyForm, WorkspaceLaunchForm
+from abq.models                   import AbqUser, Company, OS, Hardware
 import datetime, random, hashlib
 
 
@@ -17,8 +18,13 @@ def Profile(request):
     # if the user is not authenticated, then redirect them to the home page where they can lon in
     if not request.user.is_authenticated():
         return HttpResponseRedirect('/home/')
+
+    # initialize empty forms is case user is not posting
+    form_company   = CompanyForm()
+    form_workspace = WorkspaceLaunchForm()
     # if user is posting
     if request.method == 'POST':
+
         # if the user is launching a new company
         if 'company_reg' in request.POST:
             # get the company registration from
@@ -35,16 +41,39 @@ def Profile(request):
                 # the form has been successfully submitted so we should show a clean form
                 form_company = CompanyForm()
                 # otherwise there was an error and we should show just show the old form with errors
-    # if the user is not posting
-    else:
-        # company form is empty
-        form_company = CompanyForm()
+        
+        # workspace is a little bit more complicated
+        # get the form from request.POS
+        form_workspace = WorkspaceLaunchForm(request.POST)
+        # if user is launching a new workspace
+        if 'workspace_launch' in request.POST:
+            if request.POST['hardware'] != '':
+                hardware = Hardware.objects.filter(pk=request.POST['hardware'])
+                if hardware != None:
+                    form_workspace.fields['os'].queryset = OS.objects.filter(hardware=hardware)
+                    # check if it is valid
+                    if form_workspace.is_valid():
+                        # add the workspace
+                        print 'workspace form is valid'
+                        # create an empty from
+                        form_workspace = WorkspaceLaunchForm()
+        # if the user is not posting a workspace launch
+        else:
+            if form_workspace.is_valid():
+                # fill in the os field
+                hardware = Hardware.objects.filter(pk=request.POST['hardware'])
+                if hardware != None:
+                    form_workspace.fields['os'].queryset = OS.objects.filter(hardware=hardware)
+            #otherwise create an empty form
+            else:
+                form_workspace = WorkspaceLaunchForm()
+        
        
     # create a new company
     abqUser = AbqUser.objects.get(user=request.user)
     # get all the compnaies that user has
     companies = Company.objects.filter(owner=abqUser)
-    context = {'form_company':form_company, 'companies':companies} 
+    context = {'form_company':form_company, 'companies':companies, 'form_workspace':form_workspace} 
     return render_to_response('profile.html', context,
                               context_instance=RequestContext(request))
     

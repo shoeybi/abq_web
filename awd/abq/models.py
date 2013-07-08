@@ -41,21 +41,6 @@ class Company(models.Model):
 
 
 
-class OS(models.Model):
-
-    name           = models.CharField(max_length=100)
-    type           = models.CharField(max_length=100)
-    price_per_hour = models.FloatField()
-
-    def __unicode__(self):
-        return self.name
-    
-    class Meta:
-        verbose_name = 'Operating system'
-
-
-
-
 class Hardware(models.Model):
 
     name           = models.CharField(max_length=100)
@@ -64,13 +49,30 @@ class Hardware(models.Model):
     virtual_cpu    = models.IntegerField()
     memory_GiB     = models.FloatField()
     storage_GiB    = models.FloatField()
-    os             = models.ManyToManyField(OS,related_name='Hardware_os') 
-
+    
     def __unicode__(self):
         return self.name
     
     class Meta:
         verbose_name = 'Hardware'
+
+
+
+        
+class OS(models.Model):
+
+    name           = models.CharField(max_length=100)
+    type           = models.CharField(max_length=100)
+    price_per_hour = models.FloatField()
+    hardware       = models.ManyToManyField(Hardware,related_name='os_hardware') 
+
+
+    def __unicode__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = 'Operating system'
+
 
 
 

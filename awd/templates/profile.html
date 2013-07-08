@@ -26,5 +26,14 @@
 </div>
 
 
+<p> {{form_workspace.errors.as_text}}</p>
 
+<div id="workspace_launch" >
+  <form method="post">
+    {% csrf_token %}
+   {{form_workspace.hardware}}
+   {{form_workspace.os}}
+    <input type="submit" name="workspace_launch" value="launch a new workspace" />
+  </form>
+</div>
 {% endblock %}

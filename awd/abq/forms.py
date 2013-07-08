@@ -1,13 +1,15 @@
 from django import forms
 from django.contrib.auth.models import User
-from abq.models import Company
+from abq.models import Company, Workspace, Hardware, OS
+from django.db import models
+from django.forms import ModelForm
 
-
-
-class CompanyForm(forms.Form):
-
-    # company only need a name
-    name = forms.CharField(label=(u'Company name'))
+class CompanyForm(ModelForm):
+    
+    # company form only need a name
+    class Meta:
+        model = Company
+        exclude = ('owner','launch_date',)
 
     # check that the company name is unique
     def clean_name(self):
@@ -23,6 +25,22 @@ class CompanyForm(forms.Form):
         raise forms.ValidationError('company name '+name+
                                     ' is taken. Please select a different name.')
 
+
+class WorkspaceLaunchForm(forms.Form):
+
+    # show hardware option and resubmit the form as soon as it is changed
+    hardware = forms.ModelChoiceField(queryset=Hardware.objects.all(),
+                                      widget=forms.Select(attrs={"onChange":'submit()'}),
+                                      empty_label='Select a hardware')
+    # by default, don't show any os until we know thw hardware
+    os       = forms.ModelChoiceField(queryset=OS.objects.none(),required=False, 
+                                      empty_label="Selec an os")
+
+    def get_hardware(self):
+        # first we need to get access to the original cleaned_data method
+        cleaned_data = super(WorkspaceLaunchForm,self).clean()
+        # get the username from the form
+        return(cleaned_data.get('hardware'))
 
 
 class RegistrationForm(forms.Form):
