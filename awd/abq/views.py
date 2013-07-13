@@ -20,10 +20,16 @@ def Profile(request):
         return HttpResponseRedirect('/home/')
 
     # initialize empty forms is case user is not posting
-    form_company   = CompanyForm()
-    form_workspace = WorkspaceLaunchForm()
+    form_company          = CompanyForm()
+    form_workspace_launch = WorkspaceLaunchForm()
+    
     # if user is posting
     if request.method == 'POST':
+
+
+        # ====================
+        # company registration
+        # ====================
 
         # if the user is launching a new company
         if 'company_reg' in request.POST:
@@ -41,42 +47,54 @@ def Profile(request):
                 # the form has been successfully submitted so we should show a clean form
                 form_company = CompanyForm()
                 # otherwise there was an error and we should show just show the old form with errors
-        
+    
+
+
+        # ================
+        # workspace launch
+        # ================
+
         # workspace is a little bit more complicated
-        # get the form from request.POS
-        form_workspace = WorkspaceLaunchForm(request.POST)
         # if user is launching a new workspace
         if 'workspace_launch' in request.POST:
+            # get the form from request.POS
+            form_workspace_launch = WorkspaceLaunchForm(request.POST)
+            # if the value is not the default
             if request.POST['hardware'] != '':
+                # get the hardware
                 hardware = Hardware.objects.filter(pk=request.POST['hardware'])
+                # hardware should exist
                 if hardware != None:
-                    form_workspace.fields['os'].queryset = OS.objects.filter(hardware=hardware)
+                    form_workspace_launch.fields['os'].queryset = OS.objects.filter(hardware=hardware)
                     # check if it is valid
-                    if form_workspace.is_valid():
+                    if form_workspace_launch.is_valid():
                         # add the workspace
+                        # XXXXXXXXXXXXXXXXXXXXX
                         print 'workspace form is valid'
+                        # XXXXXXXXXXXXXXXXXXXXX
                         # create an empty from
-                        form_workspace = WorkspaceLaunchForm()
+                        form_workspace_launch = WorkspaceLaunchForm()
         # if the user is not posting a workspace launch
         else:
-            if form_workspace.is_valid():
-                # fill in the os field
-                hardware = Hardware.objects.filter(pk=request.POST['hardware'])
-                if hardware != None:
-                    form_workspace.fields['os'].queryset = OS.objects.filter(hardware=hardware)
-            #otherwise create an empty form
-            else:
-                form_workspace = WorkspaceLaunchForm()
+            if 'hardware' in request.POST:
+                # get the form from request.POS
+                form_workspace_launch = WorkspaceLaunchForm(request.POST)
+                # if the value is not the default
+                if request.POST['hardware'] != '':
+                    # fill in the os field
+                    hardware = Hardware.objects.filter(pk=request.POST['hardware'])
+                    if hardware != None:
+                        form_workspace_launch.fields['os'].queryset = OS.objects.filter(hardware=hardware)
+            
         
-       
+    
     # create a new company
     abqUser = AbqUser.objects.get(user=request.user)
     # get all the compnaies that user has
     companies = Company.objects.filter(owner=abqUser)
-    context = {'form_company':form_company, 'companies':companies, 'form_workspace':form_workspace} 
+    context = {'form_company':form_company, 'companies':companies,'form_workspace_launch':form_workspace_launch} 
     return render_to_response('profile.html', context,
-                              context_instance=RequestContext(request))
-    
+                          context_instance=RequestContext(request))
 
     
 def UserRegistration(request):

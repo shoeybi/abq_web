@@ -33,7 +33,7 @@ class WorkspaceLaunchForm(forms.Form):
                                       widget=forms.Select(attrs={"onChange":'submit()'}),
                                       empty_label='Select a hardware')
     # by default, don't show any os until we know thw hardware
-    os       = forms.ModelChoiceField(queryset=OS.objects.none(),required=False, 
+    os       = forms.ModelChoiceField(queryset=OS.objects.none(), 
                                       empty_label="Selec an os")
 
     def get_hardware(self):

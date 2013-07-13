@@ -10,7 +10,6 @@
   <p> {{user.first_name}} {{user.last_name}} </p>
 </div>
 
-
 <p> {{form_company.errors.as_text}}</p>
 
 <div id="company_reg" >
@@ -26,14 +25,15 @@
 </div>
 
 
-<p> {{form_workspace.errors.as_text}}</p>
+<p> {{form_workspace_launch.errors.as_text}}</p>
 
 <div id="workspace_launch" >
   <form method="post">
     {% csrf_token %}
-   {{form_workspace.hardware}}
-   {{form_workspace.os}}
+   {{form_workspace_launch.hardware}}
+   {{form_workspace_launch.os}}
     <input type="submit" name="workspace_launch" value="launch a new workspace" />
   </form>
 </div>
+
 {% endblock %}
