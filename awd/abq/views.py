@@ -20,8 +20,8 @@ def Profile(request):
         return HttpResponseRedirect('/home/')
 
     # initialize empty forms is case user is not posting
-    form_company          = CompanyForm()
-    form_workspace_launch = WorkspaceLaunchForm()
+    company_form          = CompanyForm()
+    workspace_launch_form = WorkspaceLaunchForm()
     
     # if user is posting
     if request.method == 'POST':
@@ -34,10 +34,10 @@ def Profile(request):
         # if the user is launching a new company
         if 'company_reg' in request.POST:
             # get the company registration from
-            form_company = CompanyForm(request.POST)
-            if form_company.is_valid():
+            company_form = CompanyForm(request.POST)
+            if company_form.is_valid():
                 # get the compnay name
-                name = form_company.cleaned_data['name']
+                name = company_form.cleaned_data['name']
                 # create a new company
                 abqUser = AbqUser.objects.get(user=request.user)
                 company = Company(name=name,owner=abqUser)
@@ -45,7 +45,7 @@ def Profile(request):
                 # and add it to the database
                 company.save()
                 # the form has been successfully submitted so we should show a clean form
-                form_company = CompanyForm()
+                company_form = CompanyForm()
                 # otherwise there was an error and we should show just show the old form with errors
     
 
@@ -58,41 +58,45 @@ def Profile(request):
         # if user is launching a new workspace
         if 'workspace_launch' in request.POST:
             # get the form from request.POS
-            form_workspace_launch = WorkspaceLaunchForm(request.POST)
+            workspace_launch_form = WorkspaceLaunchForm(request.POST)
             # if the value is not the default
             if request.POST['hardware'] != '':
                 # get the hardware
                 hardware = Hardware.objects.filter(pk=request.POST['hardware'])
-                # hardware should exist
-                if hardware != None:
-                    form_workspace_launch.fields['os'].queryset = OS.objects.filter(hardware=hardware)
-                    # check if it is valid
-                    if form_workspace_launch.is_valid():
-                        # add the workspace
-                        # XXXXXXXXXXXXXXXXXXXXX
-                        print 'workspace form is valid'
-                        # XXXXXXXXXXXXXXXXXXXXX
-                        # create an empty from
-                        form_workspace_launch = WorkspaceLaunchForm()
+                # hardware should defintely exist
+                if hardware == None:
+                    raise LookupError('hardware deoes not exist')
+                # add the releevant oss
+                workspace_launch_form.fields['os'].queryset = OS.objects.filter(hardware=hardware)
+                # check if it is valid
+                if workspace_launch_form.is_valid() and workspace_launch_form.check_os():
+                    # add the workspace
+                    # XXXXXXXXXXXXXXXXXXXXX
+                    print 'workspace form is valid'
+                    # XXXXXXXXXXXXXXXXXXXXX
+                    # create an empty from
+                    workspace_launch_form = WorkspaceLaunchForm()
         # if the user is not posting a workspace launch
         else:
             if 'hardware' in request.POST:
                 # get the form from request.POS
-                form_workspace_launch = WorkspaceLaunchForm(request.POST)
+                workspace_launch_form = WorkspaceLaunchForm(request.POST)
                 # if the value is not the default
                 if request.POST['hardware'] != '':
-                    # fill in the os field
+                    # get the hardware
                     hardware = Hardware.objects.filter(pk=request.POST['hardware'])
-                    if hardware != None:
-                        form_workspace_launch.fields['os'].queryset = OS.objects.filter(hardware=hardware)
-            
-        
+                    # hardware should defintely exist
+                    if hardware == None:
+                        raise LookupError('hardware deoes not exist')
+                    # and fill in the workspace
+                    workspace_launch_form.fields['os'].queryset = OS.objects.filter(hardware=hardware)
+                    
     
     # create a new company
     abqUser = AbqUser.objects.get(user=request.user)
     # get all the compnaies that user has
     companies = Company.objects.filter(owner=abqUser)
-    context = {'form_company':form_company, 'companies':companies,'form_workspace_launch':form_workspace_launch} 
+    context = {'company_form':company_form, 'companies':companies,'workspace_launch_form':workspace_launch_form}
     return render_to_response('profile.html', context,
                           context_instance=RequestContext(request))
 

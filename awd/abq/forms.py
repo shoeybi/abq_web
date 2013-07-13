@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from abq.models import Company, Workspace, Hardware, OS
 from django.db import models
 from django.forms import ModelForm
+from django.forms.util import ErrorDict, ErrorList
+from django.forms.forms import NON_FIELD_ERRORS 
 
 class CompanyForm(ModelForm):
     
@@ -34,14 +36,29 @@ class WorkspaceLaunchForm(forms.Form):
                                       empty_label='Select a hardware')
     # by default, don't show any os until we know thw hardware
     os       = forms.ModelChoiceField(queryset=OS.objects.none(), 
-                                      empty_label="Selec an os")
+                                      empty_label="Selec an os", required=False)
 
-    def get_hardware(self):
-        # first we need to get access to the original cleaned_data method
-        cleaned_data = super(WorkspaceLaunchForm,self).clean()
-        # get the username from the form
-        return(cleaned_data.get('hardware'))
-
+    # because os is to optional but is needed to form a workspace
+    # we define a special method that checks if the os is valid otherwise
+    # it adds an error message to the field errorlist
+    def check_os(self):
+        os = self.cleaned_data['os']
+        if os != None:
+            return True
+        else:
+            if not self._errors:
+                self._errors = ErrorDict()
+            self._errors['os'] = ErrorList([u'os field is required'])
+            '''
+            # here is the non-field error example
+            if not self._errors:
+                self._errors = ErrorDict()
+            if not NON_FIELD_ERRORS in self._errors:
+                self._errors[NON_FIELD_ERRORS] = self.error_class()
+            self._errors[NON_FIELD_ERRORS].append("os field is required")
+            '''
+            return False
+        
 
 class RegistrationForm(forms.Form):
     

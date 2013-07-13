@@ -6,16 +6,16 @@
    
 {% block extraheader_base %}
 
-<div id="profilename" >
+<div id="profilename">
   <p> {{user.first_name}} {{user.last_name}} </p>
 </div>
 
-<p> {{form_company.errors.as_text}}</p>
+<p> {{company_form.errors.as_text}}</p>
 
 <div id="company_reg" >
   <form method="post">
     {% csrf_token %}
-    <label for="name"> Company name </label> {{ form_company.name }}
+    <label for="name"> Company name </label> {{ company_form.name }}
     <div id="company_reg_button">
       <input type="submit" name="company_reg" value="register" />
     </div>
@@ -25,13 +25,13 @@
 </div>
 
 
-<p> {{form_workspace_launch.errors.as_text}}</p>
+<p> {{workspace_launch_form.errors.as_text}}</p>
 
 <div id="workspace_launch" >
   <form method="post">
     {% csrf_token %}
-   {{form_workspace_launch.hardware}}
-   {{form_workspace_launch.os}}
+   {{workspace_launch_form.hardware}}
+   {{workspace_launch_form.os}}
     <input type="submit" name="workspace_launch" value="launch a new workspace" />
   </form>
 </div>
