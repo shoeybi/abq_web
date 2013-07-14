@@ -19,7 +19,7 @@ class EmploymentForm(forms.Form):
 class WorkspaceLaunchForm(forms.Form):
 
     # company name
-    company_name = forms.CharField(widget=forms.HiddenInput())
+    company_name = forms.CharField(widget=forms.HiddenInput(), required=False)
     # show hardware option and resubmit the form as soon as it is changed
     hardware = forms.ModelChoiceField(queryset=Hardware.objects.all(),
                                       widget=forms.Select(attrs={"onChange":'submit()'}),

@@ -99,6 +99,8 @@ def Profile(request):
                 employment.activation_key = hashlib.sha1(salt+abqUser.user.username).hexdigest()
                 employment.key_expiration = timezone.now() + datetime.timedelta(days=7)
                 employment.save()
+                # and show a new form
+                employment_form = EmploymentForm(initial={'company_name': company.name})
             else:
                 company_name = employment_form.cleaned_data['company_name']
             # now we need to replace the form we had in the dictionary
@@ -116,6 +118,8 @@ def Profile(request):
         if 'workspace_launch' in request.POST:
             # get the form from request.POS
             workspace_launch_form = WorkspaceLaunchForm(request.POST)
+            company_name          = request.POST['company_name']
+            company               = company_dic[company_name]['company']
             # if the value is not the default
             if request.POST['hardware'] != '':
                 # get the hardware
@@ -123,7 +127,7 @@ def Profile(request):
                 # hardware should defintely exist
                 if hardware == None:
                     raise LookupError('hardware deoes not exist')
-                # add the releevant oss
+                # add the relevant oss
                 workspace_launch_form.fields['os'].queryset = OS.objects.filter(hardware=hardware)
                 # check if it is valid
                 if workspace_launch_form.is_valid() and workspace_launch_form.check_os():
@@ -132,10 +136,15 @@ def Profile(request):
                     print 'workspace form is valid'
                     # XXXXXXXXXXXXXXXXXXXXX
                     # create an empty from
-                    workspace_launch_form = WorkspaceLaunchForm()
+                    workspace_launch_form = WorkspaceLaunchForm(initial={'company_name': company.name})
+            # now we need to replace the form we had in the dictionary
+            company_dic[company_name]['workspace_launch_form'] = workspace_launch_form
+
         # if the user is not posting a workspace launch
         else:
             if 'hardware' in request.POST:
+                company_name = request.POST['company_name']
+                company      = company_dic[company_name]['company']
                 # get the form from request.POS
                 workspace_launch_form = WorkspaceLaunchForm(request.POST)
                 # if the value is not the default
@@ -147,8 +156,10 @@ def Profile(request):
                         raise LookupError('hardware deoes not exist')
                     # and fill in the workspace
                     workspace_launch_form.fields['os'].queryset = OS.objects.filter(hardware=hardware)
-                    
-    
+                # now we need to replace the form we had in the dictionary
+                company_dic[company_name]['workspace_launch_form'] = workspace_launch_form
+
+
     context = {'company_dic':company_dic,
                'employment_form': employment_form,
                'company_form':company_form, 

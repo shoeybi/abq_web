@@ -12,7 +12,8 @@ class AbqUser(models.Model):
         ('CU', 'Customer'),
         )
     user           = models.OneToOneField(User)
-    abaqual_status = models.CharField(max_length=2, choices=ABAQUAL_STATUS)
+    abaqual_status = models.CharField(max_length=2,
+                                      choices=ABAQUAL_STATUS)
     activation_key = models.CharField(max_length=40)
     key_expiration = models.DateTimeField()
     
@@ -29,8 +30,10 @@ class Company(models.Model):
     
     name        = models.CharField(max_length=100)
     owner       = models.ForeignKey(AbqUser,related_name='company_owner')
-    employee    = models.ManyToManyField(AbqUser,related_name='company_employee',
-                                         through='Employment', blank=True)
+    employee    = models.ManyToManyField(AbqUser,
+                                         related_name='company_employee',
+                                         through='Employment', 
+                                         blank=True)
     launch_date = models.DateTimeField()
         
     def __unicode__(self):
