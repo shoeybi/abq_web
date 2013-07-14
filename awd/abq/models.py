@@ -3,8 +3,13 @@ from django.contrib.auth.models    import User
 
 
 
-
 class AbqUser(models.Model):
+    """ Abaqual users class 
+
+    Abaqual user is a user with a status and a key for activation. 
+    Status can be Expert, Professional, or Customer.
+    
+    """
 
     ABAQUAL_STATUS = (
         ('EX', 'Expert'),
@@ -16,7 +21,7 @@ class AbqUser(models.Model):
                                       choices=ABAQUAL_STATUS)
     activation_key = models.CharField(max_length=40)
     key_expiration = models.DateTimeField()
-    
+
     def __unicode__(self):
         return self.user.username
 
@@ -25,15 +30,19 @@ class AbqUser(models.Model):
 
 
 
-
 class Company(models.Model):
+    """ Abaqual companies class
+    
+    A company has a unique name, an owner, and a launch date. It can also 
+    have multiple employees 
+
+    """
     
     name        = models.CharField(max_length=100)
     owner       = models.ForeignKey(AbqUser,related_name='company_owner')
     employee    = models.ManyToManyField(AbqUser,
                                          related_name='company_employee',
-                                         through='Employment', 
-                                         blank=True)
+                                         through='Employment', blank=True)
     launch_date = models.DateTimeField()
         
     def __unicode__(self):

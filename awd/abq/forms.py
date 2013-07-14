@@ -1,10 +1,10 @@
-from django import forms
-from django.contrib.auth.models import User
-from abq.models import AbqUser, Company, Workspace, Hardware, OS, Employment
-from django.db import models
-from django.forms import ModelForm
-from django.forms.util import ErrorDict, ErrorList
-from django.forms.forms import NON_FIELD_ERRORS 
+from django                         import forms
+from django.db                      import models
+from django.contrib.auth.models     import User
+from django.forms                   import ModelForm
+from django.forms.util              import ErrorDict, ErrorList
+from abq.models                     import AbqUser, Company, Workspace, Hardware, OS, \
+    Employment
 
 
 class EmploymentForm(forms.Form):
@@ -13,13 +13,13 @@ class EmploymentForm(forms.Form):
     abqUser = forms.ModelChoiceField(queryset=AbqUser.objects.exclude(
             abaqual_status='CU'),empty_label='choose a user')
     # company name
-    company_name = forms.CharField(widget=forms.HiddenInput(), required=False)
+    company_name = forms.CharField(widget=forms.HiddenInput())
 
 
 class WorkspaceLaunchForm(forms.Form):
 
     # company name
-    company_name = forms.CharField(widget=forms.HiddenInput(), required=False)
+    company_name = forms.CharField(widget=forms.HiddenInput())
     # show hardware option and resubmit the form as soon as it is changed
     hardware = forms.ModelChoiceField(queryset=Hardware.objects.all(),
                                       widget=forms.Select(attrs={"onChange":'submit()'}),
@@ -39,14 +39,6 @@ class WorkspaceLaunchForm(forms.Form):
             if not self._errors:
                 self._errors = ErrorDict()
             self._errors['os'] = ErrorList([u'os field is required'])
-            '''
-            # here is the non-field error example
-            if not self._errors:
-                self._errors = ErrorDict()
-            if not NON_FIELD_ERRORS in self._errors:
-                self._errors[NON_FIELD_ERRORS] = self.error_class()
-            self._errors[NON_FIELD_ERRORS].append("os field is required")
-            '''
             return False
         
 
