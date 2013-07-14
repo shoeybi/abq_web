@@ -9,11 +9,39 @@ from abq.models                     import AbqUser, Company, Workspace, Hardware
 
 class EmploymentForm(forms.Form):
 
-    # the user we are inviting
+    # invited user
     abqUser = forms.ModelChoiceField(queryset=AbqUser.objects.exclude(
             abaqual_status='CU'),empty_label='choose a user')
     # company name
     company_name = forms.CharField(widget=forms.HiddenInput())
+
+    def clean_company_name(self):
+        # get the company name
+        company_name = self.cleaned_data['company_name']
+        # check if it exist
+        try:
+            Company.objects.get(name=company_name)
+        except Company.DoesNotExist:
+            raise forms.ValidationError('company '+company_name+' does not exist')
+        else:
+            return company_name
+
+
+    # check that abqUser is neither the owner nor already works for the company
+    def clean(self):
+        # company
+        company_name = self.cleaned_data['company_name']
+        company      = Company.objects.get(name=company_name)
+        # user
+        abqUser      = self.cleaned_data['abqUser']
+        # first make sure that user is not the owner
+        if abqUser == company.owner:
+            raise forms.ValidationError('You are inviting yourself')
+        # check that invitee is not already part of the company
+        if abqUser in company.employee.all():
+            raise forms.ValidationError(abqUser.user.username+' is already a member')
+        # make sure we return the cleaned_data
+        return self.cleaned_data
 
 
 class WorkspaceLaunchForm(forms.Form):
