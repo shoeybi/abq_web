@@ -1,5 +1,5 @@
-from django.db import models
-from django.contrib.auth.models import User
+from django.db                     import models
+from django.contrib.auth.models    import User
 
 
 
@@ -29,7 +29,8 @@ class Company(models.Model):
     
     name        = models.CharField(max_length=100)
     owner       = models.ForeignKey(AbqUser,related_name='company_owner')
-    employee    = models.ManyToManyField(AbqUser,related_name='company_employee', blank=True)
+    employee    = models.ManyToManyField(AbqUser,related_name='company_employee',
+                                         through='Employment', blank=True)
     launch_date = models.DateTimeField()
         
     def __unicode__(self):
@@ -37,6 +38,24 @@ class Company(models.Model):
 
     class Meta:
         verbose_name = 'Company'
+
+
+
+
+class Employment(models.Model):
+
+    employee       = models.ForeignKey(AbqUser)
+    company        = models.ForeignKey(Company)
+    start_date     = models.DateTimeField(blank=True, null=True)
+    end_date       = models.DateTimeField(blank=True, null=True)
+    activation_key = models.CharField(max_length=40)
+    key_expiration = models.DateTimeField()
+
+    def __unicode__(self):
+        return self.employee.user.email+' at '+self.company.name
+
+    class Meta:
+        verbose_name = 'Employment'
 
 
 

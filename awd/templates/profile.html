@@ -20,8 +20,6 @@
       <input type="submit" name="company_reg" value="register" />
     </div>
   </form>
-  <p> Companies: </p>
-  {% for company in companies %} <p> {{company}} </p> {% endfor %} <p> 
 </div>
 
 
@@ -30,10 +28,52 @@
 <div id="workspace_launch" >
   <form method="post">
     {% csrf_token %}
-   {{workspace_launch_form.hardware}}
-   {{workspace_launch_form.os}}
+    {{workspace_launch_form.company_name}}
+    {{workspace_launch_form.hardware}}
+    {{workspace_launch_form.os}}
     <input type="submit" name="workspace_launch" value="launch a new workspace" />
   </form>
 </div>
+
+<!--
+<p> {{employment_form.errors.as_text}}</p>
+<div id="add_employee" >
+  <form method="post">
+    {% csrf_token %}
+    {{employment_form.abqUser}}
+    <input type="submit" name="invite_employee" value="invite" />
+  </form>
+</div>
+-->
+
+<!--
+{% for value in company_dic.values %}
+<p> {{value.company}}
+{{value.workspace_launch_form}}
+{{value.employment_form}}
+</p>
+{% endfor %}
+-->
+
+
+{% for company in company_dic.values %}
+
+<p> {{ company.company }} </p>
+
+<p> {{company.employment_form.errors.as_text}}</p>
+<div id="add_employee" >
+  <form method="post">
+    {% csrf_token %}
+    {{company.employment_form.abqUser}}
+    {{company.employment_form.company_name}}
+    <input type="submit" name="invite_employee" value="invite" />
+  </form>
+</div>
+
+
+
+{% endfor %}
+
+
 
 {% endblock %}

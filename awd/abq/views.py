@@ -9,9 +9,27 @@ from django.utils                 import timezone
 from django.conf                  import settings
 from abq.misc                     import login_user_no_credentials
 from abq.forms                    import LoginForm, RegistrationForm, \
-    CompanyForm, WorkspaceLaunchForm
-from abq.models                   import AbqUser, Company, OS, Hardware
+    CompanyForm, WorkspaceLaunchForm, EmploymentForm
+from abq.models                   import AbqUser, Company, OS, Hardware, Employment
 import datetime, random, hashlib
+
+
+# get the compnay lists that the current user is the owner
+def build_company_dic_for_owner(user):
+    abqUser = AbqUser.objects.get(user=user)
+    # get all the compnaies that user has
+    companies = Company.objects.filter(owner=abqUser)
+    # build a dictionary of compnay-name:value pairs
+    company_dic = {}
+    for company in companies:
+        workspace_launch_form = WorkspaceLaunchForm(initial={'company_name': company.name})
+        employment_form       = EmploymentForm(initial={'company_name': company.name})
+        dic = {'company':company, 
+               'workspace_launch_form':workspace_launch_form, 
+               'employment_form':employment_form }
+        company_dic[company.name] = dic
+    # and return the dictionary
+    return company_dic
 
 
 def Profile(request):
@@ -19,13 +37,24 @@ def Profile(request):
     if not request.user.is_authenticated():
         return HttpResponseRedirect('/home/')
 
-    # initialize empty forms is case user is not posting
-    company_form          = CompanyForm()
-    workspace_launch_form = WorkspaceLaunchForm()
+    # =====================
+    # initialize empty form
+    # =====================
+
+    # there is just one single posting for launching a company
+    company_form = CompanyForm()
+
+    # however, the other forms are per registered company so put them
+    # in a dictionary with company name as the keyword. Note that company 
+    # name is unique so there is no conflict
+    company_dic = build_company_dic_for_owner(request.user)
+
+        
+    workspace_launch_form = WorkspaceLaunchForm(initial={'company_name': 'jojo'})
+    employment_form       = EmploymentForm(initial={'company_name': 'jojo'})
     
     # if user is posting
     if request.method == 'POST':
-
 
         # ====================
         # company registration
@@ -47,7 +76,35 @@ def Profile(request):
                 # the form has been successfully submitted so we should show a clean form
                 company_form = CompanyForm()
                 # otherwise there was an error and we should show just show the old form with errors
-    
+                # if we are registering a new company, we should rebuild the company_dic
+                company_dic = build_company_dic_for_owner(request.user)
+
+
+
+        # ===================================
+        # invite a person to join the company
+        # ===================================
+        
+        # if the user is inviting a person
+        if 'invite_employee' in request.POST:
+            # get the employment form
+            employment_form = EmploymentForm(request.POST)
+            if employment_form.is_valid():
+                abqUser      = employment_form.cleaned_data['abqUser']
+                company_name = employment_form.cleaned_data['company_name']
+                company      = company_dic[company_name]['company']
+                employment   = Employment(employee=abqUser, company=company)
+                # set the activation key and expiration date
+                salt                      = hashlib.sha1(str(random.random())).hexdigest()[:5]
+                employment.activation_key = hashlib.sha1(salt+abqUser.user.username).hexdigest()
+                employment.key_expiration = timezone.now() + datetime.timedelta(days=7)
+                employment.save()
+            else:
+                company_name = employment_form.cleaned_data['company_name']
+            # now we need to replace the form we had in the dictionary
+            company_dic[company_name]['employment_form'] = employment_form
+
+
 
 
         # ================
@@ -92,11 +149,10 @@ def Profile(request):
                     workspace_launch_form.fields['os'].queryset = OS.objects.filter(hardware=hardware)
                     
     
-    # create a new company
-    abqUser = AbqUser.objects.get(user=request.user)
-    # get all the compnaies that user has
-    companies = Company.objects.filter(owner=abqUser)
-    context = {'company_form':company_form, 'companies':companies,'workspace_launch_form':workspace_launch_form}
+    context = {'company_dic':company_dic,
+               'employment_form': employment_form,
+               'company_form':company_form, 
+               'workspace_launch_form':workspace_launch_form}
     return render_to_response('profile.html', context,
                           context_instance=RequestContext(request))
 

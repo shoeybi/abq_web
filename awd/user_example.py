@@ -6,8 +6,17 @@ import datetime
 from django.utils import timezone
 
 
+user = User(username='jo@jo.com', password='jo', first_name='Jo', last_name='Lee')
+user.email = user.username
+user.is_active = True
+user.save()
+abquser = AbqUser(user=user,abaqual_status='EX')
+abquser.activation_key = 'abc'
+abquser.key_expiration = timezone.now()
+abquser.save();
+
 user = User(username='dave@abaqual.com', password='123', first_name='Dave', last_name='Corson')
-User.email = user.username
+user.email = user.username
 user.is_active = True
 user.save()
 abquser = AbqUser(user=user,abaqual_status='EX')

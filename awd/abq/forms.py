@@ -1,35 +1,25 @@
 from django import forms
 from django.contrib.auth.models import User
-from abq.models import Company, Workspace, Hardware, OS
+from abq.models import AbqUser, Company, Workspace, Hardware, OS, Employment
 from django.db import models
 from django.forms import ModelForm
 from django.forms.util import ErrorDict, ErrorList
 from django.forms.forms import NON_FIELD_ERRORS 
 
-class CompanyForm(ModelForm):
-    
-    # company form only need a name
-    class Meta:
-        model = Company
-        exclude = ('owner','launch_date',)
 
-    # check that the company name is unique
-    def clean_name(self):
-        # get the company name
-        name = self.cleaned_data['name']
-        # search the database
-        try: 
-            Company.objects.get(name=name)
-        # if the company name is not already taken, return the name
-        except Company.DoesNotExist:
-            return name            
-        # otherwise raise a validation error
-        raise forms.ValidationError('company name '+name+
-                                    ' is taken. Please select a different name.')
+class EmploymentForm(forms.Form):
+
+    # the user we are inviting
+    abqUser = forms.ModelChoiceField(queryset=AbqUser.objects.exclude(
+            abaqual_status='CU'),empty_label='choose a user')
+    # company name
+    company_name = forms.CharField(widget=forms.HiddenInput(), required=False)
 
 
 class WorkspaceLaunchForm(forms.Form):
 
+    # company name
+    company_name = forms.CharField(widget=forms.HiddenInput())
     # show hardware option and resubmit the form as soon as it is changed
     hardware = forms.ModelChoiceField(queryset=Hardware.objects.all(),
                                       widget=forms.Select(attrs={"onChange":'submit()'}),
@@ -59,6 +49,29 @@ class WorkspaceLaunchForm(forms.Form):
             '''
             return False
         
+
+
+class CompanyForm(ModelForm):
+    
+    # company form only need a name
+    class Meta:
+        model = Company
+        exclude = ('owner','launch_date',)
+
+    # check that the company name is unique
+    def clean_name(self):
+        # get the company name
+        name = self.cleaned_data['name']
+        # search the database
+        try: 
+            Company.objects.get(name=name)
+        # if the company name is not already taken, return the name
+        except Company.DoesNotExist:
+            return name            
+        # otherwise raise a validation error
+        raise forms.ValidationError('company name '+name+
+                                    ' is taken. Please select a different name.')
+
 
 class RegistrationForm(forms.Form):
     
