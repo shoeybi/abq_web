@@ -10,7 +10,7 @@ from django.conf                  import settings
 from abq.misc                     import login_user_no_credentials
 from abq.forms                    import LoginForm, RegistrationForm, \
     CompanyForm, WorkspaceLaunchForm, EmploymentForm
-from abq.models                   import AbqUser, Company, OS, Hardware, Employment
+from abq.models                   import AbqUser, Company, OS, Hardware, Employment, Workspace
 import datetime, random, hashlib
 
 
@@ -119,7 +119,7 @@ def Profile(request):
             # if the value is not the default
             if request.POST['hardware'] != '':
                 # get the hardware
-                hardware = Hardware.objects.filter(pk=request.POST['hardware'])
+                hardware = Hardware.objects.get(pk=request.POST['hardware'])
                 # hardware should defintely exist
                 if hardware == None:
                     raise LookupError('hardware deoes not exist')
@@ -128,9 +128,18 @@ def Profile(request):
                 # check if it is valid
                 if workspace_launch_form.is_valid() and workspace_launch_form.check_os():
                     # add the workspace
-                    # XXXXXXXXXXXXXXXXXXXXX
-                    print 'workspace form is valid'
-                    # XXXXXXXXXXXXXXXXXXXXX
+                    workspace = Workspace()
+                    # count the number of workspaces that this company has
+                    workspaces = Workspace.objects.filter(company=company)
+                    workspace.name        = 'workspace-'+str(len(workspaces)+1)
+                    workspace.company     = company
+                    workspace.hardware    = hardware
+                    workspace.os          = workspace_launch_form.cleaned_data['os']
+                    workspace.region      = 'west'
+                    workspace.instance_id = 'a2456d'
+                    workspace.launch_date = timezone.now()
+                    workspace.save()
+
                     # create an empty from
                     workspace_launch_form = WorkspaceLaunchForm(
                         initial={'company_name': company.name})
