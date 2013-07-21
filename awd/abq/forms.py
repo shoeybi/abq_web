@@ -15,31 +15,39 @@ class EmploymentForm(forms.Form):
     # company name
     company_name = forms.CharField(widget=forms.HiddenInput())
 
-    def clean_company_name(self):
-        # get the company name
-        company_name = self.cleaned_data['company_name']
-        # check if it exist
-        try:
-            Company.objects.get(name=company_name)
-        except Company.DoesNotExist:
-            raise forms.ValidationError('company '+company_name+' does not exist')
-        else:
-            return company_name
 
+    def __init__(self,user,*arguments,**kwargs):
+        print user.username
+        super(EmploymentForm, self).__init__(*arguments,**kwargs)
 
     # check that abqUser is neither the owner nor already works for the company
     def clean(self):
-        # company
-        company_name = self.cleaned_data['company_name']
-        company      = Company.objects.get(name=company_name)
-        # user
-        abqUser      = self.cleaned_data['abqUser']
-        # first make sure that user is not the owner
-        if abqUser == company.owner:
-            raise forms.ValidationError('You are inviting yourself')
-        # check that invitee is not already part of the company
-        if abqUser in company.employee.all():
-            raise forms.ValidationError(abqUser.user.username+' is already a member')
+        # get access to the original cleaned_data methods
+        cleaned_data = super(EmploymentForm,self).clean()
+        # company name
+        company_name = cleaned_data.get('company_name')
+        # check that there was not a validation error
+        if company_name == None:
+            raise forms.ValidationError("company name is not valid")
+        # check if company exist
+        try:
+            company = Company.objects.get(name=company_name)
+        # if not raise an error
+        except Company.DoesNotExist:
+            raise forms.ValidationError('company '+company_name+' does not exist')
+        # otherwise, check for the employee
+        else:
+            # user
+            abqUser      = cleaned_data.get('abqUser')
+            # check that there was not a validation error
+            #if abqUser == None:
+            #    raise forms.ValidationError("user is invalid")
+            # first make sure that user is not the owner
+            if abqUser == company.owner:
+                raise forms.ValidationError('You are inviting yourself')
+            # check that invitee is not already part of the company
+            if abqUser in company.employee.all():
+                raise forms.ValidationError(abqUser.user.username+' is already a member')
         # make sure we return the cleaned_data
         return self.cleaned_data
 

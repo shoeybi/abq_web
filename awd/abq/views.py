@@ -23,7 +23,7 @@ def build_company_dic_for_owner(user):
     company_dic = {}
     for company in companies:
         workspace_launch_form = WorkspaceLaunchForm(initial={'company_name': company.name})
-        employment_form       = EmploymentForm(initial={'company_name': company.name})
+        employment_form       = EmploymentForm(user,initial={'company_name': company.name})
         dic = {'company':company, 
                'workspace_launch_form':workspace_launch_form, 
                'employment_form':employment_form }
@@ -49,10 +49,6 @@ def Profile(request):
     # name is unique so there is no conflict
     company_dic = build_company_dic_for_owner(request.user)
 
-        
-    workspace_launch_form = WorkspaceLaunchForm(initial={'company_name': 'jojo'})
-    employment_form       = EmploymentForm(initial={'company_name': 'jojo'})
-    
     # if user is posting
     if request.method == 'POST':
 
@@ -136,7 +132,8 @@ def Profile(request):
                     print 'workspace form is valid'
                     # XXXXXXXXXXXXXXXXXXXXX
                     # create an empty from
-                    workspace_launch_form = WorkspaceLaunchForm(initial={'company_name': company.name})
+                    workspace_launch_form = WorkspaceLaunchForm(
+                        initial={'company_name': company.name})
             # now we need to replace the form we had in the dictionary
             company_dic[company_name]['workspace_launch_form'] = workspace_launch_form
 
@@ -161,9 +158,7 @@ def Profile(request):
 
 
     context = {'company_dic':company_dic,
-               'employment_form': employment_form,
-               'company_form':company_form, 
-               'workspace_launch_form':workspace_launch_form}
+               'company_form':company_form} 
     return render_to_response('profile.html', context,
                           context_instance=RequestContext(request))
 
