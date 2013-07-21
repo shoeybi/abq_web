@@ -84,7 +84,7 @@ def Profile(request):
         # if the user is inviting a person
         if 'invite_employee' in request.POST:
             # get the employment form
-            employment_form = EmploymentForm(request.POST)
+            employment_form = EmploymentForm(request.user,request.POST)
             if employment_form.is_valid():
                 abqUser      = employment_form.cleaned_data['abqUser']
                 company_name = employment_form.cleaned_data['company_name']
@@ -96,7 +96,7 @@ def Profile(request):
                 employment.key_expiration = timezone.now() + datetime.timedelta(days=7)
                 employment.save()
                 # and show a new form
-                employment_form = EmploymentForm(initial={'company_name': company.name})
+                employment_form = EmploymentForm(request.user,initial={'company_name': company.name})
             else:
                 company_name = employment_form.cleaned_data['company_name']
             # now we need to replace the form we had in the dictionary

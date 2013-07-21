@@ -15,10 +15,22 @@ class EmploymentForm(forms.Form):
     # company name
     company_name = forms.CharField(widget=forms.HiddenInput())
 
-
     def __init__(self,user,*arguments,**kwargs):
-        print user.username
-        super(EmploymentForm, self).__init__(*arguments,**kwargs)
+        # initialize the base class
+        super(EmploymentForm, self).__init__(*arguments,**kwargs)        
+        # first exclude the owner from the list
+        self.fields['abqUser'].queryset = self.fields['abqUser'].queryset.exclude(user=user) 
+        # get the company name
+        company_name = self.initial.get('company_name')
+        if company_name != None :
+            # get the company
+            company   = Company.objects.get(name=company_name)
+            # get the current list of employees
+            employees = company.employee.all()
+            # now remove current employees
+            for employee in employees:
+                self.fields['abqUser'].queryset = self.fields['abqUser'].queryset.exclude(user=employee.user) 
+            
 
     # check that abqUser is neither the owner nor already works for the company
     def clean(self):
