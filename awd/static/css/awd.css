@@ -31,6 +31,13 @@ body {
        margin:       0;
 }
 
+.error2 {
+       color:        red;
+       padding-left: 10px;
+       padding-top:  0px;
+       margin:       0;
+}
+
 
 /* main footer */
 #footer {
@@ -100,8 +107,6 @@ body {
 }
 
 
-
-
 #registrationbutton input {
 		    width:  100px;
 		    height: 40px;
@@ -150,3 +155,41 @@ body {
 #profilename p {
 	     font-size: 1.3em;
 }
+
+#company_reg {
+	     clear: left;
+	     font-size: 1.5em;
+	     padding: 40px 50px 20px 50px;
+	     width: 900px;
+	     display: table;
+	     border-bottom:1px solid #C0C0C0;
+}
+
+#company_reg_input {
+		   width: 650px;
+		   display: table-cell;
+}
+
+#company_reg_input input {
+		   width: 450px;
+		   height: 30px;
+		   display: table-cell;
+		   font-size: 0.6em;
+		   color: blue;
+}
+
+
+#company_reg_button {
+		    width: 150px;
+		    height: 30px;
+		    display: table-cell;  
+		    
+}
+
+#company_reg_button input {
+		    font-size: 0.7em;
+		    height: 30px;
+		    display: table-cell;  
+		    
+}
+
