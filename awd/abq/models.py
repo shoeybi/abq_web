@@ -1,7 +1,7 @@
 from django.db                     import models
 from django.contrib.auth.models    import User
-
-
+from django.core.files             import File
+from PIL                           import Image
 
 class AbqUser(models.Model):
     """ Abaqual users class 
@@ -152,7 +152,6 @@ class UninstallScript(models.Model):
 
 
 
-
 class Workspace(models.Model):
     
     name         = models.CharField(max_length=100)
@@ -161,13 +160,22 @@ class Workspace(models.Model):
     os           = models.ForeignKey(OS,related_name='workspace_os')
     region       = models.CharField(max_length=100)
     instance_id  = models.CharField(max_length=100)
-    launch_date  = models.DateTimeField() 
+    launch_date  = models.DateTimeField()
+    image        = models.ImageField(upload_to='workspace_images')
     
     def __unicode__(self):
         return self.name
 
     class Meta:
         verbose_name = 'Workspace'
+
+    def set_size_and_save_image(self,target_filename,original_filename):
+        self.image.save(target_filename,File(open(original_filename, 'r')))
+        image = Image.open(self.image)
+        # hardcode the size
+        size = ( 160, 90)
+        image = image.resize(size, Image.ANTIALIAS)
+        image.save(self.image.path)           
 
 
 

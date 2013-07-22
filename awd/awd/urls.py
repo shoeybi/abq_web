@@ -1,9 +1,13 @@
 from django.conf.urls import patterns, include, url
 # for direct use of template
 from django.views.generic import TemplateView
+# for media root and url
+from django.conf import settings
+from django.conf.urls.static import static
 # enable admin
 from django.contrib import admin
 admin.autodiscover()
+
 
 
 urlpatterns = patterns(
@@ -39,5 +43,6 @@ urlpatterns = patterns(
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-
 )
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

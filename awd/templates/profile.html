@@ -30,6 +30,16 @@
 
 <p> {{ company.company }} </p>
 
+<div id="workspaces">
+  {% for workspace in company.workspaces %}
+  <div id="workspace">
+    <a href="url"> <img src="{{workspace.image.url }}" /> </a>
+    <p> {{workspace.name}} </p>
+  </div> 
+  {% endfor %}
+</div>
+
+
 <div id="workspace_launch" >
   <p> {{company.workspace_launch_form.errors.as_text}}</p>
   <form method="post">
@@ -37,6 +47,7 @@
     {{company.workspace_launch_form.company_name}}
     {{company.workspace_launch_form.hardware}}
     {{company.workspace_launch_form.os}}
+    {{company.workspace_launch_form.image}}
     <input type="submit" name="workspace_launch" value="launch a new workspace" />
   </form>
 </div>
@@ -52,6 +63,5 @@
 </div>
 
 {% endfor %}
-
 
 {% endblock %}

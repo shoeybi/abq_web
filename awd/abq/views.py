@@ -12,7 +12,7 @@ from abq.forms                    import LoginForm, RegistrationForm, \
     CompanyForm, WorkspaceLaunchForm, EmploymentForm
 from abq.models                   import AbqUser, Company, OS, Hardware, Employment, Workspace
 import datetime, random, hashlib
-
+from django.core.files import File
 
 # get the compnay lists that the current user is the owner
 def build_company_dic_for_owner(user):
@@ -24,9 +24,12 @@ def build_company_dic_for_owner(user):
     for company in companies:
         workspace_launch_form = WorkspaceLaunchForm(initial={'company_name': company.name})
         employment_form       = EmploymentForm(user,initial={'company_name': company.name})
+        workspaces            = Workspace.objects.filter(company=company)
+        print workspaces
         dic = {'company':company, 
                'workspace_launch_form':workspace_launch_form, 
-               'employment_form':employment_form }
+               'employment_form':employment_form,
+               'workspaces':workspaces}
         company_dic[company.name] = dic
     # and return the dictionary
     return company_dic
@@ -48,6 +51,8 @@ def Profile(request):
     # in a dictionary with company name as the keyword. Note that company 
     # name is unique so there is no conflict
     company_dic = build_company_dic_for_owner(request.user)
+
+    workspace = Workspace()
 
     # if user is posting
     if request.method == 'POST':
@@ -131,13 +136,18 @@ def Profile(request):
                     workspace = Workspace()
                     # count the number of workspaces that this company has
                     workspaces = Workspace.objects.filter(company=company)
-                    workspace.name        = 'workspace-'+str(len(workspaces)+1)
+                    workspace.name        = 'workspace '+str(len(workspaces)+1)
                     workspace.company     = company
                     workspace.hardware    = hardware
                     workspace.os          = workspace_launch_form.cleaned_data['os']
                     workspace.region      = 'west'
                     workspace.instance_id = 'a2456d'
                     workspace.launch_date = timezone.now()
+                    # background image
+                    image_filename  = 'workspaceImage__'+company.name+'__'+workspace.name+'.png'
+                    # for now read from a default file
+                    source_filename = settings.MEDIA_ROOT+'workspace_images/desktop_background_default.png'
+                    workspace.set_size_and_save_image(image_filename,source_filename)   
                     workspace.save()
 
                     # create an empty from
@@ -167,7 +177,7 @@ def Profile(request):
 
 
     context = {'company_dic':company_dic,
-               'company_form':company_form} 
+               'company_form':company_form}
     return render_to_response('profile.html', context,
                           context_instance=RequestContext(request))
 
