@@ -6,6 +6,10 @@ import datetime
 from django.utils import timezone
 
 
+# ===================
+# add users
+# ===================
+
 user = User(username='jo@jo.com', password='jo', first_name='Jo', last_name='Lee')
 user.email = user.username
 user.is_active = True
@@ -16,7 +20,7 @@ abquser.key_expiration = timezone.now()
 abquser.save();
 
 user = User(username='dave@abaqual.com', password='123', first_name='Dave', last_name='Corson')
-user.email = user.username
+user.email = 'shoeybim@gmail.com'
 user.is_active = True
 user.save()
 abquser = AbqUser(user=user,abaqual_status='EX')
@@ -25,7 +29,7 @@ abquser.key_expiration = timezone.now()
 abquser.save();
 
 user = User(username='sanjeeb@abaqual.com', password='123', first_name='Sanjeeb', last_name='Bose')
-user.email = user.username
+user.email = 'shoeybim@gmail.com'
 user.is_active = True
 user.save()
 abquser = AbqUser(user=user,abaqual_status='EX')
@@ -34,7 +38,7 @@ abquser.key_expiration = timezone.now()
 abquser.save();
 
 user = User(username='raj@abaqual.com', password='123', first_name='Raj', last_name='Gupta')
-user.email = user.username
+user.email = 'shoeybim@gmail.com'
 user.is_active = True
 user.save()
 abquser = AbqUser(user=user,abaqual_status='PR')
@@ -43,7 +47,7 @@ abquser.key_expiration = timezone.now()
 abquser.save();
 
 user = User(username='vijay@abaqual.com', password='123', first_name='Vijay', last_name='Sellapon')
-user.email = user.username
+user.email = 'shoeybim@gmail.com'
 user.is_active = True
 user.save()
 abquser = AbqUser(user=user,abaqual_status='PR')
@@ -52,7 +56,7 @@ abquser.key_expiration = timezone.now()
 abquser.save();
 
 user = User(username='parviz@abaqual.com', password='123', first_name='Parviz', last_name='Moin')
-user.email = user.username
+user.email = 'shoeybim@gmail.com'
 user.is_active = True
 user.save()
 abquser = AbqUser(user=user,abaqual_status='CU')
@@ -61,7 +65,7 @@ abquser.key_expiration = timezone.now()
 abquser.save();
 
 user = User(username='frank@abaqual.com', password='123', first_name='Frank', last_name='Ham')
-user.email = user.username
+user.email = 'shoeybim@gmail.com'
 user.is_active = True
 user.save()
 abquser = AbqUser(user=user,abaqual_status='CU')
@@ -71,7 +75,9 @@ abquser.save();
 
 
 
-
+# ==============
+# add hardware
+# ==============
 
 hardware1                = Hardware()
 hardware1.name           = 'EC2 micro instance'
@@ -82,7 +88,6 @@ hardware1.memory_GiB     = 0.615
 hardware1.storage_GiB    = 8.
 hardware1.save()
 
-
 hardware2                = Hardware()
 hardware2.name           = 'EC2 small instance'
 hardware2.type           = 'm1.small'
@@ -92,7 +97,6 @@ hardware2.memory_GiB     = 1.7
 hardware2.storage_GiB    = 160.
 hardware2.save()
 
-
 hardware3                = Hardware()
 hardware3.name           = 'EC2 medium instance'
 hardware3.type           = 'm1.medium'
@@ -101,7 +105,6 @@ hardware3.virtual_cpu    = 1
 hardware3.memory_GiB     = 3.75
 hardware3.storage_GiB    = 410.
 hardware3.save()
-
 
 hardware4                = Hardware()
 hardware4.name           = 'EC2 large instance'
@@ -113,7 +116,9 @@ hardware4.storage_GiB    = 840.
 hardware4.save()
 
 
-
+# ===================
+# operating system
+# ===================
 
 osU                = OS()
 osU.name           = 'Ubuntu 12.04 LTS'
@@ -130,6 +135,9 @@ osC.save()
 osC.hardware.add(hardware3,hardware4)
 
 
+# ===================
+# software
+# ===================
 
 openFoam = Software()
 openFoam.name = 'OpenFoam'
@@ -143,6 +151,10 @@ acuSolve.price_per_hour = 20.0
 acuSolve.save()
 acuSolve.supported_os.add(osU)
 
+
+# =============================
+# install and uninstall scripts
+# =============================
 
 insScr = InstallScript()
 insScr.name = 'OpenFoam_Ubuntu_install.sh'

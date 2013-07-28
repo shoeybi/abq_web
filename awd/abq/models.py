@@ -64,7 +64,7 @@ class Employment(models.Model):
     key_expiration = models.DateTimeField()
 
     def __unicode__(self):
-        return self.employee.user.email+' at '+self.company.name
+        return self.employee.user.username+' at '+self.company.name
 
     class Meta:
         verbose_name = 'Employment'

@@ -36,6 +36,9 @@ urlpatterns = patterns(
     # logout
     url(r'^logout/$','abq.views.LogoutRequest'),
 
+    # employment confirmation
+    url(r'^confirm-employment/(?P<activation_key>\w+)/$','abq.views.EmploymentConfirmation'),
+
     # Examples:
     # url(r'^$', 'awd.views.home', name='home'),
     # url(r'^awd/', include('awd.foo.urls')),

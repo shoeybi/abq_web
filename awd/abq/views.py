@@ -98,6 +98,13 @@ def Profile(request):
                 employment.activation_key = hashlib.sha1(salt+abqUser.user.username).hexdigest()
                 employment.key_expiration = timezone.now() + datetime.timedelta(days=7)
                 employment.save()
+                # email the employee activation link
+                email_subject = 'Your new Abaqual employment confirmation'
+                email_body = 'Hello %s,\n\n ' \
+                    '%s has sent you an employment request. To accept your offer, click this link within 7 days:\n\n' \
+                    'http://127.0.0.1:8000/confirm-employment/%s' \
+                    %(employment.employee.user.first_name,employment.company.name,employment.activation_key)
+                send_mail(email_subject,email_body,settings.EMAIL_HOST_USER,[abqUser.user.email])
                 # and show a new form
                 employment_form = EmploymentForm(request.user,initial={'company_name': company.name})
             else:
@@ -180,6 +187,39 @@ def Profile(request):
                'company_form':company_form}
     return render_to_response('profile.html', context,
                           context_instance=RequestContext(request))
+
+
+def EmploymentConfirmation(request,activation_key):
+    
+    # get the employment letter
+    try:
+        employment = Employment.objects.get(activation_key=activation_key)
+    # if user does not exists
+    except ObjectDoesNotExist:
+        return render_to_response('employment_confirmation.html',{'no_account': True},
+                                  context_instance=RequestContext(request))
+    # otherwise check the time 
+    else:
+        # if user has not already activated their account
+        if employment.start_date is None:
+            # if the key has expired, delete the employment and redirect them to expiration
+            if employment.key_expiration < timezone.now():
+                employment.delete()
+                return render_to_response('employment_confirmation.html',{'expired': True},
+                                          context_instance=RequestContext(request))
+            # otherwise start employment
+            employment.start_date = timezone.now()
+            # save in the data base
+            employment.save()
+        # log in the user and redirect them to their profile
+        if request.user != employment.employee.user: 
+            # if employee is logged in as a different user,log him/her out
+            if request.user.is_authenticated():
+                logout(request)
+            login_user_no_credentials(request,employment.employee.user)
+        # redirect employee to his/her profile
+        return HttpResponseRedirect('/profile/')
+
 
     
 def UserRegistration(request):
