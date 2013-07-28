@@ -29,9 +29,9 @@ class EmploymentForm(forms.Form):
             employees = company.employee.all()
             # now remove current employees
             for employee in employees:
-                self.fields['abqUser'].queryset = self.fields['abqUser'].queryset.exclude(user=employee.user) 
+                self.fields['abqUser'].queryset = \
+                    self.fields['abqUser'].queryset.exclude(user=employee.user) 
             
-
     # check that abqUser is neither the owner nor already works for the company
     def clean(self):
         # get access to the original cleaned_data methods

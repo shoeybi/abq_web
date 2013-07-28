@@ -25,7 +25,6 @@ def build_company_dic_for_owner(user):
         workspace_launch_form = WorkspaceLaunchForm(initial={'company_name': company.name})
         employment_form       = EmploymentForm(user,initial={'company_name': company.name})
         workspaces            = Workspace.objects.filter(company=company)
-        print workspaces
         dic = {'company':company, 
                'workspace_launch_form':workspace_launch_form, 
                'employment_form':employment_form,
@@ -36,7 +35,8 @@ def build_company_dic_for_owner(user):
 
 
 def Profile(request):
-    # if the user is not authenticated, then redirect them to the home page where they can lon in
+    # if the user is not authenticated, then redirect them 
+    # to the home page where they can lon in
     if not request.user.is_authenticated():
         return HttpResponseRedirect('/home/')
 
@@ -51,8 +51,6 @@ def Profile(request):
     # in a dictionary with company name as the keyword. Note that company 
     # name is unique so there is no conflict
     company_dic = build_company_dic_for_owner(request.user)
-
-    workspace = Workspace()
 
     # if user is posting
     if request.method == 'POST':
@@ -140,10 +138,12 @@ def Profile(request):
                     workspace.company     = company
                     workspace.hardware    = hardware
                     workspace.os          = workspace_launch_form.cleaned_data['os']
+                    # XXX
                     workspace.region      = 'west'
                     workspace.instance_id = 'a2456d'
                     workspace.launch_date = timezone.now()
                     # background image
+                    # XXX
                     image_filename  = 'workspaceImage__'+company.name+'__'+workspace.name+'.png'
                     # for now read from a default file
                     source_filename = settings.MEDIA_ROOT+'workspace_images/desktop_background_default.png'
