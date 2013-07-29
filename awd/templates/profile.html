@@ -10,6 +10,7 @@
   <p> {{user.first_name}} {{user.last_name}} </p>
 </div>
 
+{% if abqUser.abaqual_status == "EX" %} 
 <div id="company_reg" >
   <form method="post">
     {% csrf_token %}
@@ -24,6 +25,7 @@
     {% endif %}
   </form>
 </div>
+{% endif %}
 
 
 {% for company in company_dic.values %}
@@ -60,6 +62,20 @@
     {{company.employment_form.company_name}}
     <input type="submit" name="invite_employee" value="invite" />
   </form>
+</div>
+
+
+<div id="employees">
+  {% for employee in company.employees_accepted %}
+  <div id="employee_accepted">
+    <p> {{employee.user.first_name}} {{employee.user.last_name}}</p>
+  </div> 
+  {% endfor %}
+  {% for employee in company.employees_pending %}
+  <div id="employee_pending">
+    <p> {{employee.user.first_name}} {{employee.user.last_name}} (pending)</p>
+  </div> 
+  {% endfor %}
 </div>
 
 {% endfor %}

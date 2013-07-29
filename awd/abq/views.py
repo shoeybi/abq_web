@@ -25,10 +25,14 @@ def build_company_dic_for_owner(user):
         workspace_launch_form = WorkspaceLaunchForm(initial={'company_name': company.name})
         employment_form       = EmploymentForm(user,initial={'company_name': company.name})
         workspaces            = Workspace.objects.filter(company=company)
+        employees_accepted    = company.employee.exclude(employment__start_date=None)
+        employees_pending     = company.employee.filter(employment__start_date=None)
         dic = {'company':company, 
                'workspace_launch_form':workspace_launch_form, 
                'employment_form':employment_form,
-               'workspaces':workspaces}
+               'workspaces':workspaces,
+               'employees_accepted':employees_accepted,
+               'employees_pending':employees_pending}
         company_dic[company.name] = dic
     # and return the dictionary
     return company_dic
@@ -77,8 +81,7 @@ def Profile(request):
                 # otherwise there was an error and we should show just show the old form with errors
                 # if we are registering a new company, we should rebuild the company_dic
                 company_dic = build_company_dic_for_owner(request.user)
-
-
+                
 
         # ===================================
         # invite a person to join the company
@@ -113,8 +116,6 @@ def Profile(request):
             company_dic[company_name]['employment_form'] = employment_form
 
 
-
-
         # ================
         # workspace launch
         # ================
@@ -126,6 +127,7 @@ def Profile(request):
             workspace_launch_form = WorkspaceLaunchForm(request.POST)
             company_name          = request.POST['company_name']
             company               = company_dic[company_name]['company']
+           
             # if the value is not the default
             if request.POST['hardware'] != '':
                 # get the hardware
@@ -156,7 +158,6 @@ def Profile(request):
                     source_filename = settings.MEDIA_ROOT+'workspace_images/desktop_background_default.png'
                     workspace.set_size_and_save_image(image_filename,source_filename)   
                     workspace.save()
-
                     # create an empty from
                     workspace_launch_form = WorkspaceLaunchForm(
                         initial={'company_name': company.name})
@@ -182,8 +183,9 @@ def Profile(request):
                 # now we need to replace the form we had in the dictionary
                 company_dic[company_name]['workspace_launch_form'] = workspace_launch_form
 
-
-    context = {'company_dic':company_dic,
+    abqUser = AbqUser.objects.get(user=request.user)
+    context = {'abqUser': abqUser,
+               'company_dic':company_dic,
                'company_form':company_form}
     return render_to_response('profile.html', context,
                           context_instance=RequestContext(request))

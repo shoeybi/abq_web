@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block extrahead_base %}
+<title> Confirmation </title>
+{% endblock %}
+   
+{% block extraheader_base %}
+
+<div id="confirmation" class="clear">
+
+  {% if no_account %}
+  <p> The employment you requested to activate does not exist anymore. </p>
+  {% endif %}
+
+  {% if expired %}
+  <p> Your activation key has exprired. </p>
+  {% endif %}
+
+</div>  
+
+{% endblock %}
