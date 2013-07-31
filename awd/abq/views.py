@@ -15,9 +15,31 @@ import datetime, random, hashlib
 from django.core.files import File
 
 # get the compnay lists that the current user is the owner
-def build_company_dic_for_owner(user):
+def build_company_dic_for_employee(user):
     abqUser = AbqUser.objects.get(user=user)
     # get all the compnaies that user has
+    companies = Company.objects.filter(employee=abqUser)
+    # build a dictionary of compnay-name:value pairs
+    company_dict = {}
+    for company in companies:
+        workspaces = Workspace.objects.filter(company=company)
+        employees  = AbqUser.objects.filter(
+            employment__company=company,
+            employment__end_date=None).exclude(
+            employment__start_date=None).exclude(user=abqUser.user)
+        dic = {'company':company, 
+               'workspaces':workspaces,
+               'employees':employees,
+               'owner':company.owner}
+        company_dict[company.name] = dic
+    # and return the dictionary
+    return company_dict
+    
+
+# get the compnay lists that the current user is an employee
+def build_company_dic_for_owner(user):
+    abqUser = AbqUser.objects.get(user=user)
+    # get all the compnaies that user is part an employee in
     companies = Company.objects.filter(owner=abqUser)
     # build a dictionary of compnay-name:value pairs
     company_dic = {}
@@ -25,8 +47,10 @@ def build_company_dic_for_owner(user):
         workspace_launch_form = WorkspaceLaunchForm(initial={'company_name': company.name})
         employment_form       = EmploymentForm(user,initial={'company_name': company.name})
         workspaces            = Workspace.objects.filter(company=company)
-        employees_accepted    = company.employee.exclude(employment__start_date=None)
-        employees_pending     = company.employee.filter(employment__start_date=None)
+        employees_accepted    = AbqUser.objects.filter(employment__company=company).exclude(
+            employment__start_date=None)
+        employees_pending     = AbqUser.objects.filter(employment__company=company,
+                                                        employment__start_date=None)
         dic = {'company':company, 
                'workspace_launch_form':workspace_launch_form, 
                'employment_form':employment_form,
@@ -44,9 +68,14 @@ def Profile(request):
     if not request.user.is_authenticated():
         return HttpResponseRedirect('/home/')
 
+    # an employee does not have much functionality
+    company_dic_employee = build_company_dic_for_employee(request.user)
+
+
     # =====================
     # initialize empty form
     # =====================
+
 
     # there is just one single posting for launching a company
     company_form = CompanyForm()
@@ -186,7 +215,8 @@ def Profile(request):
     abqUser = AbqUser.objects.get(user=request.user)
     context = {'abqUser': abqUser,
                'company_dic':company_dic,
-               'company_form':company_form}
+               'company_form':company_form,
+               'company_dic_employee':company_dic_employee}
     return render_to_response('profile.html', context,
                           context_instance=RequestContext(request))
 

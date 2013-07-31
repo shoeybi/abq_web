@@ -80,4 +80,33 @@
 
 {% endfor %}
 
+
+
+{% for company in company_dic_employee.values %}
+
+<p> {{ company.company }} </p>
+
+<div id="workspaces">
+  {% for workspace in company.workspaces %}
+  <div id="workspace">
+    <a href="url"> <img src="{{workspace.image.url }}" /> </a>
+    <p> {{workspace.name}} </p>
+  </div> 
+  {% endfor %}
+</div>
+
+<div id="owner">
+<p> Owner: {{company.owner.user.first_name}} {{company.owner.user.last_name}} </p>
+</div>
+
+<div id="employees">
+  {% for employee in company.employees %}
+  <div id="employee_accepted">
+    <p> {{employee.user.first_name}} {{employee.user.last_name}}</p>
+  </div> 
+  {% endfor %}
+</div>
+
+{% endfor %}
+
 {% endblock %}
