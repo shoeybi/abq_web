@@ -71,10 +71,10 @@ class WorkspaceLaunchForm(forms.Form):
     # show hardware option and resubmit the form as soon as it is changed
     hardware = forms.ModelChoiceField(queryset=Hardware.objects.all(),
                                       widget=forms.Select(attrs={"onChange":'submit()'}),
-                                      empty_label='Select a hardware')
+                                      empty_label='Hardware')
     # by default, don't show any os until we know thw hardware
     os       = forms.ModelChoiceField(queryset=OS.objects.none(), 
-                                      empty_label="Selec an os", required=False)
+                                      empty_label="Operating system", required=False)
 
     # because os is to optional but is needed to form a workspace
     # we define a special method that checks if the os is valid otherwise

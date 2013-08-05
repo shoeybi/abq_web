@@ -30,52 +30,68 @@
 
 {% for company in company_dic.values %}
 
-<p> {{ company.company }} </p>
+<div id="company">
+  
+  <div id="name">
+    <p> {{ company.company }} </p>
+  </div>    
 
-<div id="workspaces">
-  {% for workspace in company.workspaces %}
-  <div id="workspace">
-    <a href="url"> <img src="{{workspace.image.url }}" /> </a>
-    <p> {{workspace.name}} </p>
-  </div> 
-  {% endfor %}
-</div>
+  <div id="left"> 
+    
+    <div id="workspaces">
+      {% for workspace in company.workspaces %}
+      <div id="workspace">
+	<figure>
+	  <a href="url" alt="{{workspace.name}}">
+	    <img src="{{workspace.image.url }}" alt="">
+	  </a>
+	  <figcaption>{{workspace.name}}</figcaption>
+	</figure>
+      </div> 
 
+      {% endfor %}
+    </div>
+    
+    <div id="workspace_launch" >
+      <form method="post">
+	{% csrf_token %}
+	{{company.workspace_launch_form.company_name}}
+	{{company.workspace_launch_form.hardware}}
+	{{company.workspace_launch_form.os}}
+	<input type="submit" name="workspace_launch" value="launch workspace" />
+      </form>
+      <p class="error"> {{company.workspace_launch_form.errors.as_text}}</p>
+    </div>
 
-<div id="workspace_launch" >
-  <p> {{company.workspace_launch_form.errors.as_text}}</p>
-  <form method="post">
-    {% csrf_token %}
-    {{company.workspace_launch_form.company_name}}
-    {{company.workspace_launch_form.hardware}}
-    {{company.workspace_launch_form.os}}
-    {{company.workspace_launch_form.image}}
-    <input type="submit" name="workspace_launch" value="launch a new workspace" />
-  </form>
-</div>
+  </div>
 
-<div id="add_employee" >
-  <p> {{company.employment_form.errors.as_text}}</p>
-  <form method="post">
-    {% csrf_token %}
-    {{company.employment_form.abqUser}}
-    {{company.employment_form.company_name}}
-    <input type="submit" name="invite_employee" value="invite" />
-  </form>
-</div>
-
-
-<div id="employees">
-  {% for employee in company.employees_accepted %}
-  <div id="employee_accepted">
-    <p> {{employee.user.first_name}} {{employee.user.last_name}}</p>
-  </div> 
-  {% endfor %}
-  {% for employee in company.employees_pending %}
-  <div id="employee_pending">
-    <p> {{employee.user.first_name}} {{employee.user.last_name}} (pending)</p>
-  </div> 
-  {% endfor %}
+  <div id="right">
+    
+    <div id="employees">
+      {% for employee in company.employees_accepted %}
+      <div id="employee_accepted">
+	<p> {{employee.user.first_name}} {{employee.user.last_name}}</p>
+      </div> 
+      {% endfor %}
+      {% for employee in company.employees_pending %}
+      <div id="employee_pending">
+	<p> {{employee.user.first_name}} {{employee.user.last_name}} (pending)</p>
+      </div> 
+      {% endfor %}
+    </div>
+    
+    <div id="add_employee" >
+      <p> {{company.employment_form.errors.as_text}}</p>
+      <form method="post">
+	{% csrf_token %}
+	{{company.employment_form.abqUser}}
+	{{company.employment_form.company_name}}
+	<input type="submit" name="invite_employee" value="invite" />
+      </form>
+    </div>
+     
+  </div>
+  
 </div>
 
 {% endfor %}

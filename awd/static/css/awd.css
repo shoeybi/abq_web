@@ -193,3 +193,52 @@ body {
 		    
 }
 
+#company {
+	 font-size: 1.1em;
+}
+
+#company #left {
+	 width: 750px;
+	 float: left;
+	 clear: both;
+}
+
+#company #left #workspace {
+	 clear: right;
+	 float: left;
+}
+
+#company #left #workspace figure {
+       margin: 10px;
+       display: table;
+       text-align: center;
+       padding: 0px;
+}		 
+
+#company #left #workspace_launch{
+	 margin-top: 17px;
+	 width: 180px;
+	 border:2px dashed #708090;
+	 float: left;
+	 text-align: center;
+	 height: 90px;
+	 margin-left: 10px;
+}
+
+
+#company #left #workspace_launch select{
+	 width: 160px;
+}
+
+#company #left #workspace_launch input{
+	 color: #E25822;
+	 text-decoration:  none;	
+	 display: inline-block;
+	 margin-top: 15px;
+	 font-size: 0.6em;
+}
+
+#company #left #workspace_launch .error {
+	 margin-top: 10px;
+}
+
