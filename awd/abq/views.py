@@ -1,5 +1,5 @@
-import os, sys
-sys.path.append('/Users/mohammadshoeybi/Documents/Abaqual/repos/abq_dev/desktopdeploy')
+#import os, sys
+#sys.path.append('/Users/mohammadshoeybi/Documents/Abaqual/repos/abq_dev/desktopdeploy')
 from django.http                  import HttpResponseRedirect
 from django.shortcuts             import render_to_response
 from django.template              import RequestContext
@@ -15,7 +15,7 @@ from abq.forms                    import LoginForm, RegistrationForm, \
 from abq.models                   import AbqUser, Company, OS, Hardware, Employment, Workspace
 import datetime, random, hashlib
 from django.core.files import File
-from interface import get_instance_id, instance_status, get_public_dns, get_url
+#from interface import get_instance_id, instance_status, get_public_dns, get_url
 
 
 
