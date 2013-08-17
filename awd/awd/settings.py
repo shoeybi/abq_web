@@ -1,7 +1,9 @@
 # Django settings for awd project.
 
 # define the absolute path
-AWD_PATH = '/Users/mohammadshoeybi/Documents/Abaqual/repos/abq_web'
+import os, sys
+current_dir = os.path.dirname(os.path.abspath(__file__))
+AWD_PATH = current_dir + '/../..'
 
 
 DEBUG = True
