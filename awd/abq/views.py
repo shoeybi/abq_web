@@ -1,3 +1,5 @@
+import os, sys
+sys.path.append('/Users/mohammadshoeybi/Documents/Abaqual/repos/abq_dev/desktopdeploy')
 from django.http                  import HttpResponseRedirect
 from django.shortcuts             import render_to_response
 from django.template              import RequestContext
@@ -13,6 +15,9 @@ from abq.forms                    import LoginForm, RegistrationForm, \
 from abq.models                   import AbqUser, Company, OS, Hardware, Employment, Workspace
 import datetime, random, hashlib
 from django.core.files import File
+from interface import get_instance_id, instance_status, get_public_dns, get_url
+
+
 
 # get the compnay lists that the current user is the owner
 def build_company_dic_for_employee(user):
@@ -47,6 +52,14 @@ def build_company_dic_for_owner(user):
         workspace_launch_form = WorkspaceLaunchForm(initial={'company_name': company.name})
         employment_form       = EmploymentForm(user,initial={'company_name': company.name})
         workspaces            = Workspace.objects.filter(company=company)
+
+        # ---------------------------
+        # HACK
+        #for workspace in workspaces:
+        #    print workspace, instance_status(workspace.instance_id,workspace.region)
+        #    print workspace, get_url(workspace.instance_id,workspace.region)
+        # ---------------------------
+
         employees_accepted    = AbqUser.objects.filter(employment__company=company).exclude(
             employment__start_date=None)
         employees_pending     = AbqUser.objects.filter(employment__company=company,
@@ -176,9 +189,26 @@ def Profile(request):
                     workspace.company     = company
                     workspace.hardware    = hardware
                     workspace.os          = workspace_launch_form.cleaned_data['os']
-                    # XXX
+                    
+                    
+                    # ----------------------------------
                     workspace.region      = 'west'
                     workspace.instance_id = 'a2456d'
+                    # ----------------------------------
+                    
+                    
+                    '''
+                    workspace.region      = 'us-west-1'
+                    workspace.instance_id = get_instance_id(region=workspace.region, 
+                                                            instance_type=hardware.type, 
+                                                            os=workspace.os.type, 
+                                                            company_name=company.name, 
+                                                            uname=request.user.first_name, 
+                                                            pswd='123')
+                    print workspace.instance_id
+                    print 'AAAAAAAAAAAAAAAABBBBBBBBB'
+                    '''
+
                     workspace.launch_date = timezone.now()
                     # background image
                     # XXX
