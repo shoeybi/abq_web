@@ -1,8 +1,0 @@
-#! /bin/bash
-
-## run a NX command
-
-if [ "$NXset" != "set" ]; then
-    source $NXDIR/NXsetup
-fi
-ssh $DSKaccount sudo /usr/NX/bin/nxserver --$1
