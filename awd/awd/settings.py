@@ -1,7 +1,7 @@
 # Django settings for awd project.
 
 # define the absolute path
-import os, sys
+import os
 current_dir = os.path.dirname(os.path.abspath(__file__))
 AWD_PATH = current_dir + '/../..'
 
