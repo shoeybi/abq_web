@@ -42,8 +42,8 @@
       {% for workspace in company.workspaces %}
       <div id="workspace">
 	<figure>
-	  <a href="url" alt="{{workspace.name}}">
-	    <img src="{{workspace.image.url }}" alt="">
+	  <a href="{{workspace.instance_url}}" alt="{{workspace.name}}">
+	    <img src="{{workspace.image.url}}" alt="">
 	  </a>
 	  <figcaption>{{workspace.name}}</figcaption>
 	</figure>

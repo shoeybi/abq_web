@@ -6,6 +6,15 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 AWD_PATH = current_dir + '/../..'
 
 
+# integration with aws stuff
+AWS = True
+import sys
+aws_dir = AWD_PATH + '/../abq_dev/desktopdeploy'
+if AWS:
+    sys.path.append(aws_dir)
+
+
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 

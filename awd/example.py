@@ -81,7 +81,7 @@ abquser.save();
 
 hardware1                = Hardware()
 hardware1.name           = 'EC2 micro instance'
-hardware1.type           = 't1.micro'
+hardware1.key            = 't1.micro'
 hardware1.price_per_hour = 0.02
 hardware1.virtual_cpu    = 1
 hardware1.memory_GiB     = 0.615
@@ -90,7 +90,7 @@ hardware1.save()
 
 hardware2                = Hardware()
 hardware2.name           = 'EC2 small instance'
-hardware2.type           = 'm1.small'
+hardware2.key            = 'm1.small'
 hardware2.price_per_hour = 0.06
 hardware2.virtual_cpu    = 1
 hardware2.memory_GiB     = 1.7
@@ -99,7 +99,7 @@ hardware2.save()
 
 hardware3                = Hardware()
 hardware3.name           = 'EC2 medium instance'
-hardware3.type           = 'm1.medium'
+hardware3.key            = 'm1.medium'
 hardware3.price_per_hour = 0.12
 hardware3.virtual_cpu    = 1
 hardware3.memory_GiB     = 3.75
@@ -108,7 +108,7 @@ hardware3.save()
 
 hardware4                = Hardware()
 hardware4.name           = 'EC2 large instance'
-hardware4.type           = 'm1.large'
+hardware4.key            = 'm1.large'
 hardware4.price_per_hour = 0.24
 hardware4.virtual_cpu    = 2
 hardware4.memory_GiB     = 7.5
@@ -122,14 +122,14 @@ hardware4.save()
 
 osU                = OS()
 osU.name           = 'Ubuntu 12.04 LTS'
-osU.type           = 'ami-d0f89fb9'
+osU.key            = 'ubuntu12.04'
 osU.price_per_hour = 0.0
 osU.save()
 osU.hardware.add(hardware1, hardware2, hardware3, hardware4)
 
 osC                = OS()
 osC.name           = 'CentOs 6.0'
-osC.type           = 'ami-03559b6a'
+osC.key            = 'centos6.0'
 osC.price_per_hour = 0.0
 osC.save()
 osC.hardware.add(hardware3,hardware4)

@@ -53,7 +53,6 @@ class Company(models.Model):
 
 
 
-
 class Employment(models.Model):
 
     employee       = models.ForeignKey(AbqUser)
@@ -75,7 +74,7 @@ class Employment(models.Model):
 class Hardware(models.Model):
 
     name           = models.CharField(max_length=100)
-    type           = models.CharField(max_length=100)
+    key            = models.CharField(max_length=100)
     price_per_hour = models.FloatField()
     virtual_cpu    = models.IntegerField()
     memory_GiB     = models.FloatField()
@@ -93,7 +92,7 @@ class Hardware(models.Model):
 class OS(models.Model):
 
     name           = models.CharField(max_length=100)
-    type           = models.CharField(max_length=100)
+    key            = models.CharField(max_length=100)
     price_per_hour = models.FloatField()
     hardware       = models.ManyToManyField(Hardware,related_name='os_hardware') 
 
@@ -162,6 +161,7 @@ class Workspace(models.Model):
     instance_id  = models.CharField(max_length=100)
     launch_date  = models.DateTimeField()
     image        = models.ImageField(upload_to='workspace_images')
+    instance_url = models.URLField(max_length=200,blank=True, null=True)
     
     def __unicode__(self):
         return self.name
@@ -229,8 +229,12 @@ class LaunchdStorage(models.Model):
 
 class Project(models.Model):
     
-    company  = models.ForeignKey(Company,related_name='project_owner', null=True, blank=True)  
-    customer = models.ForeignKey(AbqUser,related_name='project_customer',null=True, blank=True)  
+    company  = models.ForeignKey(Company,
+                                 related_name='project_owner', 
+                                 null=True, blank=True)  
+    customer = models.ForeignKey(AbqUser,
+                                 related_name='project_customer',
+                                 null=True, blank=True)  
     name     = models.CharField(max_length=100)
     email    = models.EmailField()
 

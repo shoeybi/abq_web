@@ -1,5 +1,4 @@
-#import os, sys
-#sys.path.append('/Users/mohammadshoeybi/Documents/Abaqual/repos/abq_dev/desktopdeploy')
+
 from django.http                  import HttpResponseRedirect
 from django.shortcuts             import render_to_response
 from django.template              import RequestContext
@@ -9,14 +8,15 @@ from django.core.mail             import send_mail
 from django.core.exceptions       import ObjectDoesNotExist
 from django.utils                 import timezone
 from django.conf                  import settings
-from abq.misc                     import login_user_no_credentials
+from django.core.files            import File
+from abq.misc                     import login_user_no_credentials, get_aws_region
 from abq.forms                    import LoginForm, RegistrationForm, \
     CompanyForm, WorkspaceLaunchForm, EmploymentForm
 from abq.models                   import AbqUser, Company, OS, Hardware, Employment, Workspace
 import datetime, random, hashlib
-from django.core.files import File
-#from interface import get_instance_id, instance_status, get_public_dns, get_url
 
+if settings.AWS:
+    from interface import get_instance_id, instance_status, get_public_dns, get_url
 
 
 # get the compnay lists that the current user is the owner
@@ -55,9 +55,13 @@ def build_company_dic_for_owner(user):
 
         # ---------------------------
         # HACK
-        #for workspace in workspaces:
-        #    print workspace, instance_status(workspace.instance_id,workspace.region)
-        #    print workspace, get_url(workspace.instance_id,workspace.region)
+        if settings.AWS:
+            for workspace in workspaces:
+                print workspace
+                print ' >', workspace.instance_id
+                print ' >', workspace.region
+                print ' >', instance_status(workspace.instance_id,workspace.region)
+                print ' >', get_url(workspace.instance_id,workspace.region)
         # ---------------------------
 
         employees_accepted    = AbqUser.objects.filter(employment__company=company).exclude(
@@ -189,26 +193,27 @@ def Profile(request):
                     workspace.company     = company
                     workspace.hardware    = hardware
                     workspace.os          = workspace_launch_form.cleaned_data['os']
-                    
-                    
-                    # ----------------------------------
-                    workspace.region      = 'west'
-                    workspace.instance_id = 'a2456d'
-                    # ----------------------------------
-                    
-                    
-                    '''
-                    workspace.region      = 'us-west-1'
-                    workspace.instance_id = get_instance_id(region=workspace.region, 
-                                                            instance_type=hardware.type, 
-                                                            os=workspace.os.type, 
-                                                            company_name=company.name, 
-                                                            uname=request.user.first_name, 
-                                                            pswd='123')
-                    print workspace.instance_id
-                    print 'AAAAAAAAAAAAAAAABBBBBBBBB'
-                    '''
-
+                    # if the aws integration flag is on, launch an instance 
+                    # and prepare it
+                    if settings.AWS:
+                        #print 'aws is on:'
+                        workspace.region  = get_aws_region()
+                        #print ' region:', workspace.region
+                        owner_username = (request.user.first_name[0]+request.user.last_name).lower()
+                        #print ' username:', owner_username
+                        workspace.instance_id = get_instance_id(region=workspace.region, 
+                                                                instance_type=hardware.key, 
+                                                                os=workspace.os.key, 
+                                                                company_name=company.name, 
+                                                                uname=owner_username, 
+                                                                pswd='123')
+                        #print ' instance id:', workspace.instance_id
+                        #print ' DONE!!!'                    
+                    # otherwise just put something there
+                    else:
+                        workspace.region      = 'west'
+                        workspace.instance_id = 'a2456d'
+                    # set the launch date and time                        
                     workspace.launch_date = timezone.now()
                     # background image
                     # XXX

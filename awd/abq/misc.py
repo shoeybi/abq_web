@@ -18,3 +18,13 @@ def login_user_no_credentials(request, user):
     if hasattr(user, 'backend'):
         return login(request, user)
 
+
+
+# select a region for the aws
+def get_aws_region():
+    # this needs to be changed
+    supported_region_list = ['us-east-1', 
+                             'us-west-1'] 
+
+    # for now just west
+    return supported_region_list[1]
