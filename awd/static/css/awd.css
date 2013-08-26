@@ -1,25 +1,45 @@
 
+.clear {
+       clear: both;
+}
+
 /* main body */
 body {
-     font:      1.1em Calibri;
-     width:     1020px;
-     padding:   10px;
-     margin:    auto;
-     word-wrap: break-word;
+    font:      1.0em Helvetica, Arial, Verdana, sans-serif;
+    width:     980px;
+    padding:   10px;
+    margin:    0px auto;
+    word-wrap: break-word;
 }	 
-
 
 /* main header */
 #header {
-	width:       1000px;
-	padding:     10px;
-	background:  #ccc;
-	height:      110px;
+    width:      960px;
+    padding:    10px;
+    background: #ccc;
+    height:     100px;
 }
 
-#header img {
-	padding: 8px;   
+#header #logo {
+    width: 350px;
+    height: 100px;
+    float: left;
 }
+
+#header #userbar {
+    width: 600px;
+    height: 40px;
+    padding: 5px;
+    float: right;
+}
+
+#header #navbar {
+    width: 600px;
+    height: 40px;
+    padding: 5px;
+    float: right;
+}
+
 
 
 /* error class */
@@ -129,9 +149,6 @@ body {
 		  width:     160px;
 }
 
-.clear {
-       clear: both;
-}
 
 #registrationThankyou {
 		      padding:   50px;
@@ -242,3 +259,8 @@ body {
 	 margin-top: 10px;
 }
 
+#company #right {
+	 width: 750px;
+	 float: left;
+	 clear: both;
+}
