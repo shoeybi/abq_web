@@ -3,6 +3,17 @@
        clear: both;
 }
 
+.flamebutton {
+    color: #E25822;	  
+    cursor: pointer;
+    padding: 4px;
+}
+
+.right {
+    float: right;
+}
+
+
 /* main body */
 body {
     font:      1.0em Helvetica, Arial, Verdana, sans-serif;
@@ -17,30 +28,48 @@ body {
     width:      960px;
     padding:    10px;
     background: #ccc;
-    height:     100px;
+    height:     96px;
 }
 
 #header #logo {
     width: 350px;
-    height: 100px;
+    height: 96px;
     float: left;
 }
 
 #header #userbar {
     width: 600px;
-    height: 40px;
+    height: 38px;
     padding: 5px;
     float: right;
+}
+
+#header #userbar a {
+    text-decoration: none
 }
 
 #header #navbar {
     width: 600px;
-    height: 40px;
+    height: 38px;
     padding: 5px;
     float: right;
 }
 
+#header #navbar ul {
+    list-style-type: none;    
+    float: right;
+}
 
+#header #navbar ul li {
+    display: block;
+    display: inline;
+    margin: 0px 10px;
+}
+
+#header #navbar ul li a {
+    text-decoration: none;
+    color: black;
+}
 
 /* error class */
 .error {
