@@ -1,6 +1,25 @@
 
+body {
+    width: 980px;
+    padding: 10px;
+    margin: 0px auto;
+    word-wrap: break-word;
+}	 
+
+body * {
+    font: 1.0em Helvetica, Arial, Verdana, sans-serif;
+}
+
 .clear {
-       clear: both;
+    clear: both;
+}
+
+.right {
+    float: right;
+}
+
+.left {
+    float: left;
 }
 
 .flamebutton {
@@ -9,26 +28,14 @@
     padding: 4px;
 }
 
-.right {
-    float: right;
+#header, #footer {
+    width: 960px;
+    background: #ccc;
 }
 
-
-/* main body */
-body {
-    font:      1.0em Helvetica, Arial, Verdana, sans-serif;
-    width:     980px;
-    padding:   10px;
-    margin:    0px auto;
-    word-wrap: break-word;
-}	 
-
-/* main header */
 #header {
-    width:      960px;
-    padding:    10px;
-    background: #ccc;
-    height:     96px;
+    height: 96px;
+    padding: 10px;
 }
 
 #header #logo {
@@ -71,6 +78,27 @@ body {
     color: black;
 }
 
+#header #navbar ul li a:hover {
+    color: blue;
+}
+
+#content {
+    margin-top: 10px;
+    padding: 5px;
+    min-height: 480px;
+}
+
+#footer {
+    margin-top: 10px;
+    height: 20px;
+    padding: 5px 10px;
+}
+
+
+
+
+
+
 /* error class */
 .error {
        font-size:    0.75em;
@@ -88,16 +116,7 @@ body {
 }
 
 
-/* main footer */
-#footer {
-	position:   absolute;
-	bottom:     2px;
-	width:      1000px;
-	height:     25px;
-	padding:    10px;
-	background: #ccc;
-	text-align: left;
-}
+
 
 
 /* login */
