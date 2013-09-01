@@ -10,6 +10,7 @@ body * {
     font: 1.0em Helvetica, Arial, Verdana, sans-serif;
 }
 
+
 .clear {
     clear: both;
 }
@@ -25,7 +26,17 @@ body * {
 .flamebutton {
     color: #E25822;	  
     cursor: pointer;
-    padding: 4px;
+    border: solid 1px #808080;
+    border-radius: 3px;
+    background-color: #F3E7E7;
+}
+
+.error {
+    font-size: 0.75em;
+    color: red;
+    padding-left: 10px;
+    padding-top: 0px;
+    margin: 0;
 }
 
 #header, #footer {
@@ -94,19 +105,57 @@ body * {
     padding: 5px 10px;
 }
 
+#loginform {
+    float: right;
+}
+
+#loginform input {
+    margin-right: 5px;
+}
+
+#loginform input[type="submit"] {
+    box-height: 20px;
+}
+
+#loginform input[type="text"], #loginform input[type="password"] {
+    width: 150px;
+    border: solid 1px #808080;
+    border-radius: 3px;
+    padding-left: 3px;
+    color: #3F3E3E;
+    height: 20px;
+    margin-right: 10px;
+}
+
+
+/* login */
+#looginform {
+    height:      70px;
+    padding:     0;
+    font-size:   1.1em;
+    margin-top:  10px;
+    margin-left: 380px;
+}
+
+#looginform label {
+	   text-align:   right;
+	   padding-left: 15px;
+}
+
+#looginform input {
+	   height:    35px;
+	   font-size: 0.8em;
+	   width:     160px;
+}
+
+
 
 
 
 
 
 /* error class */
-.error {
-       font-size:    0.75em;
-       color:        red;
-       padding-left: 10px;
-       padding-top:  0px;
-       margin:       0;
-}
+
 
 .error2 {
        color:        red;
@@ -119,25 +168,6 @@ body * {
 
 
 
-/* login */
-#loginform {
-	   height:      70px;
-	   padding;     0;
-	   font-size:   1.1em;
-	   margin-top:  10px;
-	   margin-left: 380px;
-}
-
-#loginform label {
-	   text-align:   right;
-	   padding-left: 15px;
-}
-
-#loginform input {
-	   height:    35px;
-	   font-size: 0.8em;
-	   width:     160px;
-}
 
 #loginbutton {
 	      margin-top:  -35px;

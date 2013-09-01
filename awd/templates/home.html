@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block extrahead_base %}
 <title> Abaqual </title>
@@ -9,11 +9,9 @@
 <div id="loginform">
   <form method="post">
     {% csrf_token %}
-    <label for="username">Email    </label> {{ form.username }}
+    <label for="username">Email </label> {{ form.username }}
     <label for="password">Password </label> {{ form.password }}
-    <div id="loginbutton">
-      <input type="submit" value="login" />
-    </div>
+    <input type="submit" class="flamebutton" value="Log in" />
     {% if form.errors %} 
     <p class="error"> {{ form.non_field_errors.as_text }} </p> 
     {% endif %}
