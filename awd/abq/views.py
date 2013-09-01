@@ -79,7 +79,7 @@ def build_company_dic_for_owner(user):
     return company_dic
 
 
-def Profile(request):
+def console(request):
     # if the user is not authenticated, then redirect them 
     # to the home page where they can lon in
     if not request.user.is_authenticated():
@@ -252,7 +252,7 @@ def Profile(request):
                'company_dic':company_dic,
                'company_reg_form':company_form,
                'company_dic_employee':company_dic_employee}
-    return render_to_response('profile.html', context,
+    return render_to_response('console.html', context,
                           context_instance=RequestContext(request))
 
 

@@ -11,17 +11,18 @@ admin.autodiscover()
 
 
 urlpatterns = patterns(
+
     # no generic view pattern
     '',
+    
     # admin
     url(r'^admin/', include(admin.site.urls)),
 
     # base
     url(r'^base/$',TemplateView.as_view(template_name="base.html")),
 
-    # prifile
-    #url(r'^profile/$',TemplateView.as_view(template_name="profile.html")),
-    url(r'^profile/$','abq.views.Profile'),
+    # console
+    url(r'^console/$','abq.views.console'),
 
     # registration
     url(r'^register/$','abq.views.UserRegistration'),
