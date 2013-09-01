@@ -1,28 +1,35 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block extrahead_base %}
 <title> Profile </title>
 {% endblock %}
-   
-<!--
+
+
+{% block content_base %}
+
 {% if abqUser.abaqual_status == "EX" %} 
 <div id="company_reg" >
   <form method="post">
     {% csrf_token %}
-    <div id="company_reg_input">
-      <label for="name"{% if company_form.name.errors %} class="error2" {% endif %}> company name </label> {{ company_form.name }} 
-    </div>
-    <div id="company_reg_button">
-      <input type="submit" name="company_reg" value="register your company" />
-    </div>
-    {% if company_form.errors %} 
-    <p class="error">  {{company_form.name.errors.as_text}} </p> 
+    <label for="name" 
+	   {% if company_reg_form.name.errors %} 
+	   class="error_highlight" 
+	   {% endif %}> 
+      Company name 
+    </label> 
+    {{ company_reg_form.name }} 
+    <input type="submit" name="register_company" value="Start your company"/>
+    {% if company_reg_form.errors %} 
+    <p class="error_message">  
+      {{company_reg_form.name.errors.as_text}} 
+    </p> 
     {% endif %}
   </form>
 </div>
 {% endif %}
 
-
+{% endblock %}
+<!--
 {% for company in company_dic.values %}
 
 <div id="company">

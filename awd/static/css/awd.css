@@ -12,6 +12,26 @@ body * {
     font-smoothing: antialiased;
 }
 
+input {
+    border: solid 1px #808080;
+    border-radius: 3px;
+}
+
+input[type="text"], input[type="password"]{
+    padding-left: 3px;
+    color: #3F3E3E;
+}
+
+input[type="submit"] {
+    cursor: pointer;
+    color: black;
+    background-color: #ECE5E5;
+}
+
+.flamebutton {
+    color: #E25822 !important;	  
+    background-color: #F3E7E7 !important;
+}
 
 .clear {
     clear: both;
@@ -25,22 +45,17 @@ body * {
     float: left;
 }
 
-.flamebutton {
-    color: #E25822;	  
-    cursor: pointer;
-    border: solid 1px #808080;
-    border-radius: 3px;
-    background-color: #F3E7E7;
+.error_message {
+    font-size: 0.75em;
+    text-align: left !important ;
 }
 
-.error {
-    font-size: 0.75em;
+.error_highlight, .error_message {
     color: red;
     padding-left: 10px;
     padding-top: 0px;
     margin: 0;
 }
-
 
 #header, #footer {
     width: 960px;
@@ -130,29 +145,32 @@ body * {
 
 #loginform input[type="text"], #loginform input[type="password"] {
     width: 150px;
-    border: solid 1px #808080;
-    border-radius: 3px;
-    padding-left: 3px;
-    color: #3F3E3E;
     height: 20px;
     margin-right: 10px;
 }
 
-
-
-
-
-/* error class */
-
-
-.error2 {
-       color:        red;
-       padding-left: 10px;
-       padding-top:  0px;
-       margin:       0;
+#company_reg {
+    width: 900px;
+    height: 40px;
+    margin: 0px auto;
+    margin-top: 25px;
+    padding-bottom: 20px;
+    font-size: 1.1em;
+    text-align: center;
+    border-bottom: 1px solid #C0C0C0;
 }
 
+#company_reg input[type="text"] {
+    width: 400px;
+    height: 25px;
+    font-size: 1.0em;
+}
 
+#company_reg input[type="submit"] {
+    height: 29px;
+}
+
+	 
 
 
 
@@ -181,6 +199,13 @@ body * {
                            color: black;
 			   font-size: 1.0em; 
 }
+
+
+/* error class */
+
+
+
+
 
 
 #registrationbutton input {
@@ -227,43 +252,6 @@ body * {
 
 #profilename p {
 	     font-size: 1.3em;
-}
-
-#company_reg {
-	     clear: left;
-	     font-size: 1.5em;
-	     padding: 40px 50px 20px 50px;
-	     width: 900px;
-	     display: table;
-	     border-bottom:1px solid #C0C0C0;
-}
-
-#company_reg_input {
-		   width: 650px;
-		   display: table-cell;
-}
-
-#company_reg_input input {
-		   width: 450px;
-		   height: 30px;
-		   display: table-cell;
-		   font-size: 0.6em;
-		   color: blue;
-}
-
-
-#company_reg_button {
-		    width: 150px;
-		    height: 30px;
-		    display: table-cell;  
-		    
-}
-
-#company_reg_button input {
-		    font-size: 0.7em;
-		    height: 30px;
-		    display: table-cell;  
-		    
 }
 
 #company {

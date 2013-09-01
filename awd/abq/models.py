@@ -7,8 +7,7 @@ class AbqUser(models.Model):
     """ Abaqual users class 
 
     Abaqual user is a user with a status and a key for activation. 
-    Status can be Expert, Professional, or Customer.
-    
+    Status can be Expert, Professional, or Customer.    
     """
 
     ABAQUAL_STATUS = (

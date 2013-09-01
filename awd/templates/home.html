@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block extrahead_base %}
-<title> Abaqual </title>
+<title> Home </title>
 {% endblock %}
 
 {% block extraheader_base %}
@@ -9,11 +9,19 @@
 <div id="loginform">
   <form method="post">
     {% csrf_token %}
-    <label for="username">Email </label> {{ form.username }}
-    <label for="password">Password </label> {{ form.password }}
+    <label for="username" >
+      Email 
+    </label> 
+    {{ login_form.username }}
+    <label for="password" >
+      Password 
+    </label> 
+    {{ login_form.password }}
     <input type="submit" class="flamebutton" value="Log in" />
-    {% if form.errors %} 
-    <p class="error"> {{ form.non_field_errors.as_text }} </p> 
+    {% if login_form.errors %} 
+    <p class="error_message"> 
+      {{ login_form.non_field_errors.as_text }} 
+    </p> 
     {% endif %}
   </form>
 </div>

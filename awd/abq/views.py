@@ -110,7 +110,7 @@ def Profile(request):
         # ====================
 
         # if the user is launching a new company
-        if 'company_reg' in request.POST:
+        if 'register_company' in request.POST:
             # get the company registration from
             company_form = CompanyForm(request.POST)
             if company_form.is_valid():
@@ -250,7 +250,7 @@ def Profile(request):
     abqUser = AbqUser.objects.get(user=request.user)
     context = {'abqUser': abqUser,
                'company_dic':company_dic,
-               'company_form':company_form,
+               'company_reg_form':company_form,
                'company_dic_employee':company_dic_employee}
     return render_to_response('profile.html', context,
                           context_instance=RequestContext(request))
@@ -385,12 +385,12 @@ def LoginRequest(request):
         return HttpResponseRedirect('/profile/')    
     # if the user is posting  
     if request.method == 'POST':
-        form = LoginForm(request.POST)
+        login_form = LoginForm(request.POST)
         # check form is valid
-        if form.is_valid():
+        if login_form.is_valid():
             # get username and password
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
+            username = login_form.cleaned_data['username']
+            password = login_form.cleaned_data['password']
             # authenticate user
             user = authenticate(username=username, password=password)
             # check if the user is autheticated
@@ -401,16 +401,16 @@ def LoginRequest(request):
                 return HttpResponseRedirect('/profile/')
             # otherwise show them the form again
             else:
-                return render_to_response('home.html', {'form': form}, 
+                return render_to_response('home.html', {'login_form': login_form}, 
                                           context_instance=RequestContext(request))
         # if the form is not valid, show th blank form again
         else:
-            return render_to_response('home.html', {'form': form}, 
+            return render_to_response('home.html', {'login_form': login_form}, 
                                       context_instance=RequestContext(request))
     # otherwise show them a blank form
     else:
-        form = LoginForm()
-        return render_to_response('home.html', {'form': form}, 
+        login_form = LoginForm()
+        return render_to_response('home.html', {'login_form': login_form}, 
                                   context_instance=RequestContext(request))
 
 
