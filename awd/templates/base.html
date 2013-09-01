@@ -24,15 +24,21 @@
       </div>
       
       <div id="userbar">
-	<!-- use block content for later extention of the extra header  -->
-	{% block extraheader_base %}
-	{% endblock %}
 	<!-- logout button -->
 	{% if user.is_authenticated %}
 	<a href="/logout/" class="right"> 
 	  <input type="submit" class="flamebutton" value="Log out" /> 
 	</a>
+	<!-- user currently logged in -->
+	<div id="loggedin">
+	  <a href="#" class="right">
+	    {{user.first_name}} {{user.last_name}}
+	  </a>
+	</div>
 	{% endif %}
+	<!-- use block content for later extention of the extra header -->
+	{% block extraheader_base %}
+	{% endblock %}
       </div>
       
       <div id="navbar">

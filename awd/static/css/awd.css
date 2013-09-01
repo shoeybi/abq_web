@@ -8,6 +8,8 @@ body {
 
 body * {
     font: 1.0em Helvetica, Arial, Verdana, sans-serif;
+    -webkit-font-smoothing: antialiased !important;
+    font-smoothing: antialiased;
 }
 
 
@@ -39,6 +41,7 @@ body * {
     margin: 0;
 }
 
+
 #header, #footer {
     width: 960px;
     background: #ccc;
@@ -63,7 +66,15 @@ body * {
 }
 
 #header #userbar a {
-    text-decoration: none
+    text-decoration: none;
+}
+
+#header #userbar #loggedin *{
+    font-size: 1.1em;
+    margin-right: 20px;
+    padding: 1px;
+    color: black;
+    font-weight: 700;
 }
 
 #header #navbar {
@@ -128,29 +139,6 @@ body * {
 }
 
 
-/* login */
-#looginform {
-    height:      70px;
-    padding:     0;
-    font-size:   1.1em;
-    margin-top:  10px;
-    margin-left: 380px;
-}
-
-#looginform label {
-	   text-align:   right;
-	   padding-left: 15px;
-}
-
-#looginform input {
-	   height:    35px;
-	   font-size: 0.8em;
-	   width:     160px;
-}
-
-
-
-
 
 
 
@@ -168,16 +156,6 @@ body * {
 
 
 
-
-#loginbutton {
-	      margin-top:  -35px;
-	      margin-left: 510px;
-}
-
-#logoutbutton {
-	margin-top: -10px;
-	margin-left: 908px;
-}
 
 #loginbutton input, #logoutbutton button, #registrationbutton input {
 	     cursor:           pointer;
