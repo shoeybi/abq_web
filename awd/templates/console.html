@@ -34,13 +34,22 @@
 
 <form method="post">
   {% csrf_token %}
-  {{company.workspace_launch_form.company_name}}
-  {{company.workspace_launch_form.hardware}}
-  {{company.workspace_launch_form.os}}
+  {{company_dict.workspace_launch_form.company_name}}
+  {{company_dict.workspace_launch_form.name}}
+  {{company_dict.workspace_launch_form.hardware}}
+  {{company_dict.workspace_launch_form.os}}
   <input type="submit" name="workspace_launch" value="Launch workspace" />
 </form>
-<p class="error"> {{company.workspace_launch_form.errors.as_text}}</p>
+<p class="error"> {{company_dict.workspace_launch_form.errors.as_text}}</p>
 
+{% for workspace in company_dict.workspaces %}
+<figure>
+  <a href="{{workspace.instance_url}}" alt="{{workspace.name}}">
+    <img src="{{workspace.image.url}}" alt="">
+  </a>
+  <figcaption>{{workspace.name}}</figcaption>
+</figure>
+{% endfor %}
 
 {% endfor %}
 

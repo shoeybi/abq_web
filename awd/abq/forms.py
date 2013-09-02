@@ -75,6 +75,8 @@ class WorkspaceLaunchForm(forms.Form):
 
     # company name
     company_name = forms.CharField(widget=forms.HiddenInput())
+    # workspace name
+    name = forms.CharField(max_length=100, label=(u'Name'))
     # show hardware option and resubmit the form as soon as it is changed
     hardware = forms.ModelChoiceField(
         queryset=Hardware.objects.all(),

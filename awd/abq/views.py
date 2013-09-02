@@ -145,7 +145,7 @@ def console(request):
                 if hardware == None:
                     raise LookupError('hardware deoes not exist')
                 # add the relevant oss
-                workspace_launch_form.fields['os'].queryset =\
+                workspace_launch_form.fields['os'].queryset = \
                     OS.objects.filter(hardware=hardware)
                 # check if it is valid
                 if workspace_launch_form.is_valid() and \
@@ -154,24 +154,24 @@ def console(request):
                     workspace = Workspace()
                     # count the number of workspaces that this company has
                     workspaces = Workspace.objects.filter(company=company)
-                    workspace.name = 'workspace '+str(len(workspaces)+1)
+                    workspace.name = workspace_launch_form.cleaned_data['name']
                     workspace.company = company
                     workspace.hardware = hardware
                     workspace.os = workspace_launch_form.cleaned_data['os']
                     # if the aws integration flag is on, launch an instance 
                     # and prepare it
+                    # DBG
                     if settings.AWS:
                         workspace.region  = get_aws_region()
-                        owner_username = (
-                            request.user.first_name[0]+\
-                                request.user.last_name).lower()
-                            workspace.instance_id = get_instance_id(
-                                region=workspace.region, 
-                                instance_type=hardware.key, 
-                                os=workspace.os.key, 
-                                company_name=company.name, 
-                                uname=owner_username, 
-                                pswd='123')
+                        owner_username = \
+                            (request.user.first_name[0]+request.user.last_name).lower()
+                        workspace.instance_id = get_instance_id(\
+                            region=workspace.region, 
+                            instance_type=hardware.key, 
+                            os=workspace.os.key, 
+                            company_name=company.name, 
+                            uname=owner_username, 
+                            pswd='123')
                     # otherwise just put something there
                     else:
                         workspace.region      = 'west'
@@ -179,6 +179,7 @@ def console(request):
                     # set the launch date and time                        
                     workspace.launch_date = timezone.now()
                     # background image
+                    # DBG
                     image_filename  = 'workspaceImage__'+company.name+\
                         '__'+workspace.name+'.png'
                     # for now read from a default file
@@ -190,15 +191,19 @@ def console(request):
                     # create an empty from
                     workspace_launch_form = WorkspaceLaunchForm(
                         initial={'company_name': company.name})
+                    # since we just added a new workspace, we need to 
+                    # update the list of workspaces for this company
+                    workspaces = Workspace.objects.filter(company=company)
+                    companies_dict[company_name]['workspaces'] = workspaces
             # now we need to replace the form we had in the dictionary
-            company_dic[company_name]['workspace_launch_form'] = \
+            companies_dict[company_name]['workspace_launch_form'] = \
                 workspace_launch_form
             
         # if the user is not posting a workspace launch
         else:
             if 'hardware' in request.POST:
                 company_name = request.POST['company_name']
-                company      = company_dic[company_name]['company']
+                company = companies_dict[company_name]['company']
                 # get the form from request.POS
                 workspace_launch_form = WorkspaceLaunchForm(request.POST)
                 # if the value is not the default
@@ -213,7 +218,7 @@ def console(request):
                     workspace_launch_form.fields['os'].queryset = \
                         OS.objects.filter(hardware=hardware)
                 # now we need to replace the form we had in the dictionary
-                company_dic[company_name]['workspace_launch_form'] = \
+                companies_dict[company_name]['workspace_launch_form'] = \
                     workspace_launch_form
                 
 
