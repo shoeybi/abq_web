@@ -3,36 +3,41 @@ from django.db                      import models
 from django.contrib.auth.models     import User
 from django.forms                   import ModelForm
 from django.forms.util              import ErrorDict, ErrorList
-from abq.models                     import AbqUser, Company, Workspace, Hardware, OS, \
-    Employment
+from abq.models                     import AbqUser, Company, Workspace, \
+    Hardware, OS, Employment
 
 
 class EmploymentForm(forms.Form):
-
+    
     # invited user
-    abqUser = forms.ModelChoiceField(queryset=AbqUser.objects.exclude(
+    abqUser = forms.ModelChoiceField(
+        queryset=AbqUser.objects.exclude(
             abaqual_status='CU'),empty_label='choose a user')
     # company name
     company_name = forms.CharField(widget=forms.HiddenInput())
-
-    def __init__(self,user,*arguments,**kwargs):
+    
+    def __init__(self,*arguments,**kwargs):
         # initialize the base class
-        super(EmploymentForm, self).__init__(*arguments,**kwargs)        
-        # first exclude the owner from the list
-        self.fields['abqUser'].queryset = self.fields['abqUser'].queryset.exclude(user=user) 
+        super(EmploymentForm, self).__init__(*arguments,**kwargs)
         # get the company name
         company_name = self.initial.get('company_name')
         if company_name != None :
             # get the company
-            company   = Company.objects.get(name=company_name)
+            company = Company.objects.get(name=company_name)        
+            # first exclude the owner from the list
+            self.fields['abqUser'].queryset = \
+                self.fields['abqUser'].queryset.exclude(\
+                user=company.owner.user) 
             # get the current list of employees
             employees = company.employee.all()
             # now remove current employees
             for employee in employees:
                 self.fields['abqUser'].queryset = \
-                    self.fields['abqUser'].queryset.exclude(user=employee.user) 
-            
-    # check that abqUser is neither the owner nor already works for the company
+                    self.fields['abqUser'].queryset.exclude(
+                    user=employee.user) 
+                    
+    # check that abqUser is neither the owner nor 
+    # already works for the company
     def clean(self):
         # get access to the original cleaned_data methods
         cleaned_data = super(EmploymentForm,self).clean()
@@ -46,11 +51,12 @@ class EmploymentForm(forms.Form):
             company = Company.objects.get(name=company_name)
         # if not raise an error
         except Company.DoesNotExist:
-            raise forms.ValidationError('company '+company_name+' does not exist')
+            raise forms.ValidationError(
+                'company '+company_name+' does not exist')
         # otherwise, check for the employee
         else:
             # user
-            abqUser      = cleaned_data.get('abqUser')
+            abqUser = cleaned_data.get('abqUser')
             # check that there was not a validation error
             #if abqUser == None:
             #    raise forms.ValidationError("user is invalid")
@@ -59,7 +65,8 @@ class EmploymentForm(forms.Form):
                 raise forms.ValidationError('You are inviting yourself')
             # check that invitee is not already part of the company
             if abqUser in company.employee.all():
-                raise forms.ValidationError(abqUser.user.username+' is already a member')
+                raise forms.ValidationError(
+                    abqUser.user.username+' is already a member')
         # make sure we return the cleaned_data
         return self.cleaned_data
 
@@ -69,13 +76,15 @@ class WorkspaceLaunchForm(forms.Form):
     # company name
     company_name = forms.CharField(widget=forms.HiddenInput())
     # show hardware option and resubmit the form as soon as it is changed
-    hardware = forms.ModelChoiceField(queryset=Hardware.objects.all(),
-                                      widget=forms.Select(attrs={"onChange":'submit()'}),
-                                      empty_label='Hardware')
+    hardware = forms.ModelChoiceField(
+        queryset=Hardware.objects.all(),
+        widget=forms.Select(attrs={"onChange":'submit()'}),
+        empty_label='Hardware')
     # by default, don't show any os until we know thw hardware
-    os       = forms.ModelChoiceField(queryset=OS.objects.none(), 
-                                      empty_label="Operating system", required=False)
-
+    os = forms.ModelChoiceField(queryset=OS.objects.none(), 
+                                empty_label="Operating system", 
+                                required=False)
+    
     # because os is to optional but is needed to form a workspace
     # we define a special method that checks if the os is valid otherwise
     # it adds an error message to the field errorlist
@@ -90,14 +99,13 @@ class WorkspaceLaunchForm(forms.Form):
             return False
         
 
-
-class CompanyForm(ModelForm):
-    
+        
+class CompanyRegForm(forms.Form):
+            
     # company form only need a name
-    class Meta:
-        model = Company
-        exclude = ('owner','launch_date',)
-
+    name = forms.CharField(max_length=100, 
+                           label=(u'Company name'))
+    
     # check that the company name is unique
     def clean_name(self):
         # get the company name
@@ -109,9 +117,10 @@ class CompanyForm(ModelForm):
         except Company.DoesNotExist:
             return name            
         # otherwise raise a validation error
-        raise forms.ValidationError('company name '+name+
-                                    ' is taken. Please select a different name.')
-
+        raise forms.ValidationError(
+            'company name '+name+
+            ' is taken. Please select a different name.')
+    
 
 class RegistrationForm(forms.Form):
     

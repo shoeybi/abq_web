@@ -6,15 +6,14 @@
 
 
 {% block content_base %}
-
-{% if abqUser.abaqual_status == "EX" %} 
+{% if abq_user.abaqual_status == "EX" %} 
 <div id="company_reg" >
   <form method="post">
     {% csrf_token %}
-    <label for="name" 
-	   {% if company_reg_form.name.errors %} 
-	   class="error_highlight" 
-	   {% endif %}> 
+    <label 
+       {% if company_reg_form.name.errors %} 
+       class="error_highlight" 
+       {% endif %}> 
       Company name 
     </label> 
     {{ company_reg_form.name }} 
@@ -28,8 +27,24 @@
 </div>
 {% endif %}
 
-<!--
-{% for company in company_dic.values %}
+
+{% for company_dict in companies_dict.values %}
+
+<p> {{ company_dict.company }} </p>
+
+<form method="post">
+  {% csrf_token %}
+  {{company.workspace_launch_form.company_name}}
+  {{company.workspace_launch_form.hardware}}
+  {{company.workspace_launch_form.os}}
+  <input type="submit" name="workspace_launch" value="Launch workspace" />
+</form>
+<p class="error"> {{company.workspace_launch_form.errors.as_text}}</p>
+
+
+{% endfor %}
+
+{% for company in companies_dict.values %}
 
 <div id="company">
   
@@ -127,5 +142,5 @@
 {% endfor %}
 
 
--->
+
 {% endblock %}

@@ -11,12 +11,220 @@ from django.conf                  import settings
 from django.core.files            import File
 from abq.misc                     import login_user_no_credentials, get_aws_region
 from abq.forms                    import LoginForm, RegistrationForm, \
-    CompanyForm, WorkspaceLaunchForm, EmploymentForm
+    CompanyRegForm, WorkspaceLaunchForm, EmploymentForm
 from abq.models                   import AbqUser, Company, OS, Hardware, Employment, Workspace
 import datetime, random, hashlib
 
 if settings.AWS:
     from interface import get_instance_id, instance_status, get_public_dns, get_url
+
+
+def populate_company_dict(company):
+    
+    # start a new workspace form
+    workspace_launch_form = WorkspaceLaunchForm(\
+        initial={'company_name': company.name})
+    # invite a new employee form
+    employment_form = EmploymentForm(\
+        initial={'company_name': company.name})
+    # workspaces that are already launched
+    workspaces = Workspace.objects.filter(company=company)
+    # employees who have already accpeted employment
+    employees_accepted = AbqUser.objects.filter(\
+        employment__company=company, employment__end_date=None).exclude(\
+        employment__start_date=None)
+    # employees who still have not responded to their employment
+    employees_pending = AbqUser.objects.filter(
+        employment__company=company, employment__start_date=None)
+    # build the dictionary
+    company_dict = {
+        'company': company, 
+        'workspace_launch_form': workspace_launch_form, 
+        'employment_form': employment_form,
+        'workspaces': workspaces,
+        'employees_accepted': employees_accepted,
+        'employees_pending': employees_pending
+        }
+    # return the dictionary
+    return company_dict
+
+
+def build_companies_dict(abq_user):
+
+    # get all the compnaies that user owns
+    companies_owned = Company.objects.filter(owner=abq_user)
+    # get all the compnaies that user work for
+    companies_works = Company.objects.filter(employee=abq_user)
+    # build a dictionary of compnay-name:value pairs
+    companies_dict = {}
+    # add the companies that the user owns
+    for company in companies_owned:
+        company_dict = populate_company_dict(company)
+        company_dict['user_is_owner'] = True
+        companies_dict[company.name] = company_dict
+    # add the companies that the user works for
+    for company in companies_works:
+        company_dict = populate_company_dict(company)
+        company_dict['user_is_owner'] = False
+        companies_dict[company.name] = company_dict
+    # and return the dictionary
+    return companies_dict
+
+
+def console(request):
+
+    # DBG
+    print request.POST
+    
+    # if the user is not authenticated, then redirect them 
+    # to the home page where they can lon in
+    # make sure that this stays at the top of this function
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect('/home/')
+    
+    # if we are here it means tha the user is authenticated
+    # so we can get the user
+    abq_user = AbqUser.objects.get(user=request.user)
+
+    # there is just one single posting for launching a company
+    company_reg_form = CompanyRegForm()
+
+    # build companies forms in a dictionary format
+    companies_dict = build_companies_dict(abq_user)
+
+    # if user is posting
+    if request.method == 'POST':
+        
+        # ====================
+        # company registration
+        # ====================
+        
+        # if the user is launching a new company
+        if 'register_company' in request.POST:
+            # make sure the user has expert status
+            if abq_user.abaqual_status != 'EX':
+                raise ValidationError(
+                    'You are not authorized to start a new company')
+            # get the company registration from
+            company_reg_form = CompanyRegForm(request.POST)
+            # if the form is valid
+            if company_reg_form.is_valid():
+                # get the compnay name
+                name = company_reg_form.cleaned_data['name']
+                # create a new company
+                company = Company(name=name,owner=abq_user)
+                company.launch_date = timezone.now()
+                # and add it to the database
+                company.save()
+                # the form has been successfully submitted so 
+                # we should show a clean form
+                company_reg_form = CompanyRegForm()
+                # if we are registering a new company, 
+                # we should rebuild the company dictionary 
+                # so the new company shows up
+                companies_dict = build_companies_dict(abq_user)
+                
+
+        # ================
+        # workspace launch
+        # ================
+
+        # workspace is a little bit more complicated
+        # if user is launching a new workspace
+        if 'workspace_launch' in request.POST:
+            # get the form from request.POS
+            workspace_launch_form = WorkspaceLaunchForm(request.POST)
+            # from the company name, get the company
+            company_name = request.POST['company_name']
+            company = companies_dict[company_name]['company']
+            # if the value is not the default
+            if request.POST['hardware'] != '':
+                # get the hardware
+                hardware = Hardware.objects.get(pk=request.POST['hardware'])
+                # hardware should defintely exist
+                if hardware == None:
+                    raise LookupError('hardware deoes not exist')
+                # add the relevant oss
+                workspace_launch_form.fields['os'].queryset =\
+                    OS.objects.filter(hardware=hardware)
+                # check if it is valid
+                if workspace_launch_form.is_valid() and \
+                        workspace_launch_form.check_os():
+                    # add the workspace
+                    workspace = Workspace()
+                    # count the number of workspaces that this company has
+                    workspaces = Workspace.objects.filter(company=company)
+                    workspace.name = 'workspace '+str(len(workspaces)+1)
+                    workspace.company = company
+                    workspace.hardware = hardware
+                    workspace.os = workspace_launch_form.cleaned_data['os']
+                    # if the aws integration flag is on, launch an instance 
+                    # and prepare it
+                    if settings.AWS:
+                        workspace.region  = get_aws_region()
+                        owner_username = (
+                            request.user.first_name[0]+\
+                                request.user.last_name).lower()
+                            workspace.instance_id = get_instance_id(
+                                region=workspace.region, 
+                                instance_type=hardware.key, 
+                                os=workspace.os.key, 
+                                company_name=company.name, 
+                                uname=owner_username, 
+                                pswd='123')
+                    # otherwise just put something there
+                    else:
+                        workspace.region      = 'west'
+                        workspace.instance_id = 'a2456d'
+                    # set the launch date and time                        
+                    workspace.launch_date = timezone.now()
+                    # background image
+                    image_filename  = 'workspaceImage__'+company.name+\
+                        '__'+workspace.name+'.png'
+                    # for now read from a default file
+                    source_filename = settings.MEDIA_ROOT+\
+                        'workspace_images/desktop_background_default.png'
+                    workspace.set_size_and_save_image(
+                        image_filename,source_filename)   
+                    workspace.save()
+                    # create an empty from
+                    workspace_launch_form = WorkspaceLaunchForm(
+                        initial={'company_name': company.name})
+            # now we need to replace the form we had in the dictionary
+            company_dic[company_name]['workspace_launch_form'] = \
+                workspace_launch_form
+            
+        # if the user is not posting a workspace launch
+        else:
+            if 'hardware' in request.POST:
+                company_name = request.POST['company_name']
+                company      = company_dic[company_name]['company']
+                # get the form from request.POS
+                workspace_launch_form = WorkspaceLaunchForm(request.POST)
+                # if the value is not the default
+                if request.POST['hardware'] != '':
+                    # get the hardware
+                    hardware = Hardware.objects.filter(
+                        pk=request.POST['hardware'])
+                    # hardware should defintely exist
+                    if hardware == None:
+                        raise LookupError('hardware deoes not exist')
+                    # and fill in the workspace
+                    workspace_launch_form.fields['os'].queryset = \
+                        OS.objects.filter(hardware=hardware)
+                # now we need to replace the form we had in the dictionary
+                company_dic[company_name]['workspace_launch_form'] = \
+                    workspace_launch_form
+                
+
+    context = {'abq_user': abq_user,
+               'company_reg_form':company_reg_form,
+               'companies_dict': companies_dict
+               }
+    return render_to_response('console.html', context,
+                              context_instance=RequestContext(request))
+
+
 
 
 # get the compnay lists that the current user is the owner
@@ -40,6 +248,7 @@ def build_company_dic_for_employee(user):
     # and return the dictionary
     return company_dict
     
+
 
 # get the compnay lists that the current user is an employee
 def build_company_dic_for_owner(user):
@@ -79,7 +288,13 @@ def build_company_dic_for_owner(user):
     return company_dic
 
 
-def console(request):
+
+
+def console2(request):
+
+    print request.POST
+    print type(request.POST)
+
     # if the user is not authenticated, then redirect them 
     # to the home page where they can lon in
     if not request.user.is_authenticated():
@@ -285,14 +500,14 @@ def EmploymentConfirmation(request,activation_key):
                 logout(request)
             login_user_no_credentials(request,employment.employee.user)
         # redirect employee to his/her profile
-        return HttpResponseRedirect('/profile/')
+        return HttpResponseRedirect('/console/')
 
 
     
 def UserRegistration(request):
     # if the user is already authenticated, redirect them to his/her profile
     if request.user.is_authenticated():
-        return HttpResponseRedirect('/profile/')
+        return HttpResponseRedirect('/console/')
     # if user is registering
     if request.method == 'POST':
         # get the form they just posted
@@ -361,7 +576,7 @@ def Confirmation(request,activation_key):
         if ( abqUser.user.is_active ):
             # log in the user and redirect them to their profile
             login_user_no_credentials(request,abqUser.user)
-            return HttpResponseRedirect('/profile/')
+            return HttpResponseRedirect('/console/')
         # if the key has expired, delete the user and redirect them to expiration
         if abqUser.key_expiration < timezone.now():
             abqUser.user.delete()
@@ -374,7 +589,7 @@ def Confirmation(request,activation_key):
         abqUser.user.save();
         # lon in the user and redirect them to their profile
         login_user_no_credentials(request,abqUser.user)
-        return HttpResponseRedirect('/profile/')
+        return HttpResponseRedirect('/console/')
         
 
 
@@ -382,7 +597,7 @@ def LoginRequest(request):
     
     # if the user is already authenticated redirect them to profile
     if request.user.is_authenticated():
-        return HttpResponseRedirect('/profile/')    
+        return HttpResponseRedirect('/console/')    
     # if the user is posting  
     if request.method == 'POST':
         login_form = LoginForm(request.POST)
@@ -398,7 +613,7 @@ def LoginRequest(request):
                 # log the user in
                 login(request,user)
                 # and redirect the user to his/her profile
-                return HttpResponseRedirect('/profile/')
+                return HttpResponseRedirect('/console/')
             # otherwise show them the form again
             else:
                 return render_to_response('home.html', {'login_form': login_form}, 
