@@ -51,8 +51,24 @@
 </figure>
 {% endfor %}
 
+{% for employee in company_dict.employees_accepted %}
+<p> {{employee.user.first_name}} {{employee.user.last_name}}</p>
+{% endfor %}
+{% for employee in company_dict.employees_pending %}
+<p> {{employee.user.first_name}} {{employee.user.last_name}} (pending)</p>
 {% endfor %}
 
+<p> {{company_dict.employment_form.errors.as_text}}</p>
+<form method="post">
+  {% csrf_token %}
+  {{company_dict.employment_form.abqUser}}
+  {{company_dict.employment_form.company_name}}
+  <input type="submit" name="invite_employee" value="invite" />
+</form>
+
+{% endfor %}
+
+<!--
 {% for company in companies_dict.values %}
 
 <div id="company">
@@ -149,7 +165,7 @@
 </div>
 
 {% endfor %}
-
+-->
 
 
 {% endblock %}

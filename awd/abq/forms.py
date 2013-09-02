@@ -23,7 +23,7 @@ class EmploymentForm(forms.Form):
         company_name = self.initial.get('company_name')
         if company_name != None :
             # get the company
-            company = Company.objects.get(name=company_name)        
+            company = Company.objects.get(name=company_name)
             # first exclude the owner from the list
             self.fields['abqUser'].queryset = \
                 self.fields['abqUser'].queryset.exclude(\

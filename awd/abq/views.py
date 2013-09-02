@@ -1,25 +1,27 @@
 
-from django.http                  import HttpResponseRedirect
-from django.shortcuts             import render_to_response
-from django.template              import RequestContext
-from django.contrib.auth          import authenticate, login, logout
-from django.contrib.auth.models   import User
-from django.core.mail             import send_mail
-from django.core.exceptions       import ObjectDoesNotExist
-from django.utils                 import timezone
-from django.conf                  import settings
-from django.core.files            import File
-from abq.misc                     import login_user_no_credentials, get_aws_region
-from abq.forms                    import LoginForm, RegistrationForm, \
-    CompanyRegForm, WorkspaceLaunchForm, EmploymentForm
-from abq.models                   import AbqUser, Company, OS, Hardware, Employment, Workspace
+from django.http import HttpResponseRedirect
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
+from django.conf import settings
+from django.core.files import File
+from abq.misc import login_user_no_credentials, get_aws_region
+from abq.forms import LoginForm, RegistrationForm, CompanyRegForm, \
+    WorkspaceLaunchForm, EmploymentForm
+from abq.models import AbqUser, Company, OS, Hardware, Employment, Workspace
 import datetime, random, hashlib
 
 if settings.AWS:
-    from interface import get_instance_id, instance_status, get_public_dns, get_url
+    from interface import get_instance_id, instance_status, \
+        get_public_dns, get_url
 
 
 def populate_company_dict(company):
+    """ Build a dictionary for a given company's belongings  """
     
     # start a new workspace form
     workspace_launch_form = WorkspaceLaunchForm(\
@@ -50,6 +52,7 @@ def populate_company_dict(company):
 
 
 def build_companies_dict(abq_user):
+    """ Build a dictionary of companies with their belongins  """
 
     # get all the compnaies that user owns
     companies_owned = Company.objects.filter(owner=abq_user)
@@ -71,10 +74,142 @@ def build_companies_dict(abq_user):
     return companies_dict
 
 
-def console(request):
+def register_new_company(request,abq_user):
+    """ Register a new company  """
+    
+    # get the company registration from
+    company_reg_form = CompanyRegForm(request.POST)
+    # if the form is valid
+    if company_reg_form.is_valid():
+        # get the compnay name
+        name = company_reg_form.cleaned_data['name']
+        # create a new company
+        company = Company(name=name,owner=abq_user)
+        company.launch_date = timezone.now()
+        # and add it to the database
+        company.save()
+        # the form has been successfully submitted so 
+        # we should show a clean form
+        company_reg_form = CompanyRegForm()
+    # return the registration form    
+    return company_reg_form
 
-    # DBG
-    print request.POST
+
+def launch_new_workspace(request, company):
+    """ Build and launch a new workspace  """
+    
+    # get the form from request.POST
+    workspace_launch_form = WorkspaceLaunchForm(request.POST)
+    # if the value is not the default
+    if request.POST['hardware'] != '':
+        # get the hardware
+        hardware = Hardware.objects.get(pk=request.POST['hardware'])
+        # hardware should defintely exist
+        if hardware == None:
+            raise LookupError('hardware deoes not exist')
+        # add the relevant oss
+        workspace_launch_form.fields['os'].queryset = \
+            OS.objects.filter(hardware=hardware)
+        # check if it is valid
+        if workspace_launch_form.is_valid() and \
+                workspace_launch_form.check_os():
+            # add the workspace
+            workspace = Workspace()
+            workspace.name = workspace_launch_form.cleaned_data['name']
+            workspace.company = company
+            workspace.hardware = hardware
+            workspace.os = workspace_launch_form.cleaned_data['os']
+            # if the aws integration flag is on, launch an instance 
+            # and prepare it
+            # DBG
+            if settings.AWS:
+                workspace.region  = get_aws_region()
+                owner_username = \
+                    (request.user.first_name[0]+request.user.last_name).lower()
+                workspace.instance_id = get_instance_id(\
+                    region=workspace.region, 
+                    instance_type=hardware.key, 
+                    os=workspace.os.key, 
+                    company_name=company.name, 
+                    uname=owner_username, 
+                    pswd='123')
+            # otherwise just put something there
+            else:
+                workspace.region      = 'west'
+                workspace.instance_id = 'a2456d'
+            # set the launch date and time                        
+            workspace.launch_date = timezone.now()
+            # background image
+            # DBG
+            image_filename  = 'workspaceImage__'+company.name+\
+                '__'+workspace.name+'.png'
+            # for now read from a default file
+            source_filename = settings.MEDIA_ROOT+\
+                'workspace_images/desktop_background_default.png'
+            workspace.set_size_and_save_image(
+                image_filename,source_filename)   
+            workspace.save()
+            # create an empty from
+            workspace_launch_form = WorkspaceLaunchForm(
+                initial={'company_name': company.name})
+    #return the form
+    return workspace_launch_form
+        
+
+def populate_os(request):
+    """ Populate operating system based on hardware """
+    
+    # get the form from request.POS
+    workspace_launch_form = WorkspaceLaunchForm(request.POST)
+    # if the value is not the default
+    if request.POST['hardware'] != '':
+        # get the hardware
+        hardware = Hardware.objects.filter(
+            pk=request.POST['hardware'])
+        # hardware should defintely exist
+        if hardware == None:
+            raise LookupError('hardware deoes not exist')
+        # and fill in the workspace
+        workspace_launch_form.fields['os'].queryset = \
+            OS.objects.filter(hardware=hardware)
+    # return the form
+    return workspace_launch_form
+
+
+def invite_new_employee(request, company_name):
+    """ Send offer letter of employment """
+    
+    # get the employment form
+    employment_form = EmploymentForm(request.POST)
+    if employment_form.is_valid():
+        abq_user = employment_form.cleaned_data['abqUser']
+        company = Company.objects.get(name=company_name)        
+        employment = Employment(employee=abq_user, company=company)
+        # set the activation key and expiration date
+        salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
+        employment.activation_key = \
+            hashlib.sha1(salt+abq_user.user.username).hexdigest()
+        employment.key_expiration = \
+            timezone.now() + datetime.timedelta(days=7)
+        employment.save()
+        # email the employee activation link
+        email_subject = 'Your new Abaqual employment confirmation'
+        email_body = 'Hello %s,\n\n ' \
+            '%s has sent you an employment request.'\
+            ' To accept your offer, click this link within 7 days:\n\n' \
+            'http://127.0.0.1:8000/confirm-employment/%s' \
+            %(employment.employee.user.first_name,\
+                  employment.company.name,employment.activation_key)
+        send_mail(email_subject,email_body,\
+                      settings.EMAIL_HOST_USER,[abq_user.user.email])
+        # and show a new form
+        employment_form = EmploymentForm(\
+            initial={'company_name': company.name})
+    #return the employment form
+    return employment_form
+
+
+def console(request):
     
     # if the user is not authenticated, then redirect them 
     # to the home page where they can lon in
@@ -105,24 +240,11 @@ def console(request):
             if abq_user.abaqual_status != 'EX':
                 raise ValidationError(
                     'You are not authorized to start a new company')
-            # get the company registration from
-            company_reg_form = CompanyRegForm(request.POST)
-            # if the form is valid
-            if company_reg_form.is_valid():
-                # get the compnay name
-                name = company_reg_form.cleaned_data['name']
-                # create a new company
-                company = Company(name=name,owner=abq_user)
-                company.launch_date = timezone.now()
-                # and add it to the database
-                company.save()
-                # the form has been successfully submitted so 
-                # we should show a clean form
-                company_reg_form = CompanyRegForm()
-                # if we are registering a new company, 
-                # we should rebuild the company dictionary 
-                # so the new company shows up
-                companies_dict = build_companies_dict(abq_user)
+            company_reg_form = register_new_company(request,abq_user)
+            # if we are registering a new company, 
+            # we should rebuild the company dictionary 
+            # so the new company shows up
+            companies_dict = build_companies_dict(abq_user)
                 
 
         # ================
@@ -132,95 +254,50 @@ def console(request):
         # workspace is a little bit more complicated
         # if user is launching a new workspace
         if 'workspace_launch' in request.POST:
-            # get the form from request.POS
-            workspace_launch_form = WorkspaceLaunchForm(request.POST)
-            # from the company name, get the company
             company_name = request.POST['company_name']
             company = companies_dict[company_name]['company']
-            # if the value is not the default
-            if request.POST['hardware'] != '':
-                # get the hardware
-                hardware = Hardware.objects.get(pk=request.POST['hardware'])
-                # hardware should defintely exist
-                if hardware == None:
-                    raise LookupError('hardware deoes not exist')
-                # add the relevant oss
-                workspace_launch_form.fields['os'].queryset = \
-                    OS.objects.filter(hardware=hardware)
-                # check if it is valid
-                if workspace_launch_form.is_valid() and \
-                        workspace_launch_form.check_os():
-                    # add the workspace
-                    workspace = Workspace()
-                    # count the number of workspaces that this company has
-                    workspaces = Workspace.objects.filter(company=company)
-                    workspace.name = workspace_launch_form.cleaned_data['name']
-                    workspace.company = company
-                    workspace.hardware = hardware
-                    workspace.os = workspace_launch_form.cleaned_data['os']
-                    # if the aws integration flag is on, launch an instance 
-                    # and prepare it
-                    # DBG
-                    if settings.AWS:
-                        workspace.region  = get_aws_region()
-                        owner_username = \
-                            (request.user.first_name[0]+request.user.last_name).lower()
-                        workspace.instance_id = get_instance_id(\
-                            region=workspace.region, 
-                            instance_type=hardware.key, 
-                            os=workspace.os.key, 
-                            company_name=company.name, 
-                            uname=owner_username, 
-                            pswd='123')
-                    # otherwise just put something there
-                    else:
-                        workspace.region      = 'west'
-                        workspace.instance_id = 'a2456d'
-                    # set the launch date and time                        
-                    workspace.launch_date = timezone.now()
-                    # background image
-                    # DBG
-                    image_filename  = 'workspaceImage__'+company.name+\
-                        '__'+workspace.name+'.png'
-                    # for now read from a default file
-                    source_filename = settings.MEDIA_ROOT+\
-                        'workspace_images/desktop_background_default.png'
-                    workspace.set_size_and_save_image(
-                        image_filename,source_filename)   
-                    workspace.save()
-                    # create an empty from
-                    workspace_launch_form = WorkspaceLaunchForm(
-                        initial={'company_name': company.name})
-                    # since we just added a new workspace, we need to 
-                    # update the list of workspaces for this company
-                    workspaces = Workspace.objects.filter(company=company)
-                    companies_dict[company_name]['workspaces'] = workspaces
-            # now we need to replace the form we had in the dictionary
+            # make sure the user is the owner
+            if not companies_dict[company_name]['user_is_owner']:
+                raise ValidationError(
+                    'You are not authorized invite a new person')
             companies_dict[company_name]['workspace_launch_form'] = \
-                workspace_launch_form
-            
+                launch_new_workspace(request,company)
+            # since we just added a new workspace, we need to 
+            # update the list of workspaces for this company
+            workspaces = Workspace.objects.filter(company=company)
+            companies_dict[company_name]['workspaces'] = workspaces
+                        
         # if the user is not posting a workspace launch
         else:
             if 'hardware' in request.POST:
+                # add os to the list
                 company_name = request.POST['company_name']
-                company = companies_dict[company_name]['company']
-                # get the form from request.POS
-                workspace_launch_form = WorkspaceLaunchForm(request.POST)
-                # if the value is not the default
-                if request.POST['hardware'] != '':
-                    # get the hardware
-                    hardware = Hardware.objects.filter(
-                        pk=request.POST['hardware'])
-                    # hardware should defintely exist
-                    if hardware == None:
-                        raise LookupError('hardware deoes not exist')
-                    # and fill in the workspace
-                    workspace_launch_form.fields['os'].queryset = \
-                        OS.objects.filter(hardware=hardware)
-                # now we need to replace the form we had in the dictionary
                 companies_dict[company_name]['workspace_launch_form'] = \
-                    workspace_launch_form
-                
+                    populate_os(request)
+             
+
+        # ===================================
+        # invite a person to join the company
+        # ===================================
+        
+        # if the user is inviting a person
+        if 'invite_employee' in request.POST:
+            # get company name
+            company_name = request.POST['company_name']
+            company = companies_dict[company_name]['company']
+            # make sure the user is the owner
+            if not companies_dict[company_name]['user_is_owner']:
+                raise ValidationError(
+                    'You are not authorized invite a new person')
+            # now we need to replace the form we had in the dictionary
+            companies_dict[company_name]['employment_form'] = \
+                invite_new_employee(request, company_name)     
+            # we need to add the employee to the pending list
+            employees_pending = AbqUser.objects.filter(
+                employment__company=company, employment__start_date=None)  
+            companies_dict[company_name]['employees_pending'] = \
+                employees_pending
+
 
     context = {'abq_user': abq_user,
                'company_reg_form':company_reg_form,
