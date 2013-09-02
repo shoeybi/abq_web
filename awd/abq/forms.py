@@ -99,9 +99,30 @@ class WorkspaceLaunchForm(forms.Form):
                 self._errors = ErrorDict()
             self._errors['os'] = ErrorList([u'os field is required'])
             return False
-        
 
-        
+
+class WorkspaceTerminateForm(forms.Form):
+
+    # company name
+    company_name = forms.CharField(widget=forms.HiddenInput())
+    # workspace id and region
+    region = forms.CharField(widget=forms.HiddenInput())
+    instance_id = forms.CharField(widget=forms.HiddenInput())
+    
+    # check that the combination id and region exists and it unique
+    def clean(self):
+        instance_id = self.cleaned_data['instance_id']
+        region = self.cleaned_data['region']
+        try:
+            Workspace.objects.get(instance_id=instance_id,
+                                  region=region)
+        except:
+            raise forms.ValidationError(\
+                "combination of instance id and region is not unique")
+        # make sure we return the cleaned_data
+        return self.cleaned_data
+
+            
 class CompanyRegForm(forms.Form):
             
     # company form only need a name

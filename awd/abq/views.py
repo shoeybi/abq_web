@@ -11,7 +11,7 @@ from django.conf import settings
 from django.core.files import File
 from abq.misc import login_user_no_credentials, get_aws_region
 from abq.forms import LoginForm, RegistrationForm, CompanyRegForm, \
-    WorkspaceLaunchForm, EmploymentForm
+    WorkspaceLaunchForm, EmploymentForm, WorkspaceTerminateForm
 from abq.models import AbqUser, Company, OS, Hardware, Employment, Workspace
 import datetime, random, hashlib
 
@@ -20,17 +20,40 @@ if settings.AWS:
         get_public_dns, get_url
 
 
+def build_workspaces_dict(company):
+    """ Build the workspace list for a given company  """
+    
+    # get all the workspaces that a company has
+    workspaces = Workspace.objects.filter(company=company)
+    workspaces_dict = {}
+    # now for all those workspaces
+    for workspace in workspaces:
+        # prepopulate termination form
+        workspace_terminate_form = WorkspaceTerminateForm(\
+            initial={'company_name': company.name, 
+                     'region': workspace.region, 
+                     'instance_id': workspace.instance_id})
+        # add the workspace and its termination form as a 
+        # dictionary to the list
+        key = workspace.region +'__' + workspace.instance_id
+        workspaces_dict[key] = \
+            {'workspace': workspace, \
+                 'workspace_terminate_form':workspace_terminate_form}
+    # return the list
+    return workspaces_dict
+
+
 def populate_company_dict(company):
     """ Build a dictionary for a given company's belongings  """
     
     # start a new workspace form
     workspace_launch_form = WorkspaceLaunchForm(\
-        initial={'company_name': company.name})
+        initial={'company_name': company.name, 'name':'workspace'})
     # invite a new employee form
     employment_form = EmploymentForm(\
         initial={'company_name': company.name})
     # workspaces that are already launched
-    workspaces = Workspace.objects.filter(company=company)
+    workspaces_dict = build_workspaces_dict(company)
     # employees who have already accpeted employment
     employees_accepted = AbqUser.objects.filter(\
         employment__company=company, employment__end_date=None).exclude(\
@@ -43,7 +66,7 @@ def populate_company_dict(company):
         'company': company, 
         'workspace_launch_form': workspace_launch_form, 
         'employment_form': employment_form,
-        'workspaces': workspaces,
+        'workspaces': workspaces_dict,
         'employees_accepted': employees_accepted,
         'employees_pending': employees_pending
         }
@@ -151,7 +174,8 @@ def launch_new_workspace(request, company):
             workspace.save()
             # create an empty from
             workspace_launch_form = WorkspaceLaunchForm(
-                initial={'company_name': company.name})
+                initial={'company_name': company.name, 
+                         'name': 'workspace'})
     #return the form
     return workspace_launch_form
         
@@ -264,8 +288,8 @@ def console(request):
                 launch_new_workspace(request,company)
             # since we just added a new workspace, we need to 
             # update the list of workspaces for this company
-            workspaces = Workspace.objects.filter(company=company)
-            companies_dict[company_name]['workspaces'] = workspaces
+            workspaces_dict = build_workspaces_dict(company)
+            companies_dict[company_name]['workspaces'] = workspaces_dict
                         
         # if the user is not posting a workspace launch
         else:
@@ -275,6 +299,26 @@ def console(request):
                 companies_dict[company_name]['workspace_launch_form'] = \
                     populate_os(request)
              
+
+        # ===================
+        # terminate workspace
+        # ===================
+
+        if 'terminate_workspace' in request.POST:
+            workspace_terminate_form = WorkspaceTerminateForm(request.POST)
+            region = request.POST['region']
+            instance_id = request.POST['instance_id']
+            company_name = request.POST['company_name']
+            company = companies_dict[company_name]['company']
+            key = region + '__' + instance_id            
+            if workspace_terminate_form.is_valid():
+                workspace = Workspace.objects.get(\
+                    instance_id=instance_id, region=region)
+                workspace.delete()
+                companies_dict[company_name]['workspaces'] = build_workspaces_dict(company)
+            else:
+                companies_dict[company_name]['workspaces'][key]['workspace_terminate_form'] = workspace_terminate_form
+            
 
         # ===================================
         # invite a person to join the company
@@ -298,7 +342,7 @@ def console(request):
             companies_dict[company_name]['employees_pending'] = \
                 employees_pending
 
-
+    # context based on the populated fields
     context = {'abq_user': abq_user,
                'company_reg_form':company_reg_form,
                'companies_dict': companies_dict
