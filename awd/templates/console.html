@@ -30,7 +30,9 @@
 
 {% for company_dict in companies_dict.values %}
 
-<p> {{ company_dict.company }} </p>
+
+<p> {{ company_dict.company.name }} </p>
+
 
 <form method="post">
   {% csrf_token %}
@@ -42,44 +44,52 @@
 </form>
 <p class="error"> {{company_dict.workspace_launch_form.errors.as_text}}</p>
 
-{% for workspace_dict in company_dict.workspaces.values %}
+
+
+{% for item in company_dict.workspaces_list %}
+
 <figure>
-  <a href="{{workspace_dict.workspace.instance_url}}" 
-     alt="{{workspace_dict.workspace.name}}">
-    <img src="{{workspace_dict.workspace.image.url}}" alt="">
+  <a href="{{item.workspace.instance_url}}" 
+     alt="{{item.workspace.name}}">
+    <img src="{{item.workspace.image.url}}" alt="">
   </a>
-  <figcaption>{{workspace_dict.workspace.name}}</figcaption>
+  <figcaption>{{item.workspace.name}}</figcaption>
 </figure>
+
 
 <form method="post">
   {% csrf_token %}
-  {{workspace_dict.workspace_terminate_form.region}}
-  {{workspace_dict.workspace_terminate_form.instance_id}}
-  {{workspace_dict.workspace_terminate_form.company_name}}
+  {{item.termination_form.region}}
+  {{item.termination_form.instance_id}}
+  {{item.termination_form.company_name}}
   <input type="submit" name="terminate_workspace" 
 	 value="Terminate workspace" />
 </form>
-<p class="error"> {{workspace_dict.workspace_terminate_form.errors.as_text}}</p>
+<p class="error"> {{item.termination_form.errors.as_text}}</p>
 
 {% endfor %}
 
-{% for employee in company_dict.employees_accepted %}
-<p> {{employee.user.first_name}} {{employee.user.last_name}}</p>
+<p> {{company_dict.company.owner.user.first_name }} 
+  {{company_dict.company.owner.user.last_name }} (owner) <p>
+{% for item in company_dict.employees_list %}
+
+<p> {{item.employee.user.first_name}} {{item.employee.user.last_name}} 
+  {% if not item.accepted %}
+  (pending)
+  {% endif %}
+</p>
+
+
 <form method="post">
   {% csrf_token %}
-
+  {{item.termination_form.company_name}}
+  {{item.termination_form.username}}
   <input type="submit" name="terminate_employment" 
 	 value="Terminate employment" />
 </form>
+
 {% endfor %}
-{% for employee in company_dict.employees_pending %}
-<p> {{employee.user.first_name}} {{employee.user.last_name}} (pending)</p>
-<form method="post">
-  {% csrf_token %}
-  <input type="submit" name="terminate_employment" 
-	 value="Terminate employment" />
-</form>
-{% endfor %}
+
 
 <p> {{company_dict.employment_form.errors.as_text}}</p>
 <form method="post">

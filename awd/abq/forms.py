@@ -71,6 +71,15 @@ class EmploymentForm(forms.Form):
         return self.cleaned_data
 
 
+
+class EmploymentTerminationForm(forms.Form):
+
+    # username (unique)
+    username = forms.EmailField(widget=forms.HiddenInput())
+    # company name
+    company_name = forms.CharField(widget=forms.HiddenInput())
+
+
 class WorkspaceLaunchForm(forms.Form):
 
     # company name
