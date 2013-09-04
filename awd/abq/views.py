@@ -18,8 +18,8 @@ import datetime, random, hashlib
 
 if settings.AWS:
     from interface import get_instance_id, instance_status, \
-        get_public_dns, get_url
-
+        terminate_instance, make_company, remove_company
+    
     
 def build_workspaces_list(company):
     """ Build workspaces and their termination form for a given company """
@@ -30,6 +30,16 @@ def build_workspaces_list(company):
     workspaces_list = [] 
     # now for all those workspaces
     for workspace in workspaces:
+        # DBG
+        if settings.AWS:
+            # if workspace does not have an assigned url, update it
+            if workspace.instance_url == None:
+                output = instance_status(workspace.instance_id,
+                                         workspace.region)
+                if output[2] != 'None':
+                    workspace.instance_url = output[2]
+                    workspace.save()
+                print output
         # prepopulate termination form
         workspace_terminate_form = WorkspaceTerminateForm(
             initial={'company_name': company.name, 
@@ -144,6 +154,9 @@ def register_new_company(request,abq_user):
         company.launch_date = timezone.now()
         # and add it to the database
         company.save()
+        # DBG
+        if settings.AWS:
+            make_company(company.name,'us-west-1')
         # the form has been successfully submitted so 
         # we should show a clean form
         company_reg_form = CompanyRegForm()
@@ -183,7 +196,7 @@ def launch_new_workspace(request, company):
                 owner_username = \
                     (request.user.first_name[0]+request.user.last_name).lower()
                 workspace.instance_id = get_instance_id(\
-                    region=workspace.region, 
+                    region_name=workspace.region, 
                     instance_type=hardware.key, 
                     os=workspace.os.key, 
                     company_name=company.name, 
@@ -229,6 +242,12 @@ def terminate_workspace(request, company):
         raise Exception(\
             "combination of instance id and region is not unique")
     # here we can do whatever we want
+    # terminate the workspace from aws
+    # DBG
+    if settings.AWS:
+        terminate_instance(workspace.instance_id, 
+                           workspace.region)
+    # and delete the workspace from database
     workspace.delete()
     # and we don't need to return anything
     return True
