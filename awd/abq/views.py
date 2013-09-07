@@ -13,13 +13,25 @@ from abq.misc import login_user_no_credentials, get_aws_region
 from abq.forms import LoginForm, RegistrationForm, CompanyRegForm, \
     WorkspaceLaunchForm, EmploymentForm, WorkspaceTerminateForm, \
     EmploymentTerminationForm
-from abq.models import AbqUser, Company, OS, Hardware, Employment, Workspace
+from abq.models import AbqUser, Company, OS, Hardware, Employment, \
+    Workspace, Region
 import datetime, random, hashlib
 
 if settings.AWS:
     from interface import get_instance_id, instance_status, \
         terminate_instance, make_company, remove_company
+
     
+def get_aws_regions():
+    """ Get regions list """
+
+    # DBG
+    if settings.AWS:
+        regions = Region.objects.all()
+    else:
+        regions = ['west']
+    return regions
+
     
 def build_workspaces_list(company):
     """ Build workspaces and their termination form for a given company """
