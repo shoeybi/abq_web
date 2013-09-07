@@ -51,6 +51,16 @@ class Company(models.Model):
         verbose_name = 'Company'
 
 
+class Region(models.Model):
+
+    name = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Region'
+
 
 class Employment(models.Model):
 
@@ -160,7 +170,7 @@ class Workspace(models.Model):
     instance_id  = models.CharField(max_length=100)
     launch_date  = models.DateTimeField()
     image        = models.ImageField(upload_to='workspace_images')
-    instance_url = models.URLField(max_length=200,blank=True, null=True)
+    instance_url = models.URLField(max_length=200,default='#')
     
     def __unicode__(self):
         return self.name

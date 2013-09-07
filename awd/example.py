@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from abq.models import AbqUser, Company, Hardware, OS, Software
-from abq.models import InstallScript, UninstallScript, Workspace, Project, LaunchedSoftware
+from abq.models import InstallScript, UninstallScript, Workspace, \
+    Project, LaunchedSoftware, Region
 import datetime
 from django.utils import timezone
 
@@ -10,7 +11,7 @@ from django.utils import timezone
 # add users
 # ===================
 
-user = User(username='jo@jo.com', password='jo', first_name='Jo', last_name='Lee')
+user = User(username='jo@jo.com', password="jo", first_name='Jo', last_name='Lee')
 user.email = user.username
 user.is_active = True
 user.save()
@@ -191,4 +192,41 @@ uninsScr.name = 'AcuSolve_Ubuntu_uninstall.sh'
 uninsScr.os = osU
 uninsScr.software = acuSolve
 uninsScr.save()
+
+
+# ==========
+# regions
+# ==========
+
+region = Region()
+region.name = 'us-west-1'
+region.save()
+
+region = Region()
+region.name = 'us-west-2'
+region.save()
+
+region = Region()
+region.name = 'us-east-1'
+region.save()
+
+region = Region()
+region.name = 'eu-west-11'
+region.save()
+
+region = Region()
+region.name = 'ap-southeast-1'
+region.save()
+
+region = Region()
+region.name = 'ap-southeast-2'
+region.save()
+
+region = Region()
+region.name = 'ap-northeast-1'
+region.save()
+
+region = Region()
+region.name = 'sa-east-1'
+region.save()
 

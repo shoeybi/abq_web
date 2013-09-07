@@ -32,6 +32,13 @@
 
 
 <p> {{ company_dict.company.name }} </p>
+<form method="post">
+  {% csrf_token %}
+  <input id="id_company_name" name="company_name" 
+	 value="Company-A" type="hidden">
+  <input name="dissolve_company" value="Dissolve company" 
+	 type="submit">
+</form>
 
 
 <form method="post">

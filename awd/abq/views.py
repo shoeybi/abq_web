@@ -33,13 +33,12 @@ def build_workspaces_list(company):
         # DBG
         if settings.AWS:
             # if workspace does not have an assigned url, update it
-            if workspace.instance_url == None:
+            if workspace.instance_url == '#':
                 output = instance_status(workspace.instance_id,
                                          workspace.region)
                 if output[2] != 'None':
                     workspace.instance_url = output[2]
                     workspace.save()
-                print output
         # prepopulate termination form
         workspace_terminate_form = WorkspaceTerminateForm(
             initial={'company_name': company.name, 
@@ -228,12 +227,9 @@ def launch_new_workspace(request, company):
     return workspace_launch_form
      
 
-def terminate_workspace(request, company):
+def terminate_workspace(instance_id, region):
     """ Terminate a workspace  """
     
-    # get the region, instace id 
-    region = request.POST['region']
-    instance_id = request.POST['instance_id']
     # check that the combination is unique
     try:
         workspace = Workspace.objects.get(instance_id=instance_id,
@@ -306,11 +302,9 @@ def invite_new_employee(request, company_name):
     return employment_form
 
 
-def terminate_employment(request, company):
+def terminate_employment(username, company):
     """ Terminate employment  """
     
-    # get the username
-    username = request.POST['username']
     # from username get the abaqual user
     try:
         abq_user = AbqUser.objects.get(user__username=username)
@@ -324,6 +318,27 @@ def terminate_employment(request, company):
     # delete employment
     employment.delete()
     # we do not need to return anything
+    return True
+
+
+def dissolve_company(company_name):
+    """ Terminate a compnay  """
+    
+    # just make sure that workspaces are terminated
+    # get the company
+    company = Company.objects.get(name=company_name)
+    # get the compnay's workspaces
+    workspaces = Workspace.objects.filter(company=company)
+    # for all the workspaces
+    for workspace in workspaces:
+        terminate_workspace(workspace.instance_id, workspace.region)
+    # DBG
+    if settings.AWS:
+        # remove company keys and other stuffa
+        remove_company(company.name)
+    # and delete the company
+    company.delete()
+    # don't need to return anything
     return True
 
 
@@ -401,7 +416,11 @@ def console(request):
         if 'terminate_workspace' in request.POST:
             company_name = request.POST['company_name']
             company = companies_dict[company_name]['company']
-            terminate_workspace(request, company)
+            # get the region, instace id 
+            region = request.POST['region']
+            instance_id = request.POST['instance_id']
+            # and terminate workspace
+            terminate_workspace(instance_id, region)
             # now we need to rebuild the list
             companies_dict[company_name]['workspaces_list'] = \
                 build_workspaces_list(company)
@@ -436,11 +455,26 @@ def console(request):
             # get company name
             company_name = request.POST['company_name']
             company = companies_dict[company_name]['company']
-            terminate_employment(request, company)
+            # get the username
+            username = request.POST['username']
+            terminate_employment(username, company)
             # we need to rebuild the employees list
             companies_dict[company_name]['employees_list'] = \
                 build_employees_list(company)
 
+
+        # ==================
+        # dissolve a company
+        # ==================
+
+        if 'dissolve_company' in request.POST:
+            # get company name
+            company_name = request.POST['company_name']
+            # dissolve the company
+            dissolve_company(company_name)
+            # we need to rebuild the companies dictionary
+            companies_dict = build_companies_dict(abq_user)
+            
 
     # context based on the populated fields
     context = {'abq_user': abq_user,
