@@ -27,7 +27,10 @@ def get_aws_regions():
 
     # DBG
     if settings.AWS:
-        regions = Region.objects.all()
+        regions2 = Region.objects.all()
+        regions = []
+        for region in regions2:
+            regions.append(region.name)
     else:
         regions = ['west']
     return regions
@@ -48,7 +51,7 @@ def build_workspaces_list(company):
             if workspace.instance_url == '#':
                 output = instance_status(workspace.instance_id,
                                          workspace.region)
-                if output[2] != 'None':
+                if output[0] == 'ready':
                     workspace.instance_url = output[2]
                     workspace.save()
         # prepopulate termination form
@@ -167,7 +170,7 @@ def register_new_company(request,abq_user):
         company.save()
         # DBG
         if settings.AWS:
-            make_company(company.name,'us-west-1')
+            make_company(company.name,get_aws_regions())
         # the form has been successfully submitted so 
         # we should show a clean form
         company_reg_form = CompanyRegForm()
@@ -211,8 +214,7 @@ def launch_new_workspace(request, company):
                     instance_type=hardware.key, 
                     os=workspace.os.key, 
                     company_name=company.name, 
-                    uname=owner_username, 
-                    pswd='123')
+                    uname=owner_username)
             # otherwise just put something there
             else:
                 workspace.region      = 'west'
@@ -347,7 +349,7 @@ def dissolve_company(company_name):
     # DBG
     if settings.AWS:
         # remove company keys and other stuffa
-        remove_company(company.name)
+        remove_company(company.name,get_aws_regions())
     # and delete the company
     company.delete()
     # don't need to return anything
