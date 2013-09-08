@@ -28,6 +28,14 @@ input[type="submit"] {
     background-color: #ECE5E5;
 }
 
+figure {
+    margin: 0px;
+}
+
+p {
+    margin: 0px;
+}
+
 .flamebutton {
     color: #E25822 !important;	  
     background-color: #F3E7E7 !important;
@@ -56,6 +64,43 @@ input[type="submit"] {
     padding-top: 0px;
     margin: 0;
 }
+
+.add10, .add15, .add20, .add25 {
+    background:url(/static/images/add.png) no-repeat;
+    background-color: transparent !important;
+    border: none;
+}
+
+.terminate10, .terminate15, .terminate20, .terminate25 {
+    background:url(/static/images/terminate.png) no-repeat;
+    background-color: transparent !important;
+    border: none;
+}
+
+.terminate10, .add10 {
+    background-size: 10px;
+    width: 10px;
+    height: 10px;
+}
+
+.terminate15, .add15 {
+    background-size: 15px;
+    width: 15px;
+    height: 15px;
+}
+
+.terminate20, .add20 {
+    background-size: 20px;
+    width: 20px;
+    height: 20px;
+}
+
+.terminate25, .add25 {
+    background-size: 25px;
+    width: 25px;
+    height: 25px;
+}
+
 
 #header, #footer {
     width: 960px;
@@ -155,7 +200,6 @@ input[type="submit"] {
     margin: 0px auto;
     margin-top: 25px;
     padding-bottom: 20px;
-    font-size: 1.1em;
     text-align: center;
     border-bottom: 1px solid #C0C0C0;
 }
@@ -163,13 +207,27 @@ input[type="submit"] {
 #company_reg input[type="text"] {
     width: 400px;
     height: 25px;
-    font-size: 1.0em;
 }
 
 #company_reg input[type="submit"] {
     height: 29px;
 }
 
+#company {
+    background-color: gray;
+}
+
+#company #name {
+    background-color: yellow;
+}
+
+#company #workspaces {
+    background-color: green;
+}
+
+#company #team {
+    background-color: cyan;
+}
 
 
 
@@ -254,6 +312,7 @@ input[type="submit"] {
 	     font-size: 1.3em;
 }
 
+/*
 #company {
 	 font-size: 1.1em;
 }
@@ -308,3 +367,4 @@ input[type="submit"] {
 	 float: left;
 	 clear: both;
 }
+*/

@@ -5,6 +5,7 @@
 {% endblock %}
 
 
+<!-- company registration for the experts -->
 {% block content_base %}
 {% if abq_user.abaqual_status == "EX" %} 
 <div id="company_reg" >
@@ -28,86 +29,104 @@
 {% endif %}
 
 
+<!-- loop through all the companies -->
 {% for company_dict in companies_dict.values %}
+<div id="company" >
+  
+  <!-- company name and termination -->
+  <div id="name">
+    {{ company_dict.company.name }}
+    <form method="post">
+      {% csrf_token %}
+      <input name="company_name" value="{{ company_dict.company.name }}"
+	     type="hidden" >
+      <input name="dissolve_company" class="terminate15" 
+	     value="" type="submit" >
+    </form>
+  </div>
+  
+  <!-- workspace -->
+  <div id="workspaces" >
+    <!-- workspaces and termination -->
+    {% for item in company_dict.workspaces_list %}
+    <!-- workspace -->
+    <figure>
+      <a href="{{item.workspace.instance_url}}" 
+	 alt="{{item.workspace.name}}">
+	<img src="{{item.workspace.image.url}}" alt="">
+      </a>
+      <figcaption>{{item.workspace.name}}</figcaption>
+    </figure>
+    <!-- termiation -->
+    <form method="post">
+      {% csrf_token %}
+      {{item.termination_form.region}}
+      {{item.termination_form.instance_id}}
+      {{item.termination_form.company_name}}
+      <input type="submit" name="terminate_workspace" 
+	     class="terminate20" value="" />
+    </form>
+    <p class="error"> {{item.termination_form.errors.as_text}}</p>
+    {% endfor %}
+    
+    <!-- launch a new workspace -->
+    <form method="post">
+      {% csrf_token %}
+      {{company_dict.workspace_launch_form.company_name}}
+      {{company_dict.workspace_launch_form.name}}
+      {{company_dict.workspace_launch_form.hardware}}
+      {{company_dict.workspace_launch_form.os}}
+      <input type="submit" name="workspace_launch" 
+	     class="add25" value="" />
+    </form>
+    <p class="error"> 
+      {{company_dict.workspace_launch_form.errors.as_text}}
+    </p>
+    
+  </div>
+  
+  
+  <!-- Team -->
+  <div id="team">
+    <!-- team mebers -->
+    <p> {{company_dict.company.owner.user.first_name }} 
+      {{company_dict.company.owner.user.last_name }} (owner) </p>
+    {% for item in company_dict.employees_list %}
+    <p> {{item.employee.user.first_name}} {{item.employee.user.last_name}} 
+      {% if not item.accepted %}
+      (pending)
+      {% endif %}
+    </p>
+    <!-- employment termination -->
+    <form method="post">
+      {% csrf_token %}
+      {{item.termination_form.company_name}}
+      {{item.termination_form.username}}
+      <input type="submit" name="terminate_employment" 
+	     class="terminate15", value="" />
+      
+      
+    </form>
+    {% endfor %}
+    <p> {{company_dict.employment_form.errors.as_text}}</p>
+    
+    <!-- new employee -->
+    <form method="post">
+      {% csrf_token %}
+      {{company_dict.employment_form.abqUser}}
+      {{company_dict.employment_form.company_name}}
+      <input type="submit" name="invite_employee" 
+	     class="add20" value="" />
+    </form>
+  </div>  
 
-
-<p> {{ company_dict.company.name }} </p>
-<form method="post">
-  {% csrf_token %}
-  <input id="id_company_name" name="company_name" 
-	 value="{{ company_dict.company.name }}" type="hidden">
-  <input name="dissolve_company" value="Dissolve company" 
-	 type="submit">
-</form>
-
-
-<form method="post">
-  {% csrf_token %}
-  {{company_dict.workspace_launch_form.company_name}}
-  {{company_dict.workspace_launch_form.name}}
-  {{company_dict.workspace_launch_form.hardware}}
-  {{company_dict.workspace_launch_form.os}}
-  <input type="submit" name="workspace_launch" value="Launch workspace" />
-</form>
-<p class="error"> {{company_dict.workspace_launch_form.errors.as_text}}</p>
-
-
-
-{% for item in company_dict.workspaces_list %}
-
-<figure>
-  <a href="{{item.workspace.instance_url}}" 
-     alt="{{item.workspace.name}}">
-    <img src="{{item.workspace.image.url}}" alt="">
-  </a>
-  <figcaption>{{item.workspace.name}}</figcaption>
-</figure>
-
-
-<form method="post">
-  {% csrf_token %}
-  {{item.termination_form.region}}
-  {{item.termination_form.instance_id}}
-  {{item.termination_form.company_name}}
-  <input type="submit" name="terminate_workspace" 
-	 value="Terminate workspace" />
-</form>
-<p class="error"> {{item.termination_form.errors.as_text}}</p>
-
-{% endfor %}
-
-<p> {{company_dict.company.owner.user.first_name }} 
-  {{company_dict.company.owner.user.last_name }} (owner) <p>
-{% for item in company_dict.employees_list %}
-
-<p> {{item.employee.user.first_name}} {{item.employee.user.last_name}} 
-  {% if not item.accepted %}
-  (pending)
-  {% endif %}
-</p>
-
-
-<form method="post">
-  {% csrf_token %}
-  {{item.termination_form.company_name}}
-  {{item.termination_form.username}}
-  <input type="submit" name="terminate_employment" 
-	 value="Terminate employment" />
-</form>
-
-{% endfor %}
-
-
-<p> {{company_dict.employment_form.errors.as_text}}</p>
-<form method="post">
-  {% csrf_token %}
-  {{company_dict.employment_form.abqUser}}
-  {{company_dict.employment_form.company_name}}
-  <input type="submit" name="invite_employee" value="invite" />
-</form>
-
-{% endfor %}
-
+  </div>
+  {% endfor %}
+  
+  
+  
+  {% endblock %}
+  
 <!--
 {% for company in companies_dict.values %}
 
@@ -208,4 +227,4 @@
 -->
 
 
-{% endblock %}
+
