@@ -12,6 +12,12 @@ body * {
     font-smoothing: antialiased;
 }
 
+select {
+    overflow: hidden; 
+    white-space: nowrap; 
+    text-overflow: ellipsis;
+}
+
 input{
     border: solid 1px #808080;
     border-radius: 3px;
