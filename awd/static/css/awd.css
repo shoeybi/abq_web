@@ -12,7 +12,7 @@ body * {
     font-smoothing: antialiased;
 }
 
-input {
+input{
     border: solid 1px #808080;
     border-radius: 3px;
 }
@@ -34,6 +34,11 @@ figure {
 
 p {
     margin: 0px;
+}
+
+label {
+    margin: 0px;
+    padding: 0px;
 }
 
 .flamebutton {
@@ -78,7 +83,7 @@ p {
 }
 
 .terminate10, .add10 {
-    background-size: 10px;
+    background-size: 10px auto;
     width: 10px;
     height: 10px;
 }
@@ -214,20 +219,98 @@ p {
 }
 
 #company {
-    background-color: gray;
+    margin-top: 30px;
 }
 
 #company #name {
-    background-color: yellow;
+    padding: 5px;
+    font-size: 1.1em;
+}
+
+#company #name input{
+    vertical-align: top;
 }
 
 #company #workspaces {
-    background-color: green;
+    width: 709px;
+    border-right: 1px solid #C0C0C0;
+    float: left;
+    padding: 5px;
+}
+
+#company #workspaces #workspace {
+    padding: 10px 30px;
+    float: left;
+}
+
+#company #workspaces #workspace {
+    display: table;
+    text-align: center;
+}
+
+#company #workspaces #workspace input{
+    vertical-align: top;
+}
+
+#company #workspaces #launch {
+    border:2px dashed #708090;
+    width: 170px;
+    float: left;
+    text-align: center;
+    margin-left: 20px;
+    margin-top: 5px;
+    font-size:0.95em;
+    padding: 5px;
+}
+
+#company #workspaces #launch #id_name {
+    width: 105px;
+}
+
+#company #workspaces #launch #id_hardware{
+    width: 125px;
+}
+
+#company #workspaces #launch #id_os{
+    width: 145px;
 }
 
 #company #team {
-    background-color: cyan;
+    width: 240px;
+    float: right;
+    padding: 5px;
 }
+
+#company #team p {
+    padding: 7px;
+    font-weight: bold;
+}
+
+#company #team #employee {
+    padding: 7px;
+}
+    
+#company #team #employee input{
+    vertical-align: top;
+}
+
+
+#company #team #invite {
+    padding: 7px;
+}
+
+#company #team #invite select{
+    width: 150px;
+}
+
+#company #team #invite input{
+    vertical-align: middle;
+}    
+
+
+
+
+
 
 
 

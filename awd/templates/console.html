@@ -35,97 +35,112 @@
   
   <!-- company name and termination -->
   <div id="name">
-    {{ company_dict.company.name }}
     <form method="post">
       {% csrf_token %}
+      <label> {{ company_dict.company.name }} </label>
       <input name="company_name" value="{{ company_dict.company.name }}"
 	     type="hidden" >
-      <input name="dissolve_company" class="terminate15" 
+      <input name="dissolve_company" class="terminate10" 
 	     value="" type="submit" >
     </form>
   </div>
+  <div class="clear"> </div>
   
   <!-- workspace -->
   <div id="workspaces" >
     <!-- workspaces and termination -->
     {% for item in company_dict.workspaces_list %}
     <!-- workspace -->
-    <figure>
-      <a href="{{item.workspace.instance_url}}" 
-	 alt="{{item.workspace.name}}">
-	<img src="{{item.workspace.image.url}}" alt="">
-      </a>
-      <figcaption>{{item.workspace.name}}</figcaption>
-    </figure>
-    <!-- termiation -->
-    <form method="post">
-      {% csrf_token %}
-      {{item.termination_form.region}}
-      {{item.termination_form.instance_id}}
-      {{item.termination_form.company_name}}
-      <input type="submit" name="terminate_workspace" 
-	     class="terminate20" value="" />
-    </form>
-    <p class="error"> {{item.termination_form.errors.as_text}}</p>
+    <div id="workspace" >
+      <figure>
+	<a href="{{item.workspace.instance_url}}" 
+	   alt="{{item.workspace.name}}">
+	  <img src="{{item.workspace.image.url}}" alt="">
+	</a>
+	<figcaption>
+	  <!-- termiation -->
+	  <form method="post">
+	    {% csrf_token %}
+	    {{item.termination_form.region}}
+	    {{item.termination_form.instance_id}}
+	    {{item.termination_form.company_name}}
+	    <label> {{item.workspace.name}} </label>
+	    <input type="submit" name="terminate_workspace" 
+		   class="terminate10" value="" />
+	  </form>
+	</figcaption>
+      </figure>
+      <p class="error"> {{item.termination_form.errors.as_text}}</p>
+    </div>
     {% endfor %}
-    
+
+
     <!-- launch a new workspace -->
-    <form method="post">
-      {% csrf_token %}
-      {{company_dict.workspace_launch_form.company_name}}
-      {{company_dict.workspace_launch_form.name}}
-      {{company_dict.workspace_launch_form.hardware}}
-      {{company_dict.workspace_launch_form.os}}
-      <input type="submit" name="workspace_launch" 
-	     class="add25" value="" />
-    </form>
-    <p class="error"> 
-      {{company_dict.workspace_launch_form.errors.as_text}}
-    </p>
-    
+    <div id="launch">
+      <form method="post">
+	{% csrf_token %}
+	{{company_dict.workspace_launch_form.company_name}}
+	{{company_dict.workspace_launch_form.name}}
+	{{company_dict.workspace_launch_form.hardware}}
+	{{company_dict.workspace_launch_form.os}}
+	<input type="submit" name="workspace_launch" 
+	       class="add25" value="" />
+	<p class="error"> 
+	  {{company_dict.workspace_launch_form.errors.as_text}}
+	</p>
+      </form>
+    </div>
+    <div class="clear"> </div>
+        
   </div>
   
   
   <!-- Team -->
   <div id="team">
     <!-- team mebers -->
-    <p> {{company_dict.company.owner.user.first_name }} 
+    <div id="owner">
+    <p>{{company_dict.company.owner.user.first_name }} 
       {{company_dict.company.owner.user.last_name }} (owner) </p>
+    </div>
     {% for item in company_dict.employees_list %}
-    <p> {{item.employee.user.first_name}} {{item.employee.user.last_name}} 
-      {% if not item.accepted %}
-      (pending)
-      {% endif %}
-    </p>
-    <!-- employment termination -->
-    <form method="post">
-      {% csrf_token %}
-      {{item.termination_form.company_name}}
-      {{item.termination_form.username}}
-      <input type="submit" name="terminate_employment" 
-	     class="terminate15", value="" />
-      
-      
-    </form>
+    <div id="employee">
+      <!-- employment termination -->
+      <form method="post">
+	{% csrf_token %}
+	<label>
+	  {{item.employee.user.first_name}} {{item.employee.user.last_name}} 
+	  {% if not item.accepted %}
+	  (pending)
+	  {% endif %}
+	</label>
+	{{item.termination_form.company_name}}
+	{{item.termination_form.username}}
+	<input type="submit" name="terminate_employment" 
+	       class="terminate10", value="" />
+      </form>
+    </div>
     {% endfor %}
-    <p> {{company_dict.employment_form.errors.as_text}}</p>
-    
+      
     <!-- new employee -->
-    <form method="post">
-      {% csrf_token %}
-      {{company_dict.employment_form.abqUser}}
-      {{company_dict.employment_form.company_name}}
-      <input type="submit" name="invite_employee" 
-	     class="add20" value="" />
-    </form>
+    <div id="invite">
+      <form method="post">
+	{% csrf_token %}
+	{{company_dict.employment_form.abqUser}}
+	{{company_dict.employment_form.company_name}}
+	<input type="submit" name="invite_employee" 
+	       class="add20" value="" />
+      </form>
+      <p> {{company_dict.employment_form.errors.as_text}}</p>
+      </div>
   </div>  
+  
+</div>
+<div class="clear"> </div>
+{% endfor %}
 
-  </div>
-  {% endfor %}
-  
-  
-  
-  {% endblock %}
+
+
+{% endblock %}
   
 <!--
 {% for company in companies_dict.values %}
