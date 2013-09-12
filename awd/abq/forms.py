@@ -12,7 +12,7 @@ class EmploymentForm(forms.Form):
     # invited user
     abqUser = forms.ModelChoiceField(
         queryset=AbqUser.objects.exclude(
-            abaqual_status='CU'),empty_label='choose a user')
+            abaqual_status='CU'),empty_label='invite a user')
     # company name
     company_name = forms.CharField(widget=forms.HiddenInput())
     
@@ -21,6 +21,8 @@ class EmploymentForm(forms.Form):
         super(EmploymentForm, self).__init__(*arguments,**kwargs)
         # get the company name
         company_name = self.initial.get('company_name')
+        print 'AAAAAAAAAAAAAAAAA'
+        print self.fields['abqUser']
         if company_name != None :
             # get the company
             company = Company.objects.get(name=company_name)
@@ -90,6 +92,7 @@ class WorkspaceLaunchForm(forms.Form):
     hardware = forms.ModelChoiceField(
         queryset=Hardware.objects.all(),
         widget=forms.Select(attrs={"onChange":'submit()'}),
+        initial=1,
         empty_label='Hardware')
     # by default, don't show any os until we know thw hardware
     os = forms.ModelChoiceField(queryset=OS.objects.none(), 

@@ -15,7 +15,7 @@ from abq.forms import LoginForm, RegistrationForm, CompanyRegForm, \
     EmploymentTerminationForm
 from abq.models import AbqUser, Company, OS, Hardware, Employment, \
     Workspace, Region
-import datetime, random, hashlib
+import datetime, random, hashlib, threading
 
 if settings.AWS:
     from interface import get_instance_id, instance_status, \
@@ -78,7 +78,8 @@ def build_employees_list(company):
         'user__last_name', 'user__first_name')
     # employees who still have not responded to their employment
     employees_pending = AbqUser.objects.filter(\
-        employment__company=company, employment__start_date=None).order_by(\
+        employment__company=company, 
+        employment__start_date=None).order_by(\
         'user__last_name', 'user__first_name')
     # now build the list
     employees_list = []
@@ -86,7 +87,8 @@ def build_employees_list(company):
     for employee in employees_accepted:
         # initialize the termination form
         employee_termination_form = EmploymentTerminationForm(
-            initial={'username': employee.user.username, 'company_name': company.name} )
+            initial={'username': employee.user.username, 
+                     'company_name': company.name} )
         # append them to the list
         employees_list.append(
             {'employee': employee, 'accepted': True, 
@@ -96,7 +98,8 @@ def build_employees_list(company):
     for employee in employees_pending:
         # initialize the termination form
         employee_termination_form = EmploymentTerminationForm(
-            initial={'username': employee.user.username, 'company_name': company.name} )
+            initial={'username': employee.user.username, 
+                     'company_name': company.name} )
         # append them to the list
         employees_list.append(
             {'employee': employee, 'accepted': False, 
@@ -287,7 +290,8 @@ def invite_new_employee(request, company_name):
     """ Send offer letter of employment """
     
     # get the employment form
-    employment_form = EmploymentForm(request.POST)
+    employment_form = EmploymentForm(
+        request.POST, initial={'company_name': company_name})
     if employment_form.is_valid():
         abq_user = employment_form.cleaned_data['abqUser']
         company = Company.objects.get(name=company_name)        
@@ -307,8 +311,11 @@ def invite_new_employee(request, company_name):
             'http://127.0.0.1:8000/confirm-employment/%s' \
             %(employment.employee.user.first_name,\
                   employment.company.name,employment.activation_key)
-        send_mail(email_subject,email_body,\
-                      settings.EMAIL_HOST_USER,[abq_user.user.email])
+        thread = threading.Thread(target=send_mail,
+                                  args=(email_subject,email_body,
+                                        settings.EMAIL_HOST_USER,
+                                        [abq_user.user.email]))
+        thread.start()
         # and show a new form
         employment_form = EmploymentForm(\
             initial={'company_name': company.name})
@@ -326,7 +333,8 @@ def terminate_employment(username, company):
         raise Exception('user '+username+' does not exist')
     # and get the employment
     try:
-        employment = Employment.objects.get(employee=abq_user,company=company)
+        employment = Employment.objects.get(
+            employee=abq_user,company=company)
     except:
         raise Exception('problem with employment')
     # delete employment
@@ -438,7 +446,8 @@ def console(request):
             # now we need to rebuild the list
             companies_dict[company_name]['workspaces_list'] = \
                 build_workspaces_list(company)
-                        
+            
+
 
         # ===================================
         # invite a person to join the company
@@ -475,7 +484,9 @@ def console(request):
             # we need to rebuild the employees list
             companies_dict[company_name]['employees_list'] = \
                 build_employees_list(company)
-
+            # as well as employment form
+            companies_dict[company_name]['employment_form'] = \
+                EmploymentForm(initial={'company_name': company_name})
 
         # ==================
         # dissolve a company
@@ -570,7 +581,11 @@ def UserRegistration(request):
                            'To activate your account, click this link within 48 hours:\n\n' \
                            'http://127.0.0.1:8000/confirm/%s' \
                            %(abqUser.user.first_name,abqUser.activation_key)
-            send_mail(email_subject,email_body,settings.EMAIL_HOST_USER,[abqUser.user.email])
+            thread = threading.Thread(target=send_mail,
+                                      args=(email_subject,email_body,
+                                            settings.EMAIL_HOST_USER,
+                                            [abq_user.user.email]))
+            thread.start()
             # and redirect them to thank you page
             return HttpResponseRedirect('/thankyou/')
         # if the form is not valid show then the form again
