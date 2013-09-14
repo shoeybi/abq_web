@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block extrahead_base %}
-<title> Console </title>
+<title> Console - Abaqual </title>
 {% endblock %}
 
 
@@ -39,10 +39,12 @@
     <form method="post">
       {% csrf_token %}
       <label> {{ company_dict.company.name }} </label>
+      {% if abq_user == company_dict.company.owner %} 
       <input name="company_name" value="{{ company_dict.company.name }}"
 	     type="hidden" >
       <input name="dissolve_company" class="terminate20" 
 	     value="" type="submit" >
+      {% endif %}
     </form>
   </div>
   <div class="clear"> </div>
@@ -66,17 +68,18 @@
 	    {{item.termination_form.instance_id}}
 	    {{item.termination_form.company_name}}
 	    <label> {{item.workspace.name}} </label>
+	    {% if abq_user == company_dict.company.owner %} 
 	    <input type="submit" name="terminate_workspace" 
 		   class="terminate20" value="" />
+	    {% endif %}
 	  </form>
 	</figcaption>
       </figure>
       <p class="error"> {{item.termination_form.errors.as_text}}</p>
     </div>
     {% endfor %}
-
-
     <!-- launch a new workspace -->
+    {% if abq_user == company_dict.company.owner %} 
     <div id="launch">
       <form method="post">
 	{% csrf_token %}
@@ -97,10 +100,9 @@
 	       class="add20" value="" />
       </form>
     </div>
-    <div class="clear"> </div>
-        
+    {% endif %}
+    <div class="clear"> </div>       
   </div>
-  
   
   <!-- Team -->
   <div id="team">
@@ -121,15 +123,17 @@
 	  (pending)
 	  {% endif %}
 	</label>
+	{% if abq_user == company_dict.company.owner %} 
 	{{item.termination_form.company_name}}
 	{{item.termination_form.username}}
 	<input type="submit" name="terminate_employment" 
 	       class="terminate20", value="" />
+	{% endif %}
       </form>
     </div>
     {% endfor %}
-    
     <!-- new employee -->
+    {% if abq_user == company_dict.company.owner %} 
     <div id="invite">
       <form method="post">
 	{% csrf_token %}
@@ -144,6 +148,7 @@
 	{% endif %}
       </p>
     </div>
+    {% endif %}
   </div>  
   
 </div>

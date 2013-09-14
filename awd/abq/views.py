@@ -146,12 +146,10 @@ def build_companies_dict(abq_user):
     # add the companies that the user owns
     for company in companies_owned:
         company_dict = populate_company_dict(company)
-        company_dict['user_is_owner'] = True
         companies_dict[company.name] = company_dict
     # add the companies that the user works for
     for company in companies_works:
         company_dict = populate_company_dict(company)
-        company_dict['user_is_owner'] = False
         companies_dict[company.name] = company_dict
     # and return the dictionary
     return companies_dict
@@ -346,12 +344,10 @@ def terminate_employment(username, company):
     return True
 
 
-def dissolve_company(company_name):
+def dissolve_company(company):
     """ Terminate a compnay  """
     
     # just make sure that workspaces are terminated
-    # get the company
-    company = Company.objects.get(name=company_name)
     # get the compnay's workspaces
     workspaces = Workspace.objects.filter(company=company)
     # for all the workspaces
@@ -414,10 +410,9 @@ def console(request):
         if 'workspace_launch' in request.POST:
             company_name = request.POST['company_name']
             company = companies_dict[company_name]['company']
-            # make sure the user is the owner
-            if not companies_dict[company_name]['user_is_owner']:
-                raise Exception(
-                    'You are not authorized invite a new person')
+            # check that the owner is launching a workspace            
+            if company.owner != abq_user:
+                raise Exception('only owner can  a workspace')
             companies_dict[company_name]['workspace_launch_form'] = \
                 launch_new_workspace(request,company)
             # since we just added a new workspace, we need to 
@@ -441,6 +436,9 @@ def console(request):
         if 'terminate_workspace' in request.POST:
             company_name = request.POST['company_name']
             company = companies_dict[company_name]['company']
+            # check that the owner terminating a workspace            
+            if company.owner != abq_user:
+                raise Exception('only owner can terminate a workspace')
             # get the region, instace id 
             region = request.POST['region']
             instance_id = request.POST['instance_id']
@@ -461,10 +459,9 @@ def console(request):
             # get company name
             company_name = request.POST['company_name']
             company = companies_dict[company_name]['company']
-            # make sure the user is the owner
-            if not companies_dict[company_name]['user_is_owner']:
-                raise Exception(
-                    'You are not authorized invite a new person')
+            # check that the owner terminating a workspace            
+            if company.owner != abq_user:
+                raise Exception('only owner can invite a new person')
             # now we need to replace the form we had in the dictionary
             companies_dict[company_name]['employment_form'] = \
                 invite_new_employee(request, company_name)     
@@ -481,6 +478,9 @@ def console(request):
             # get company name
             company_name = request.POST['company_name']
             company = companies_dict[company_name]['company']
+            # check that the owner terminating an employment            
+            if company.owner != abq_user:
+                raise Exception('only owner can terminate an employment')
             # get the username
             username = request.POST['username']
             terminate_employment(username, company)
@@ -498,8 +498,13 @@ def console(request):
         if 'dissolve_company' in request.POST:
             # get company name
             company_name = request.POST['company_name']
+            # get the company
+            company = Company.objects.get(name=company_name)
+            # check that the owner is dissolving a company            
+            if company.owner != abq_user:
+                raise Exception('only owner can dissolve a company')
             # dissolve the company
-            dissolve_company(company_name)
+            dissolve_company(company)
             # we need to rebuild the companies dictionary
             companies_dict = build_companies_dict(abq_user)
             

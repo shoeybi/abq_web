@@ -34,17 +34,13 @@ input[type="submit"] {
     background-color: #ECE5E5;
 }
 
-figure {
-    margin: 0px;
-}
-
-p {
-    margin: 0px;
-}
-
-label {
+p, figure, label {
     margin: 0px;
     padding: 0px;
+}
+
+a {
+    text-decoration: none;
 }
 
 .flamebutton {
@@ -112,7 +108,6 @@ label {
     height: 25px;
 }
 
-
 #header, #footer {
     width: 960px;
     background: #ccc;
@@ -134,10 +129,6 @@ label {
     height: 38px;
     padding: 5px;
     float: right;
-}
-
-#header #userbar a {
-    text-decoration: none;
 }
 
 #header #userbar #loggedin *{
