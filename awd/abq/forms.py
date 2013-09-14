@@ -178,7 +178,7 @@ class CompanyRegForm(forms.Form):
             Company.objects.get(name=name)
         # if the company name is not already taken, return the name
         except Company.DoesNotExist:
-            return name            
+            pass            
         # otherwise raise a validation error
         else:
             raise forms.ValidationError(
@@ -188,7 +188,6 @@ class CompanyRegForm(forms.Form):
         # the full list of cleaned_data
         return self.cleaned_data
 
-    
 
 class RegistrationForm(forms.Form):
     

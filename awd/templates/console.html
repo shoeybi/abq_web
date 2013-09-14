@@ -14,7 +14,8 @@
     <label 
        {% if company_reg_form.non_field_errors %} 
        class="error_highlight" 
-       {% endif %}> 
+       {% endif %} 
+       > 
       Company name 
     </label> 
     {{ company_reg_form.name }} 
@@ -40,7 +41,7 @@
       <label> {{ company_dict.company.name }} </label>
       <input name="company_name" value="{{ company_dict.company.name }}"
 	     type="hidden" >
-      <input name="dissolve_company" class="terminate10" 
+      <input name="dissolve_company" class="terminate20" 
 	     value="" type="submit" >
     </form>
   </div>
@@ -66,7 +67,7 @@
 	    {{item.termination_form.company_name}}
 	    <label> {{item.workspace.name}} </label>
 	    <input type="submit" name="terminate_workspace" 
-		   class="terminate10" value="" />
+		   class="terminate20" value="" />
 	  </form>
 	</figcaption>
       </figure>
@@ -93,7 +94,7 @@
 	  {{ company_dict.workspace_launch_form.os.errors.as_text }}
 	</p>
 	<input type="submit" name="workspace_launch" 
-	       class="add25" value="" />
+	       class="add20" value="" />
       </form>
     </div>
     <div class="clear"> </div>
@@ -123,7 +124,7 @@
 	{{item.termination_form.company_name}}
 	{{item.termination_form.username}}
 	<input type="submit" name="terminate_employment" 
-	       class="terminate10", value="" />
+	       class="terminate20", value="" />
       </form>
     </div>
     {% endfor %}

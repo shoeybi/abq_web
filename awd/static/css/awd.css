@@ -77,13 +77,13 @@ label {
 }
 
 .add10, .add15, .add20, .add25 {
-    background:url(/static/images/add.png) no-repeat;
+    background:url(/static/images/plus_sign.png) no-repeat;
     background-color: transparent !important;
     border: none;
 }
 
 .terminate10, .terminate15, .terminate20, .terminate25 {
-    background:url(/static/images/terminate.png) no-repeat;
+    background:url(/static/images/minus_sign.png) no-repeat;
     background-color: transparent !important;
     border: none;
 }
