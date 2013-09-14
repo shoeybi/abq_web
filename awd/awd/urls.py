@@ -21,6 +21,9 @@ urlpatterns = patterns(
     # base
     url(r'^base/$',TemplateView.as_view(template_name="base.html")),
 
+    # base
+    url(r'^test/$',TemplateView.as_view(template_name="mytests.html")),
+
     # console
     url(r'^console/$','abq.views.console'),
 
