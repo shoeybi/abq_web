@@ -21,8 +21,6 @@ class EmploymentForm(forms.Form):
         super(EmploymentForm, self).__init__(*arguments,**kwargs)
         # get the company name
         company_name = self.initial.get('company_name')
-        print 'AAAAAAAAAAAAAAAAA'
-        print self.fields['abqUser']
         if company_name != None :
             # get the company
             company = Company.objects.get(name=company_name)
@@ -37,7 +35,9 @@ class EmploymentForm(forms.Form):
                 self.fields['abqUser'].queryset = \
                     self.fields['abqUser'].queryset.exclude(
                     user=employee.user) 
-                    
+        else:
+            raise forms.ValidationError('company name is not valid.')
+
     # check that abqUser is neither the owner nor 
     # already works for the company
     def clean(self):
@@ -47,28 +47,28 @@ class EmploymentForm(forms.Form):
         company_name = cleaned_data.get('company_name')
         # check that there was not a validation error
         if company_name == None:
-            raise forms.ValidationError("company name is not valid")
+            raise forms.ValidationError("company name is not valid.")
         # check if company exist
         try:
             company = Company.objects.get(name=company_name)
         # if not raise an error
         except Company.DoesNotExist:
             raise forms.ValidationError(
-                'company '+company_name+' does not exist')
+                'company '+company_name+' does not exist.')
         # otherwise, check for the employee
         else:
             # user
             abqUser = cleaned_data.get('abqUser')
             # check that there was not a validation error
-            #if abqUser == None:
-            #    raise forms.ValidationError("user is invalid")
+            if abqUser == None:
+                raise forms.ValidationError("user is invalid.")
             # first make sure that user is not the owner
             if abqUser == company.owner:
-                raise forms.ValidationError('You are inviting yourself')
+                raise forms.ValidationError('You are inviting yourself.')
             # check that invitee is not already part of the company
             if abqUser in company.employee.all():
                 raise forms.ValidationError(
-                    abqUser.user.username+' is already a member')
+                    abqUser.user.username+' is already a member.')
         # make sure we return the cleaned_data
         return self.cleaned_data
 
@@ -87,7 +87,9 @@ class WorkspaceLaunchForm(forms.Form):
     # company name
     company_name = forms.CharField(widget=forms.HiddenInput())
     # workspace name
-    name = forms.CharField(max_length=100, label=(u'Name'))
+    name = forms.CharField(max_length=100, 
+                           label=(u'Name'), 
+                           initial='new workspace')
     # show hardware option and resubmit the form as soon as it is changed
     hardware = forms.ModelChoiceField(
         queryset=Hardware.objects.all(),
@@ -95,9 +97,23 @@ class WorkspaceLaunchForm(forms.Form):
         initial=1,
         empty_label='Hardware')
     # by default, don't show any os until we know thw hardware
-    os = forms.ModelChoiceField(queryset=OS.objects.none(), 
-                                empty_label="Operating system", 
-                                required=False)
+    hardware_initial = Hardware.objects.get(pk=1)
+    os = forms.ModelChoiceField(
+        queryset=OS.objects.filter(hardware=hardware_initial),
+        initial=1,
+        empty_label="Operating system", 
+        required=False)
+
+    # clean the name
+    def clean(self):
+        try:
+            name = self.cleaned_data['name']
+        except:
+            if not self._errors:
+                self._errors = ErrorDict()
+            self._errors['name'] = ErrorList(
+                [u' Workspace name is required.'])
+        return self.cleaned_data
     
     # because os is to optional but is needed to form a workspace
     # we define a special method that checks if the os is valid otherwise
@@ -109,8 +125,15 @@ class WorkspaceLaunchForm(forms.Form):
         else:
             if not self._errors:
                 self._errors = ErrorDict()
-            self._errors['os'] = ErrorList([u'os field is required'])
+            self._errors['os'] = ErrorList([u'Operating system is required'])
             return False
+
+    # raise an error for the case that hardware is not provided
+    def raise_hardware_error(self):
+        if not self._errors:
+            self._errors = ErrorDict()
+        self._errors['hardware'] = ErrorList([u' Hardware is required'])
+        
 
 
 class WorkspaceTerminateForm(forms.Form):
@@ -140,11 +163,16 @@ class CompanyRegForm(forms.Form):
     # company form only need a name
     name = forms.CharField(max_length=100, 
                            label=(u'Company name'))
-    
-    # check that the company name is unique
-    def clean_name(self):
-        # get the company name
-        name = self.cleaned_data['name']
+
+    def clean(self):
+        # first we need to get access to the original cleaned_data method
+        cleaned_data = super(CompanyRegForm,self).clean()
+        # get the name from the form
+        name = cleaned_data.get('name')
+        # if there was a validation error then name has not been a valid one
+        if name == None:
+            raise forms.ValidationError("Company name is not valid.")
+        # otherwise try to find if the name is in the database
         # search the database
         try: 
             Company.objects.get(name=name)
@@ -152,9 +180,14 @@ class CompanyRegForm(forms.Form):
         except Company.DoesNotExist:
             return name            
         # otherwise raise a validation error
-        raise forms.ValidationError(
-            'company name '+name+
-            ' is taken. Please select a different name.')
+        else:
+            raise forms.ValidationError(
+                'Company name '+name+
+                ' is taken. Please select a different name.')
+        # return cleaned_data so the methos returns 
+        # the full list of cleaned_data
+        return self.cleaned_data
+
     
 
 class RegistrationForm(forms.Form):

@@ -114,7 +114,7 @@ def populate_company_dict(company):
     
     # start a new workspace form
     workspace_launch_form = WorkspaceLaunchForm(\
-        initial={'company_name': company.name, 'name':'workspace'})
+        initial={'company_name': company.name})
     # invite a new employee form
     employment_form = EmploymentForm(\
         initial={'company_name': company.name})
@@ -240,7 +240,10 @@ def launch_new_workspace(request, company):
             workspace_launch_form = WorkspaceLaunchForm(
                 initial={'company_name': company.name, 
                          'name': 'workspace'})
-    #return the form
+    else:    
+        workspace_launch_form.raise_hardware_error()
+
+    # return the form
     return workspace_launch_form
      
 
