@@ -196,6 +196,18 @@ a {
     margin-right: 10px;
 }
 
+#home #left, #home #right {
+    width:465px;
+    padding: 10px;
+    font-size: 1.3em;
+    margin-top: 40px;
+}
+
+#home #left input[type="submit"] {
+    margin-top: 20px;
+    margin-left: 250px;
+}
+
 #company_reg {
     width: 900px;
     height: 40px;
