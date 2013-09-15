@@ -6,6 +6,49 @@ from django.forms.util import ErrorDict, ErrorList
 from abq.models import AbqUser, Company, Workspace, Hardware, OS, Employment
 
 
+class ContactUsForm(forms.Form):
+
+    firstname = forms.CharField(max_length=100, label=(u'First Name'))
+    lastname = forms.CharField(max_length=100, label=(u'Last Name'))
+    email = forms.EmailField(label=(u'Email Address'))
+    message = forms.CharField(widget=forms.Textarea, label=(u'Message'))
+
+    # clean 
+    def clean(self):
+        # first we need to get access to the original cleaned_data method
+        cleaned_data = super(ContactUsForm,self).clean()
+        # get the first name
+        firstname = cleaned_data.get('firstname')
+        if firstname == None :
+            if not self._errors:
+                self._errors = ErrorDict()
+            self._errors['firstname'] = ErrorList(
+                [u' First name is required.'])
+        # get the last name
+        lastname = cleaned_data.get('lastname')
+        if lastname == None :
+            if not self._errors:
+                self._errors = ErrorDict()
+            self._errors['lastname'] = ErrorList(
+                [u' Last name is required.'])
+        # get the email address
+        email = cleaned_data.get('email')
+        if email == None :
+            if not self._errors:
+                self._errors = ErrorDict()
+            self._errors['email'] = ErrorList(
+                [u' Email address is not valid.'])
+        # get the email address
+        message = cleaned_data.get('message')
+        if message == None :
+            if not self._errors:
+                self._errors = ErrorDict()
+            self._errors['message'] = ErrorList(
+                [u' Message is required.'])
+
+        return self.cleaned_data
+
+
 class EmploymentForm(forms.Form):
     
     # invited user
@@ -70,7 +113,6 @@ class EmploymentForm(forms.Form):
                     abqUser.user.username+' is already a member.')
         # make sure we return the cleaned_data
         return self.cleaned_data
-
 
 
 class EmploymentTerminationForm(forms.Form):

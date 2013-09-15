@@ -12,7 +12,7 @@ from django.core.files import File
 from abq.misc import login_user_no_credentials, get_aws_region
 from abq.forms import LoginForm, RegistrationForm, CompanyRegForm, \
     WorkspaceLaunchForm, EmploymentForm, WorkspaceTerminateForm, \
-    EmploymentTerminationForm
+    EmploymentTerminationForm, ContactUsForm
 from abq.models import AbqUser, Company, OS, Hardware, Employment, \
     Workspace, Region
 import datetime, random, hashlib, threading
@@ -660,6 +660,29 @@ def RegistrationConfirmation(request,activation_key):
         # lon in the user and redirect them to their profile
         login_user_no_credentials(request,abqUser.user)
         return HttpResponseRedirect('/console/')
+
+
+
+def ContactUs(request):
+
+    # if the user is posting  
+    if request.method == 'POST':
+        # populate the form from post
+        form = ContactUsForm(request.POST)
+        # if the form is valid
+        if form.is_valid():
+            print 'form is valid'
+            # redirect them to a thank you page
+
+    else:
+        # show them an empty form
+        form = ContactUsForm()
+
+
+    return render_to_response(
+        'contactus.html',
+        {'form': form}, 
+        context_instance=RequestContext(request)) 
 
 
 def LoginRequest(request):

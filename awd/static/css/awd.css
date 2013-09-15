@@ -303,7 +303,6 @@ a {
     vertical-align: top;
 }
 
-
 #company #team #invite {
     padding: 7px;
 }
@@ -322,7 +321,7 @@ a {
 }
 
 
-#registration {
+#registration, #contactus {
     text-align: left;
     margin-left: 40px;
     margin-top: 30px;
@@ -349,33 +348,30 @@ a {
     height: 30px;
 }
 
+#contactus label {
+    display: inline-block;
+    width: 110px;
+    vertical-align: top;
+    padding: 5px;
+}
 
+#contactus input[type="text"] {
+    width: 300px;
+}
 
+#contactus input[type="submit"] {
+    margin-top: 20px;
+    margin-left: 450px;
+}
 
-
-
-
-
-
-
-
-/* ===================== */
-
-#registrationThankyou {
-		      padding:   50px;
-		      font-size: 1.3em;
+#contactus textarea {
+    width:380px;
+    height:250px;
 }
 
 
-#profilename {
-	     margin-top: -70px;
-	     margin-right: 120px;
-	     width: 300px;
-	     float: right;
-	     text-align: right;
-}
 
-#profilename p {
-	     font-size: 1.3em;
-}
+
+
+
 

@@ -37,16 +37,15 @@ urlpatterns = patterns(
     url(r'^employment-confirmation/(?P<activation_key>\w+)/$',
         'abq.views.EmploymentConfirmation'),
 
+    # contact us
+    url(r'^contactus/$','abq.views.ContactUs'),
 
 
     # base
     url(r'^base/$',TemplateView.as_view(template_name="base.html")),
 
-    # base
+    # test
     url(r'^test/$',TemplateView.as_view(template_name="mytests.html")),
-
-
-
 
 
     # Examples:

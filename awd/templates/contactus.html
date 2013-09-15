@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block extrahead_base %}
+<title> Contact Us - Abaqual </title>
+{% endblock %}
+
+
+{% block content_base %}
+<div id="contactus">
+  <form method="post">
+  {% csrf_token %}
+   
+  <div class="name">
+    <label 
+       {% if form.firstname.errors %} 
+       class="error_highlight" 
+       {% endif %} > 
+      First Name 
+    </label> 
+    {{ form.firstname }}
+    {% if form.firstname.errors %}
+    <p class="error_message"> 
+      {{ form.firstname.errors.as_text }}
+    </p>
+    {% endif %}
+  </div>
+
+  <div class="name">
+    <label 
+       {% if form.lastname.errors %} 
+       class="error_highlight" 
+       {% endif %} > 
+      Last Name 
+    </label> 
+    {{ form.lastname }}
+    {% if form.lastname.errors %}
+    <p class="error_message"> 
+      {{ form.lastname.errors.as_text }}
+    </p>
+    {% endif %}
+  </div>
+
+  <div class="name">
+    <label 
+       {% if form.email.errors %} 
+       class="error_highlight" 
+       {% endif %} > 
+      Email Address 
+    </label> 
+    {{ form.email }}
+    {% if form.email.errors %}
+    <p class="error_message"> 
+      {{ form.email.errors.as_text }}
+    </p>
+    {% endif %}
+  </div>
+
+  <div id="message">
+    <label 
+       {% if form.message.errors %} 
+       class="error_highlight" 
+       {% endif %} > 
+      Message 
+    </label> 
+    {{ form.message }}
+    {% if form.message.errors %}
+    <p class="error_message"> 
+      {{ form.message.errors.as_text }}
+    </p>
+    {% endif %}
+  </div>
+
+  <input type="submit" class="flamebutton" value="Send" />
+  
+  </form>
+</div>
+{% endblock %}
