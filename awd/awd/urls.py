@@ -9,7 +9,6 @@ from django.contrib import admin
 admin.autodiscover()
 
 
-
 urlpatterns = patterns(
 
     # no generic view pattern
@@ -18,30 +17,37 @@ urlpatterns = patterns(
     # admin
     url(r'^admin/', include(admin.site.urls)),
 
-    # base
-    url(r'^base/$',TemplateView.as_view(template_name="base.html")),
-
-    # base
-    url(r'^test/$',TemplateView.as_view(template_name="mytests.html")),
-
-    # console
-    url(r'^console/$','abq.views.console'),
-
-    # registration
-    url(r'^register/$','abq.views.UserRegistration'),
-    # and followup thank you
-    url(r'^thankyou/$',TemplateView.as_view(template_name="registerThankyou.html")),
-    # confirmation
-    url(r'^confirm/(?P<activation_key>\w+)/$','abq.views.Confirmation'),
-
     # home
     url(r'^home/$','abq.views.LoginRequest'),
 
     # logout
     url(r'^logout/$','abq.views.LogoutRequest'),
 
+    # registration
+    url(r'^registration/$','abq.views.UserRegistration'),
+
+    # registration confirmation
+    url(r'^registration-confirmation/(?P<activation_key>\w+)/$',
+        'abq.views.RegistrationConfirmation'),
+
+    # console
+    url(r'^console/$','abq.views.console'),
+
     # employment confirmation
-    url(r'^confirm-employment/(?P<activation_key>\w+)/$','abq.views.EmploymentConfirmation'),
+    url(r'^employment-confirmation/(?P<activation_key>\w+)/$',
+        'abq.views.EmploymentConfirmation'),
+
+
+
+    # base
+    url(r'^base/$',TemplateView.as_view(template_name="base.html")),
+
+    # base
+    url(r'^test/$',TemplateView.as_view(template_name="mytests.html")),
+
+
+
+
 
     # Examples:
     # url(r'^$', 'awd.views.home', name='home'),

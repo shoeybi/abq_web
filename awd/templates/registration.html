@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block extrahead_base %}
+<title> Registration - Abaqual</title>
+{% endblock %}
+   
+{% block content_base %}
+
+<div id="registration" >    
+  <form  method="post">
+    {% csrf_token %}
+    
+    <div id="register">
+      <label 
+	 {% if form.username.errors %} 
+	 class="error_highlight" 
+	 {% endif %} > 
+	Email Address 
+      </label> 
+      {{ form.username }}
+      {% if form.username.errors %}
+      <p class="error_message"> 
+	{{ form.username.errors.as_text }}
+      </p>
+      {% endif %}
+    </div>
+    
+    <div id="register">
+      <label
+	 {% if form.firstname.errors %} 
+	 class="error_highlight"
+	 {% endif %}>
+	First Name 
+      </label> 
+      {{ form.firstname }}
+      {% if form.firstname.errors %}
+      <p class="error_message">
+	{{ form.firstname.errors.as_text }}
+      </p>
+      {% endif %}
+    </div>    
+    
+    <div id="register">
+      <label
+	 {% if form.lastname.errors %} 
+	 class="error_highlight"
+	 {% endif %} >
+	Last Name 
+      </label> 
+      {{ form.lastname }}
+      {% if form.lastname.errors %}
+      <p class="error_message">
+	{{ form.lastname.errors.as_text }}
+      </p>
+      {% endif %}
+    </div>
+    
+    <div id="register">
+      <label
+	 {% if form.password.errors or form.non_field_errors %} 
+	 class="error_highlight"
+	 {% endif %} >
+	Password 
+      </label> 
+      {{ form.password }}
+      {% if form.password.errors %}
+      <p class="error_message">
+	{{ form.password.errors.as_text }}
+      </p>
+      {% endif %}
+    </div>        
+    
+    <div id="register">
+      <label
+	 {% if form.password1.errors or form.non_field_errors %} 
+	 class="error_highlight"
+	 {% endif %} >
+	Verify Password
+      </label> 
+      {{ form.password1 }}
+      {% if form.password1.errors %}
+      <p class="error_message">
+	{{ form.password1.errors.as_text }}
+      </p>
+      {% endif %}
+      <!-- show the password error -->
+      {% if form.errors %}
+      <p class="error_message">
+	{{ form.non_field_errors.as_text }}
+      </p>
+      {% endif %}  
+    </div>
+
+    <input type="submit" class="flamebutton" value="Sign Up" />
+  
+  </form>
+</div>  
+
+{% endblock %}

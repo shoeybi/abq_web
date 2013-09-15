@@ -309,7 +309,7 @@ def invite_new_employee(request, company_name):
         email_body = 'Hello %s,\n\n ' \
             '%s has sent you an employment request.'\
             ' To accept your offer, click this link within 7 days:\n\n' \
-            'http://127.0.0.1:8000/confirm-employment/%s' \
+            'http://127.0.0.1:8000/employment-confirmation/%s' \
             %(employment.employee.user.first_name,\
                   employment.company.name,employment.activation_key)
         thread = threading.Thread(target=send_mail,
@@ -526,17 +526,20 @@ def EmploymentConfirmation(request,activation_key):
         employment = Employment.objects.get(activation_key=activation_key)
     # if user does not exists
     except ObjectDoesNotExist:
-        return render_to_response('employment_confirmation.html',{'no_account': True},
-                                  context_instance=RequestContext(request))
+        return render_to_response(
+            'employment_confirmation.html',{'no_account': True},
+            context_instance=RequestContext(request))
     # otherwise check the time 
     else:
         # if user has not already activated their account
         if employment.start_date is None:
-            # if the key has expired, delete the employment and redirect them to expiration
+            # if the key has expired, delete the employment 
+            # and redirect them to expiration
             if employment.key_expiration < timezone.now():
                 employment.delete()
-                return render_to_response('employment_confirmation.html',{'expired': True},
-                                          context_instance=RequestContext(request))
+                return render_to_response(
+                    'employment_confirmation.html',{'expired': True},
+                    context_instance=RequestContext(request))
             # otherwise start employment
             employment.start_date = timezone.now()
             # save in the data base
@@ -550,10 +553,10 @@ def EmploymentConfirmation(request,activation_key):
         # redirect employee to his/her profile
         return HttpResponseRedirect('/console/')
 
-
     
 def UserRegistration(request):
-    # if the user is already authenticated, redirect them to his/her profile
+    # if the user is already authenticated,
+    # redirect them to his/her profile
     if request.user.is_authenticated():
         return HttpResponseRedirect('/console/')
     # if user is registering
@@ -566,7 +569,8 @@ def UserRegistration(request):
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             # create the user
-            user = User.objects.create_user(username=username,password=password)
+            user = User.objects.create_user(username=username,
+                                            password=password)
             # set first name, last name and email address
             user.email      = username;
             user.first_name = form.cleaned_data['firstname']
@@ -576,65 +580,79 @@ def UserRegistration(request):
             # save the user into data-base
             user.save()
             # now create an abaqual user
-            abqUser = AbqUser(user=user,abaqual_status='PR')
+            # DBG  --> user is always given an expert status
+            abqUser = AbqUser(user=user,abaqual_status='EX')
             # set the activation key and expiration date
-            salt                   = hashlib.sha1(str(random.random())).hexdigest()[:5]
+            salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
             abqUser.activation_key = hashlib.sha1(salt+username).hexdigest()
-            abqUser.key_expiration = timezone.now() + datetime.timedelta(hours=48)
+            abqUser.key_expiration = timezone.now() + \
+                datetime.timedelta(hours=48)
             # save abaqual user into database
             abqUser.save()
             # email the user activation link
             email_subject = 'Your new Abaqual account confirmation'
-            email_body = 'Hello %s, and thanks for signing up for an Abaqual account!\n\n ' \
-                           'To activate your account, click this link within 48 hours:\n\n' \
-                           'http://127.0.0.1:8000/confirm/%s' \
-                           %(abqUser.user.first_name,abqUser.activation_key)
+            email_body = 'Hello %s, and thanks for signing up '\
+                'for an Abaqual account!\n\n ' \
+                'To activate your account, click this '\
+                'link within 48 hours:\n\n' \
+                'http://127.0.0.1:8000/registration-confirmation/%s' \
+                %(abqUser.user.first_name,abqUser.activation_key)
             thread = threading.Thread(target=send_mail,
                                       args=(email_subject,email_body,
                                             settings.EMAIL_HOST_USER,
-                                            [abq_user.user.email]))
+                                            [abqUser.user.email]))
             thread.start()
             # and redirect them to thank you page
-            return HttpResponseRedirect('/thankyou/')
+            return render_to_response('registration_thankyou.html')
         # if the form is not valid show then the form again
         else:
-            return render_to_response('register.html', {'form':form}, 
-                                      context_instance=RequestContext(request))
+            return render_to_response(
+                'registration.html', {'form':form}, 
+                context_instance=RequestContext(request))
     # otherwise show the user an empty form
     else:
         form = RegistrationForm()
-        return render_to_response('register.html', {'form':form}, 
-                                  context_instance=RequestContext(request))
+        return render_to_response(
+            'registration.html', {'form':form}, 
+            context_instance=RequestContext(request))
 
 
 
-def Confirmation(request,activation_key):
+def RegistrationConfirmation(request,activation_key):
     
-    # if user is already authenticated, then they cannot confirm a new account
+    # if user is already authenticated, 
+    # then they cannot confirm a new account
     if request.user.is_authenticated():
-        return render_to_response('confirmation.html',
-                                  {'has_account': True, 'username': request.user.username},
-                                  context_instance=RequestContext(request))
+        return render_to_response(
+            'registration_confirmation.html',
+            {'has_account': True, 'username': request.user.username},
+            context_instance=RequestContext(request))
     # if not then try to get the abaqual user based on the activation key
     try:
         abqUser = AbqUser.objects.get(activation_key=activation_key)
     # if user does not exists
     except ObjectDoesNotExist:
-        return render_to_response('confirmation.html',{'no_account': True},
-                                  context_instance=RequestContext(request))
+        return render_to_response(
+            'registration_confirmation.html',
+            {'no_account': True},
+            context_instance=RequestContext(request))
     # otherwise check the time 
     else:
-        # check if user is already activated, then jutr redirect them to their profile
+        # check if user is already activated, 
+        # then just redirect them to their profile
         if ( abqUser.user.is_active ):
             # log in the user and redirect them to their profile
             login_user_no_credentials(request,abqUser.user)
             return HttpResponseRedirect('/console/')
-        # if the key has expired, delete the user and redirect them to expiration
+        # if the key has expired, delete the user and 
+        # redirect them to expiration
         if abqUser.key_expiration < timezone.now():
             abqUser.user.delete()
             abqUser.delete()
-            return render_to_response('confirmation.html',{'expired': True},
-                                      context_instance=RequestContext(request))
+            return render_to_response(
+                'registration_confirmation.html',
+                {'expired': True},
+                context_instance=RequestContext(request))
         # otherwise activate user
         abqUser.user.is_active = True
         # save in the data base
@@ -642,7 +660,6 @@ def Confirmation(request,activation_key):
         # lon in the user and redirect them to their profile
         login_user_no_credentials(request,abqUser.user)
         return HttpResponseRedirect('/console/')
-        
 
 
 def LoginRequest(request):
@@ -668,18 +685,23 @@ def LoginRequest(request):
                 return HttpResponseRedirect('/console/')
             # otherwise show them the form again
             else:
-                return render_to_response('home.html', {'login_form': login_form}, 
-                                          context_instance=RequestContext(request))
+                return render_to_response(
+                    'home.html', 
+                    {'login_form': login_form}, 
+                    context_instance=RequestContext(request))
         # if the form is not valid, show th blank form again
         else:
-            return render_to_response('home.html', {'login_form': login_form}, 
-                                      context_instance=RequestContext(request))
+            return render_to_response(
+                'home.html', 
+                {'login_form': login_form}, 
+                context_instance=RequestContext(request))
     # otherwise show them a blank form
     else:
         login_form = LoginForm()
-        return render_to_response('home.html', {'login_form': login_form}, 
-                                  context_instance=RequestContext(request))
-
+        return render_to_response(
+            'home.html', 
+            {'login_form': login_form}, 
+            context_instance=RequestContext(request))
 
 
 def LogoutRequest(request):

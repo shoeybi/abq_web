@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block extrahead_base %}
+<title> Confirmation - Abaqual </title>
+{% endblock %}
+   
+{% block content_base %}
+
+<div id="confirmation" class="clear">
+
+  {% if has_account %}
+  <p> 
+    You are already loggin in as {{username}}. 
+    Please log out and click again on the link provided in the email. 
+  </p>
+  {% endif %}
+
+  {% if no_account %}
+  <p> 
+    The account you requested to activate does not exist anymore. 
+    Please register again and activate your account within 48 hours. 
+  </p>
+  {% endif %}
+
+  {% if expired %}
+  <p> 
+    Your activation key has exprired. Please register agian 
+    and activate your account within 48 hours. 
+  </p>
+  {% endif %}
+
+</div>  
+
+{% endblock %}
