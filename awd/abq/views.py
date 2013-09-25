@@ -671,13 +671,31 @@ def ContactUs(request):
         form = ContactUsForm(request.POST)
         # if the form is valid
         if form.is_valid():
-            print 'form is valid'
+            # first email the content 
+            email_address = 'shared@abaqual.com'
+            email_subject = 'Abaqual contact us request'
+            email_body = \
+                'First name: %s\n' \
+                'Last name: %s\n' \
+                'Email address: %s\n' \
+                'message: %s\n' \
+                %(form.cleaned_data['firstname'],\
+                      form.cleaned_data['lastname'],\
+                      form.cleaned_data['email'],\
+                      form.cleaned_data['message'])
+            thread = threading.Thread(target=send_mail,
+                                      args=(email_subject,email_body,
+                                            settings.EMAIL_HOST_USER,
+                                            [email_address]))
+            thread.start()
             # redirect them to a thank you page
+            return render_to_response(
+                'contactus_thankyou.html',
+                context_instance=RequestContext(request)) 
 
     else:
         # show them an empty form
         form = ContactUsForm()
-
 
     return render_to_response(
         'contactus.html',
