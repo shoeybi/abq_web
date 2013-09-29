@@ -23,6 +23,22 @@ if settings.AWS:
         terminate_instance, make_company, remove_company
 
 
+def Desktop(request):
+
+    # if the user is not authenticated redirect them to home
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect('/home/')    
+
+
+
+
+    return render_to_response('desktop.html',
+                              #context,
+                              context_instance=RequestContext(request))
+
+
+
+
 def Tools(request):
 
     hardwares = Hardware.objects.all()
