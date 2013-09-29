@@ -1,4 +1,4 @@
-
+from django import forms
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -9,17 +9,73 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.conf import settings
 from django.core.files import File
+from django.forms.models import modelformset_factory, modelform_factory
 from abq.misc import login_user_no_credentials, get_aws_region
 from abq.forms import LoginForm, RegistrationForm, CompanyRegForm, \
     WorkspaceLaunchForm, EmploymentForm, WorkspaceTerminateForm, \
-    EmploymentTerminationForm, ContactUsForm
+    EmploymentTerminationForm, ContactUsForm, RequestToolForm
 from abq.models import AbqUser, Company, OS, Hardware, Employment, \
-    Workspace, Region
+    Workspace, Region, Software
 import datetime, random, hashlib, threading
 
 if settings.AWS:
     from interface import get_instance_id, instance_status, \
         terminate_instance, make_company, remove_company
+
+
+def Tools(request):
+
+    hardwares = Hardware.objects.all()
+    oss = OS.objects.all()
+    softwares = Software.objects.all()
+
+    context = {'hardwares': hardwares, 
+               'oss': oss, 
+               'softwares': softwares}
+    return render_to_response('seetools.html',
+                              context,
+                              context_instance=RequestContext(request))
+
+
+def OrderTools(request):
+
+    # if the user is posting  
+    if request.method == 'POST':
+        # populate the form from post
+        form = RequestToolForm(request.POST)
+        # if the form is valid
+        if form.is_valid():
+            # first email the content 
+            email_address = 'shared@abaqual.com'
+            email_subject = 'Abaqual order tool request'
+            email_body = \
+                'Product name: %s\n' \
+                'Product link: %s\n' \
+                'Email address: %s\n' \
+                'comment: %s\n' \
+                %(form.cleaned_data['name'],\
+                      form.cleaned_data['link'],\
+                      form.cleaned_data['email'],\
+                      form.cleaned_data['comment'])
+            thread = threading.Thread(target=send_mail,
+                                      args=(email_subject,email_body,
+                                            settings.EMAIL_HOST_USER,
+                                            [email_address]))
+            thread.start()
+            # redirect them to a thank you page
+            return render_to_response(
+                'ordertool_thankyou.html',
+                context_instance=RequestContext(request)) 
+
+    else:
+        # show them an empty form
+        form = RequestToolForm()
+
+    return render_to_response(
+        'ordertool.html',
+        {'form': form}, 
+        context_instance=RequestContext(request)) 
+
 
     
 def get_aws_regions():

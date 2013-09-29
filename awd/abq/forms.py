@@ -6,6 +6,35 @@ from django.forms.util import ErrorDict, ErrorList
 from abq.models import AbqUser, Company, Workspace, Hardware, OS, Employment
 
 
+class RequestToolForm(forms.Form):
+
+    name = forms.CharField(max_length=100, label=(u'Requested tool'))
+    link = forms.URLField(max_length=200, required=False)
+    email = forms.EmailField(label=(u'Email Address'))
+    comment = forms.CharField(widget=forms.Textarea, 
+                              label=(u'Comment'), required=False)
+
+    # clean 
+    def clean(self):
+        # first we need to get access to the original cleaned_data method
+        cleaned_data = super(RequestToolForm,self).clean()
+        # get the tool name
+        name = cleaned_data.get('name')
+        if name == None :
+            if not self._errors:
+                self._errors = ErrorDict()
+            self._errors['name'] = ErrorList(
+                [u' Requested tool name is required.'])
+        # get the email address
+        email = cleaned_data.get('email')
+        if email == None :
+            if not self._errors:
+                self._errors = ErrorDict()
+            self._errors['email'] = ErrorList(
+                [u' Email address is not valid.'])
+        return self.cleaned_data
+
+
 class ContactUsForm(forms.Form):
 
     firstname = forms.CharField(max_length=100, label=(u'First Name'))

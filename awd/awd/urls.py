@@ -40,6 +40,13 @@ urlpatterns = patterns(
     # contact us
     url(r'^contactus/$','abq.views.ContactUs'),
 
+    # tools
+    url(r'^tools/$','abq.views.Tools'),
+
+    # order tools
+    url(r'^ordertools/$','abq.views.OrderTools'),
+    
+
 
     # base
     url(r'^base/$',TemplateView.as_view(template_name="base.html")),

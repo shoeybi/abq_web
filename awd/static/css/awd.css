@@ -34,9 +34,14 @@ input[type="submit"] {
     background-color: #ECE5E5;
 }
 
-p, figure, label {
+p, figure, label, h1 {
     margin: 0px;
     padding: 0px;
+}
+
+h1 {
+    font-size: 1.25em;
+    font-weight: bold;
 }
 
 a {
@@ -58,6 +63,10 @@ a {
 
 .left {
     float: left;
+}
+
+.red {
+    color: red;
 }
 
 .error_message {
@@ -106,6 +115,12 @@ a {
     background-size: 25px;
     width: 25px;
     height: 25px;
+}
+
+.description {
+    font-size: 0.9em;
+    color: #3F3E3E;
+    padding-left: 5px;
 }
 
 #header, #footer {
@@ -350,7 +365,7 @@ a {
 
 #contactus label {
     display: inline-block;
-    width: 110px;
+    width: 120px;
     vertical-align: top;
     padding: 5px;
 }
@@ -369,7 +384,22 @@ a {
     height:250px;
 }
 
+#tools #order {
+    font-size: 1.1em;
+    margin-top: 25px;
+    margin-left: 30px;
+}
 
+#tools #hardware, #tools #os, #tools #software {
+    width: 292px;
+    padding-left: 10px;
+    margin-top: 30px;
+} 
+
+
+#tools #hardware {
+    margin-left: 60px;
+}
 
 
 

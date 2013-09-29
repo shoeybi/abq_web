@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block extrahead_base %}
+<title> Request Tool - Abaqual </title>
+{% endblock %}
+
+
+{% block content_base %}
+<div id="contactus">
+  <form method="post">
+  {% csrf_token %}
+   
+  <div class="name">
+    <label 
+       {% if form.name.errors %} 
+       class="error_highlight" 
+       {% endif %} > 
+      Product name 
+    </label> 
+    {{ form.name }}
+    {% if form.name.errors %}
+    <p class="error_message"> 
+      {{ form.name.errors.as_text }}
+    </p>
+    {% endif %}
+  </div>
+
+  <div class="name">
+    <label 
+       {% if form.link.errors %} 
+       class="error_highlight" 
+       {% endif %} > 
+      Product website 
+    </label> 
+    {{ form.link }}
+    {% if form.link.errors %}
+    <p class="error_message"> 
+      {{ form.link.errors.as_text }}
+    </p>
+    {% endif %}
+  </div>
+
+  <div class="name">
+    <label 
+       {% if form.email.errors %} 
+       class="error_highlight" 
+       {% endif %} > 
+      Email Address 
+    </label> 
+    {{ form.email }}
+    {% if form.email.errors %}
+    <p class="error_message"> 
+      {{ form.email.errors.as_text }}
+    </p>
+    {% endif %}
+  </div>
+
+  <div id="message">
+    <label 
+       {% if form.comment.errors %} 
+       class="error_highlight" 
+       {% endif %} > 
+      Comment 
+    </label> 
+    {{ form.comment }}
+    {% if form.comment.errors %}
+    <p class="error_message"> 
+      {{ form.comment.errors.as_text }}
+    </p>
+    {% endif %}
+  </div>
+
+  <input type="submit" class="flamebutton" value="Send" />
+  
+  </form>
+</div>
+{% endblock %}

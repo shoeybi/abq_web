@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block extrahead_base %}
+<title> Available Tools - Abaqual </title>
+{% endblock %}
+
+
+{% block content_base %}
+
+<div id="tools" >
+
+  <div id="order">
+    Don't see the tools you want? 
+    <a href="/ordertools/" class="red"> 
+      Order here
+      <a>
+  </div>
+  
+  <div id="hardware" class="left">
+    <h1> Hardware </h1>
+    <br></br>
+    {% for hardware in hardwares %}
+    <p>
+      {{hardware.name}}
+    </p>
+    <div class="description">
+      <p class="red">
+	${{hardware.price_per_hour}}/hr
+      </p>
+      <p>
+	{{hardware.virtual_cpu}} EC2 compute unit
+      </p>
+      <p>
+      {{hardware.memory_GiB}} GiB memory
+      </p>
+      <p>
+	{{hardware.storage_GiB}} GiB storage
+      </p>
+    </div>
+    <br></br>
+    {% endfor %}
+  </div>
+
+
+  <div id="os" class="left">
+    <h1> Operating system </h1>
+    <br></br>
+    {% for os in oss %}
+    <p>
+      {{os.name}}
+    </p>
+    <div class="description">
+      <p class="red">
+	{% if os.price_per_hour == 0.0 %}
+	free
+	{% else %}
+	${{os.price_per_hour}}/hr
+	{% endif %}
+      </p>
+    </div>
+    <br></br>
+    {% endfor %}
+  </div>
+
+
+  <div id="software" class="left">
+    <h1> Software </h1>
+    <br></br>
+    {% for software in softwares %}
+    <p>
+      {{software.name}}
+    </p>
+    <div class="description">
+      <p class="red">
+	{% if software.price_per_hour == 0.0 %}
+	free
+	{% else %}
+	${{software.price_per_hour}}/hr
+	{% endif %}
+      </p>
+    </div>
+    <br></br>
+    {% endfor %}
+  </div>
+
+</div>
+<div class="clear"> </div>
+
+{% endblock %}
