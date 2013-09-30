@@ -501,6 +501,41 @@ def console(request):
                     populate_os(request)
              
 
+        # =========================
+        # add software to workspace
+        # =========================
+
+        # if user is adding software
+        if 'add_software' in request.POST:
+            # get the company
+            company_name = request.POST['company_name']
+            company = companies_dict[company_name]['company']
+            # check that the owner is launching a workspace            
+            if company.owner != abq_user:
+                raise Exception('only owner can add software to a workspace')
+            # get the region, instace id 
+            region = request.POST['region']
+            instance_id = request.POST['instance_id']
+            # check that the combination is unique
+            try:
+                workspace = Workspace.objects.get(instance_id=instance_id,
+                                                  region=region)
+            except:
+                raise Exception(\
+                    "combination of instance id and region is not unique")
+            else:
+                launched_softwares = Software.objects.filter(\
+                    softwarelaunch__workspace=workspace)
+                available_softwares = Software.objects.exclude(\
+                    softwarelaunch__workspace=workspace)
+                context = {'workspace': workspace,
+                           'launched_softwares':launched_softwares,
+                           'available_softwares': available_softwares
+                           }
+
+                return render_to_response('desktop.html', context,
+                              context_instance=RequestContext(request))
+
         # ===================
         # terminate workspace
         # ===================

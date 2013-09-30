@@ -159,7 +159,6 @@ class UninstallScript(models.Model):
         verbose_name = 'Uninstall script'
 
 
-
 class Workspace(models.Model):
     
     name         = models.CharField(max_length=100)
@@ -171,6 +170,9 @@ class Workspace(models.Model):
     launch_date  = models.DateTimeField()
     image        = models.ImageField(upload_to='workspace_images')
     instance_url = models.URLField(max_length=200,default='#')
+    software     = models.ManyToManyField(Software,
+                                         related_name='workspace_software',
+                                         through='SoftwareLaunch', blank=True)
     
     def __unicode__(self):
         return self.name
@@ -187,20 +189,17 @@ class Workspace(models.Model):
         image.save(self.image.path)           
 
 
+class SoftwareLaunch(models.Model):
 
-
-class LaunchedSoftware(models.Model):
-
-    software      = models.ForeignKey(Software,related_name='launched_software')
-    workspace     = models.ForeignKey(Workspace,related_name='launched_software_workspace')
+    software      = models.ForeignKey(Software)
+    workspace     = models.ForeignKey(Workspace)
     launched_date = models.DateTimeField()
 
     def __unicode__(self):
-        return self.name
+        return self.software.name+' at '+self.workspace.name
     
     class Meta:
-        verbose_name = 'Launched software'
-
+        verbose_name = 'Software launch'
 
 
 
