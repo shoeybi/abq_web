@@ -688,7 +688,7 @@ def UserRegistration(request):
             user.save()
             # now create an abaqual user
             # DBG  --> user is always given an professional status
-            abqUser = AbqUser(user=user,abaqual_status='PR')
+            abqUser = AbqUser(user=user,abaqual_status='EX')
             # set the activation key and expiration date
             salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
             abqUser.activation_key = hashlib.sha1(salt+username).hexdigest()
