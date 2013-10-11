@@ -19,6 +19,7 @@ urlpatterns = patterns(
 
     # home
     url(r'^home/$','abq.views.LoginRequest'),
+    url(r'^$','abq.views.LoginRequest'),
 
     # logout
     url(r'^logout/$','abq.views.LogoutRequest'),

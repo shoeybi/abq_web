@@ -151,7 +151,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'abaqualinc@gmail.com'
-EMAIL_HOST_PASSWORD = 's1y2m3d4'
+EMAIL_HOST_PASSWORD = 'magnolia123'
 
 
 # A sample logging configuration. The only tangible logging

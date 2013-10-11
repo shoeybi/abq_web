@@ -381,7 +381,7 @@ def invite_new_employee(request, company_name):
         email_body = 'Hello %s,\n\n ' \
             '%s has sent you an employment request.'\
             ' To accept your offer, click this link within 7 days:\n\n' \
-            'http://127.0.0.1:8000/employment-confirmation/%s' \
+            'http://abaqual.com/employment-confirmation/%s' \
             %(employment.employee.user.first_name,\
                   employment.company.name,employment.activation_key)
         thread = threading.Thread(target=send_mail,
@@ -702,7 +702,7 @@ def UserRegistration(request):
                 'for an Abaqual account!\n\n ' \
                 'To activate your account, click this '\
                 'link within 48 hours:\n\n' \
-                'http://127.0.0.1:8000/registration-confirmation/%s' \
+                'http://abaqual.com/registration-confirmation/%s' \
                 %(abqUser.user.first_name,abqUser.activation_key)
             thread = threading.Thread(target=send_mail,
                                       args=(email_subject,email_body,
