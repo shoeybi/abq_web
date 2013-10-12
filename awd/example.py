@@ -11,7 +11,7 @@ from django.utils import timezone
 # add users
 # ===================
 
-user = User(username='jo@jo.com', password="jo", first_name='Jo', last_name='Lee')
+user = User(username='jo@jo.com', password="jo", first_name='Jo', last_name='Jo')
 user.email = user.username
 user.is_active = True
 user.save()
@@ -147,8 +147,8 @@ openFoam.save()
 openFoam.supported_os.add(osU,osC)
 
 acuSolve = Software()
-acuSolve.name = 'AcuSolve'
-acuSolve.price_per_hour = 20.0
+acuSolve.name = 'Paraview'
+acuSolve.price_per_hour = 0.0
 acuSolve.save()
 acuSolve.supported_os.add(osU)
 
@@ -170,7 +170,7 @@ insScr.software = openFoam
 insScr.save()
 
 insScr = InstallScript()
-insScr.name = 'AcuSolve_Ubuntu_install.sh'
+insScr.name = 'Paraview_Ubuntu_install.sh'
 insScr.os = osU
 insScr.software = acuSolve
 insScr.save()
@@ -188,7 +188,7 @@ uninsScr.software = openFoam
 uninsScr.save()
 
 uninsScr = UninstallScript()
-uninsScr.name = 'AcuSolve_Ubuntu_uninstall.sh'
+uninsScr.name = 'Paraview_Ubuntu_uninstall.sh'
 uninsScr.os = osU
 uninsScr.software = acuSolve
 uninsScr.save()
