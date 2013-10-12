@@ -662,6 +662,7 @@ def EmploymentConfirmation(request,activation_key):
 
     
 def UserRegistration(request):
+    print request
     # if the user is already authenticated,
     # redirect them to his/her profile
     if request.user.is_authenticated():
