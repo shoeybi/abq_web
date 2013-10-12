@@ -17,6 +17,7 @@ from abq.forms import LoginForm, RegistrationForm, CompanyRegForm, \
 from abq.models import AbqUser, Company, OS, Hardware, Employment, \
     Workspace, Region, Software
 import datetime, random, hashlib, threading
+threading._DummyThread._Thread__stop = lambda x: 42
 
 if settings.AWS:
     from interface import get_instance_id, instance_status, \
@@ -377,13 +378,15 @@ def invite_new_employee(request, company_name):
             timezone.now() + datetime.timedelta(days=7)
         employment.save()
         # email the employee activation link
+        domain_name = request.build_absolute_uri('/')
         email_subject = 'Your new Abaqual employment confirmation'
         email_body = 'Hello %s,\n\n ' \
             '%s has sent you an employment request.'\
             ' To accept your offer, click this link within 7 days:\n\n' \
-            'http://abaqual.com/employment-confirmation/%s' \
+            '%semployment-confirmation/%s' \
             %(employment.employee.user.first_name,\
-                  employment.company.name,employment.activation_key)
+                  employment.company.name, domain_name, \
+                  employment.activation_key)
         thread = threading.Thread(target=send_mail,
                                   args=(email_subject,email_body,
                                         settings.EMAIL_HOST_USER,
@@ -662,6 +665,7 @@ def EmploymentConfirmation(request,activation_key):
 
     
 def UserRegistration(request):
+    
     # if the user is already authenticated,
     # redirect them to his/her profile
     if request.user.is_authenticated():
@@ -697,13 +701,14 @@ def UserRegistration(request):
             # save abaqual user into database
             abqUser.save()
             # email the user activation link
+            domain_name = request.build_absolute_uri('/')
             email_subject = 'Your new Abaqual account confirmation'
             email_body = 'Hello %s, and thanks for signing up '\
                 'for an Abaqual account!\n\n ' \
                 'To activate your account, click this '\
                 'link within 48 hours:\n\n' \
-                'http://abaqual.com/registration-confirmation/%s' \
-                %(abqUser.user.first_name,abqUser.activation_key)
+                '%sregistration-confirmation/%s' \
+                %(abqUser.user.first_name, domain_name, abqUser.activation_key)
             thread = threading.Thread(target=send_mail,
                                       args=(email_subject,email_body,
                                             settings.EMAIL_HOST_USER,
