@@ -18,8 +18,8 @@ urlpatterns = patterns(
     url(r'^admin/', include(admin.site.urls)),
 
     # home
-    url(r'^home/$','abq.views.LoginRequest'),
     url(r'^$','abq.views.LoginRequest'),
+    url(r'^home/$','abq.views.LoginRequest'),
 
     # logout
     url(r'^logout/$','abq.views.LogoutRequest'),
@@ -40,6 +40,11 @@ urlpatterns = patterns(
     # employment confirmation
     url(r'^employment-confirmation/(?P<activation_key>\w+)/$',
         'abq.views.EmploymentConfirmation'),
+
+    # view profiles
+    url(r'^viewprofiles/$',
+        TemplateView.as_view(template_name="viewprofiles.html")),
+
 
     # contact us
     url(r'^contactus/$','abq.views.ContactUs'),
