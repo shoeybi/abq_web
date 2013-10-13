@@ -692,7 +692,7 @@ def UserRegistration(request):
         # if the form is valid
         if form.is_valid():
             # get their username and password
-            username = form.cleaned_data['username']
+            username = form.cleaned_data['username'].lower()
             password = form.cleaned_data['password']
             # create the user
             user = User.objects.create_user(username=username,
@@ -841,7 +841,7 @@ def LoginRequest(request):
         # check form is valid
         if login_form.is_valid():
             # get username and password
-            username = login_form.cleaned_data['username']
+            username = login_form.cleaned_data['username'].lower()
             password = login_form.cleaned_data['password']
             # authenticate user
             user = authenticate(username=username, password=password)
