@@ -13,31 +13,16 @@ from django.forms.models import modelformset_factory, modelform_factory
 from abq.misc import login_user_no_credentials, get_aws_region
 from abq.forms import LoginForm, RegistrationForm, CompanyRegForm, \
     WorkspaceLaunchForm, EmploymentForm, WorkspaceTerminateForm, \
-    EmploymentTerminationForm, ContactUsForm, RequestToolForm
+    EmploymentTerminationForm, ContactUsForm, RequestToolForm, \
+    SoftwareForm
 from abq.models import AbqUser, Company, OS, Hardware, Employment, \
-    Workspace, Region, Software
+    Workspace, Region, Software, SoftwareLaunch
 import datetime, random, hashlib, threading
 threading._DummyThread._Thread__stop = lambda x: 42
 
 if settings.AWS:
     from interface import get_instance_id, instance_status, \
         terminate_instance, make_company, remove_company
-
-
-def Desktop(request):
-
-    # if the user is not authenticated redirect them to home
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect('/home/')    
-
-
-
-
-    return render_to_response('desktop.html',
-                              #context,
-                              context_instance=RequestContext(request))
-
-
 
 
 def Tools(request):
@@ -504,12 +489,41 @@ def console(request):
                     populate_os(request)
              
 
-        # =========================
-        # add software to workspace
-        # =========================
-
+        # =================================
+        # add /remove software to workspace
+        # =================================
+        if 'add_remove_software' in request.POST:
+            software_form = SoftwareForm(request.POST)
+            # get the region, instace id 
+            region = request.POST['region']
+            instance_id = request.POST['instance_id']
+            # check that the combination is unique
+            try:
+                workspace = Workspace.objects.get(instance_id=instance_id,
+                                                  region=region)
+            except:
+                raise Exception(\
+                    "combination of instance id and region is not unique")
+            else:
+                # initialize the form
+                if software_form.is_valid():
+                    softwares = software_form.cleaned_data['software']
+                    softwares_old = Software.objects.filter(
+                        softwarelaunch__workspace=workspace)
+                    for software in softwares_old:
+                        if software not in softwares:
+                            launch = SoftwareLaunch.objects.get(
+                                software=software, workspace=workspace)
+                            launch.delete()
+                    for software in softwares:
+                        if not software in softwares_old:
+                            launch = \
+                                SoftwareLaunch(software=software,
+                                               workspace=workspace,
+                                               launched_date=timezone.now())
+                            launch.save()
         # if user is adding software
-        if 'add_software' in request.POST:
+        if 'go_to_software' in request.POST:
             # get the company
             company_name = request.POST['company_name']
             company = companies_dict[company_name]['company']
@@ -527,18 +541,19 @@ def console(request):
                 raise Exception(\
                     "combination of instance id and region is not unique")
             else:
-                launched_softwares = Software.objects.filter(\
+                # initialize the form
+                software_form = SoftwareForm()
+                software_form.fields['software'].initial = \
+                    Software.objects.filter(\
                     softwarelaunch__workspace=workspace)
-                available_softwares = Software.objects.exclude(\
-                    softwarelaunch__workspace=workspace)
+                software_form.fields['region'].initial = region
+                software_form.fields['instance_id'].initial = instance_id
                 context = {'workspace': workspace,
-                           'launched_softwares':launched_softwares,
-                           'available_softwares': available_softwares
-                           }
-
-                return render_to_response('desktop.html', context,
-                              context_instance=RequestContext(request))
-
+                           'softwares': software_form}
+                return render_to_response(
+                    'desktop.html', context,
+                    context_instance=RequestContext(request))
+                             
         # ===================
         # terminate workspace
         # ===================

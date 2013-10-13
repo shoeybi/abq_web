@@ -6,76 +6,22 @@
 
 {% block content_base %}
 
-<div id="tools" >
-
-  <div id="hardware" class="left">
-    <h1> Hardware </h1>
-    <br>
-    {% for hardware in hardwares %}
-    <p>
-      {{hardware.name}}
-    </p>
-    <div class="description">
-      <p class="red">
-	${{hardware.price_per_hour}}/hr
-      </p>
-      <p>
-	{{hardware.virtual_cpu}} EC2 compute unit
-      </p>
-      <p>
-      {{hardware.memory_GiB}} GiB memory
-      </p>
-      <p>
-	{{hardware.storage_GiB}} GiB storage
-      </p>
-    </div>
-    <div class="br"> </div>
-    {% endfor %}
+<div id="software_change">
+  <div id="worksapce">
+    <h1> {{workspace }} </h1>
   </div>
-
-
-  <div id="os" class="left">
-    <h1> Operating system </h1>
-    <br>
-    {% for os in oss %}
-    <p>
-      {{os.name}}
-    </p>
-    <div class="description">
-      <p class="red">
-	{% if os.price_per_hour == 0.0 %}
-	free
-	{% else %}
-	${{os.price_per_hour}}/hr
-	{% endif %}
-      </p>
+  <br>
+  <div id="form">
+  <form method="post">
+    {% csrf_token %}
+    <div id="list">
+      {{softwares}}
     </div>
-    <div class="br"> </div>
-    {% endfor %}
-  </div>
-
-
-  <div id="software" class="left">
-    <h1> Software </h1>
-    <br>
-    {% for software in softwares %}
-    <p>
-      {{software.name}}
-    </p>
-    <div class="description">
-      <p class="red">
-	{% if software.price_per_hour == 0.0 %}
-	free
-	{% else %}
-	${{software.price_per_hour}}/hr
-	{% endif %}
-      </p>
-    </div>
-    <div class="br"> </div>
-    {% endfor %}
+    <input type="submit" name="add_remove_software" 
+	   class="flamebutton", value="Update"/>
+  </form>
   </div>
 
 </div>
-<div class="clear"> </div>
 
 {% endblock %}

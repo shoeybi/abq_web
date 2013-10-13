@@ -3,7 +3,18 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.forms import ModelForm
 from django.forms.util import ErrorDict, ErrorList
-from abq.models import AbqUser, Company, Workspace, Hardware, OS, Employment
+from abq.models import AbqUser, Company, Workspace, Hardware, OS, \
+    Employment, Software
+
+
+class SoftwareForm(forms.Form):
+
+    software = forms.ModelMultipleChoiceField(
+        queryset=Software.objects.all(), 
+        widget=forms.CheckboxSelectMultiple,
+        required=False)
+    region = forms.CharField(widget=forms.HiddenInput())
+    instance_id = forms.CharField(widget=forms.HiddenInput())
 
 
 class RequestToolForm(forms.Form):

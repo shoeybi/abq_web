@@ -127,6 +127,18 @@ a {
     height: 25px;
 }
 
+.text_input {
+    float: right;
+    padding: 0px;
+    margin: 0px;
+    font-size: 0.9em;
+    border: none;
+    background: none !important; 
+}
+.text_input:hover {
+    color: blue;
+}
+
 #header, #footer {
     width: 960px;
     background: #ccc;
@@ -286,7 +298,7 @@ a {
     float: left;
     text-align: center;
     margin-left: 20px;
-    margin-top: 5px;
+    margin-top: 20px;
     font-size:0.95em;
     padding: 5px;
 }
@@ -406,6 +418,18 @@ a {
 }
 
 
+#software_change {
+    margin-top: 30px;
+}
 
+#software_change ul {
+    list-style-type: none;    
+}
 
+#software_change #form {
+    margin-left: 20px;
+}
 
+#software_change input[type="submit"] {
+    margin-left: 50px;
+}

@@ -55,6 +55,17 @@
     <!-- workspace -->
     <div id="workspace" >
       <figure>
+	<!-- termiation -->
+	<form method="post">
+	  {% csrf_token %}
+	  {{item.termination_form.region}}
+	  {{item.termination_form.instance_id}}
+	  {{item.termination_form.company_name}}
+	  {% if abq_user == company_dict.company.owner %} 
+	  <input type="submit" name="go_to_software" 
+		 class="text_input", value="softwares(+/-)" />
+	  {% endif %}
+	</form>
 	<a href="{{item.workspace.instance_url}}" 
 	   alt="{{item.workspace.name}}" target="_blank">
 	  <img src="{{item.workspace.image.url}}" alt="">
@@ -70,8 +81,6 @@
 	    {% if abq_user == company_dict.company.owner %} 
 	    <input type="submit" name="terminate_workspace" 
 		   class="terminate20" value="" />
-	    <input type="submit" name="add_software" 
-		   class="add20" value="" />
 	    {% endif %}
 	  </form>
 	</figcaption>
