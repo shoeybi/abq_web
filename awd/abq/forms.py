@@ -287,7 +287,7 @@ class RegistrationForm(forms.Form):
         cleaned_data = super(RegistrationForm,self).clean()
         
         # get the username from the form
-        username = cleaned_data.get('username').lower()
+        username = cleaned_data.get('username')
         # if there was a validation error then email has not been a valid one
         if username == None:
             if not self._errors:
@@ -296,6 +296,7 @@ class RegistrationForm(forms.Form):
                 ErrorList([u' Email address is not valid.'])
         else:
             # otherwise try to find if the username is in the database
+            username = username.lower()
             try:
                 User.objects.get(username=username)
             # if user does not exist then it is valid
@@ -372,11 +373,12 @@ class LoginForm(forms.Form):
         # first we need to get access to the original cleaned_data method
         cleaned_data = super(LoginForm,self).clean()
         # get the username from the form
-        username = cleaned_data.get('username').lower()
+        username = cleaned_data.get('username')
         # if there was a validation error then email has not been a valid one
         if username == None:
             raise forms.ValidationError("Email address is not valid.")
         # otherwise try to find if the username is in the database
+        username = username.lower()
         try:
             User.objects.get(username=username)
         # if user does not exist then raise an error
