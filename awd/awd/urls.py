@@ -7,7 +7,7 @@ from django.conf.urls.static import static
 # enable admin
 from django.contrib import admin
 admin.autodiscover()
-
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = patterns(
 
@@ -42,7 +42,6 @@ urlpatterns = patterns(
     url(r'^viewprofiles/$',
         TemplateView.as_view(template_name="viewprofiles.html")),
 
-
     # contact us
     url(r'^contactus/$','abq.views.ContactUs'),
 
@@ -52,7 +51,9 @@ urlpatterns = patterns(
     # order tools
     url(r'^ordertools/$','abq.views.OrderTools'),
     
-
+    # This is the for nx authentication
+    # I think this is not clever and nedds to be changed
+    url(r'^nxauth/$','abq.views.NxAuth'),
 
     # base
     url(r'^base/$',TemplateView.as_view(template_name="base.html")),
@@ -71,3 +72,5 @@ urlpatterns = patterns(
 )
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# serve static files
+urlpatterns += staticfiles_urlpatterns()

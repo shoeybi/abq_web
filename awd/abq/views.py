@@ -1,8 +1,9 @@
 from django import forms
-from django.http import HttpResponseRedirect
+from django.conf import settings
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, decorators
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.core.exceptions import ObjectDoesNotExist
@@ -17,12 +18,26 @@ from abq.forms import LoginForm, RegistrationForm, CompanyRegForm, \
     SoftwareForm
 from abq.models import AbqUser, Company, OS, Hardware, Employment, \
     Workspace, Region, Software, SoftwareLaunch
-import datetime, random, hashlib, threading
+import datetime, random, hashlib, threading, os
 threading._DummyThread._Thread__stop = lambda x: 42
 
 if settings.AWS:
     from interface import get_instance_id, instance_status, \
         terminate_instance, make_company, remove_company
+
+@decorators.login_required
+def NxAuth(request):
+
+    # get the username
+    username = request.user.username
+    # get the user object
+    user = User.objects.get(username=username)
+    # from user object get the abaqual user
+    abq_user = AbqUser.objects.get(user=user)
+    # build the filename path based on activation key
+    filename = '/static/nxauth/' + abq_user.activation_key + '.js'
+    # redirect to the file
+    return HttpResponseRedirect(filename)
 
 
 def Tools(request):
@@ -715,6 +730,22 @@ def UserRegistration(request):
                 datetime.timedelta(hours=48)
             # save abaqual user into database
             abqUser.save()
+
+            # create a file for nx authentication
+            filename = settings.STATICFILES_DIRS[0] + \
+                '/nxauth/' + abqUser.activation_key + '.js'
+            with open(filename, 'w') as f:
+                myfile = File(f)
+                body = 'function user_auth() {\n'\
+                    '  var uname = "%s";\n'\
+                    '  var pass  = "%s";\n'\
+                    'return [uname,pass] ;\n'\
+                    '}' \
+                    %(username, abqUser.activation_key)
+                myfile.write(body)
+            myfile.closed
+            f.closed
+
             # email the user activation link
             domain_name = request.build_absolute_uri('/')
             email_subject = 'Your new Abaqual account confirmation'
@@ -723,7 +754,8 @@ def UserRegistration(request):
                 'To activate your account, click this '\
                 'link within 48 hours:\n\n' \
                 '%sregistration-confirmation/%s' \
-                %(abqUser.user.first_name, domain_name, abqUser.activation_key)
+                %(abqUser.user.first_name, domain_name, 
+                  abqUser.activation_key)
             thread = threading.Thread(target=send_mail,
                                       args=(email_subject,email_body,
                                             settings.EMAIL_HOST_USER,
