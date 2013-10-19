@@ -209,9 +209,9 @@ region.save()
 region = Region()
 region.name = 'us-east-1'
 region.save()
-
+'''
 region = Region()
-region.name = 'eu-west-11'
+region.name = 'eu-west-1'
 region.save()
 
 region = Region()
@@ -229,4 +229,4 @@ region.save()
 region = Region()
 region.name = 'sa-east-1'
 region.save()
-
+'''

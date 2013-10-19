@@ -96,7 +96,10 @@ def OrderTools(request):
 
     
 def get_aws_regions():
-    """ Get regions list """
+    """ Get regions list 
+    pass regions so company unique key is copied 
+    in all the available regions
+    """
 
     # DBG
     if settings.AWS:
@@ -121,7 +124,7 @@ def build_workspaces_list(company):
         # DBG
         if settings.AWS:
             # if workspace does not have an assigned url, update it
-            if workspace.instance_url == '#':
+            if not 'http' in workspace.instance_url:
                 output = instance_status(workspace.instance_id,
                                          workspace.region)
                 if output[0] == 'ready':
@@ -283,12 +286,17 @@ def launch_new_workspace(request, company):
                 workspace.region  = get_aws_region()
                 owner_username = \
                     (request.user.first_name[0]+request.user.last_name).lower()
-                workspace.instance_id = get_instance_id(\
-                    region_name=workspace.region, 
-                    instance_type=hardware.key, 
-                    os=workspace.os.key, 
-                    company_name=company.name, 
-                    uname=owner_username)
+                # get the abaqual user so we have access to the
+                # activation key used for nx password
+                abq_user = AbqUser.objects.get(user=request.user)
+                res1, res2 = get_instance_id(region_name=workspace.region, 
+                                             instance_type=hardware.key, 
+                                             os=workspace.os.key, 
+                                             company_name=company.name, 
+                                             uname=owner_username,
+                                             pswd=abq_user.activation_key)
+                workspace.instance_id = res1
+                workspace.instance_url = res2
             # otherwise just put something there
             else:
                 workspace.region      = 'west'
@@ -736,12 +744,14 @@ def UserRegistration(request):
                 '/nxauth/' + abqUser.activation_key + '.js'
             with open(filename, 'w') as f:
                 myfile = File(f)
+                nx_username = \
+                    (user.first_name[0]+user.last_name).lower()
                 body = 'function user_auth() {\n'\
                     '  var uname = "%s";\n'\
                     '  var pass  = "%s";\n'\
                     'return [uname,pass] ;\n'\
                     '}' \
-                    %(username, abqUser.activation_key)
+                    %(nx_username, abqUser.activation_key)
                 myfile.write(body)
             myfile.closed
             f.closed

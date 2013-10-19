@@ -7,13 +7,11 @@ AWD_PATH = current_dir + '/../..'
 
 
 # integration with aws stuff
-AWS = False
+AWS = True
 import sys
 aws_dir = AWD_PATH + '/../abq_dev/desktopdeploy'
 if AWS:
     sys.path.append(aws_dir)
-
-
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
