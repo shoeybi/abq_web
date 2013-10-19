@@ -7,7 +7,6 @@ from django.conf.urls.static import static
 # enable admin
 from django.contrib import admin
 admin.autodiscover()
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = patterns(
 
@@ -73,4 +72,5 @@ urlpatterns = patterns(
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # serve static files
-urlpatterns += staticfiles_urlpatterns()
+#from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+#urlpatterns += staticfiles_urlpatterns()
