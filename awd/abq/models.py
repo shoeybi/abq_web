@@ -188,6 +188,10 @@ class Workspace(models.Model):
         image = image.resize(size, Image.ANTIALIAS)
         image.save(self.image.path)           
 
+    def delete(self, *args, **kwargs):
+        self.image.delete()
+        super(Workspace, self).delete(*args, **kwargs)
+
 
 class SoftwareLaunch(models.Model):
 
