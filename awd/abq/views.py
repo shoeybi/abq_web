@@ -12,13 +12,14 @@ from django.conf import settings
 from django.core.files import File
 from django.forms.models import modelformset_factory, modelform_factory
 from abq.misc import login_user_no_credentials, get_aws_region, \
-    get_pretty_username
+    get_pretty_username, get_aws_available_regions, \
+    get_image_filename_for_workspace
 from abq.forms import LoginForm, RegistrationForm, CompanyRegForm, \
     WorkspaceLaunchForm, EmploymentForm, WorkspaceTerminateForm, \
     EmploymentTerminationForm, ContactUsForm, RequestToolForm, \
     SoftwareForm
 from abq.models import AbqUser, Company, OS, Hardware, Employment, \
-    Workspace, Region, Software, SoftwareLaunch
+    Workspace, Software, SoftwareLaunch
 import datetime, random, hashlib, threading, os
 threading._DummyThread._Thread__stop = lambda x: 42
 
@@ -26,24 +27,6 @@ if settings.AWS:
     from interface import get_instance_id, instance_status, \
         terminate_instance, make_company, remove_company
 
-
-
-    
-def get_aws_regions():
-    """ Get regions list 
-    pass regions so company unique key is copied 
-    in all the available regions
-    """
-
-    # DBG
-    if settings.AWS:
-        regions2 = Region.objects.all()
-        regions = []
-        for region in regions2:
-            regions.append(region.name)
-    else:
-        regions = ['west']
-    return regions
 
     
 def build_workspaces_list(company):
@@ -181,7 +164,7 @@ def register_new_company(request,abq_user):
         company.save()
         # DBG
         if settings.AWS:
-            make_company(company.name,get_aws_regions())
+            make_company(company.name,get_aws_available_regions())
         # the form has been successfully submitted so 
         # we should show a clean form
         company_reg_form = CompanyRegForm()
@@ -240,8 +223,8 @@ def launch_new_workspace(request, company):
             workspace.launch_date = timezone.now()
             # background image
             # DBG
-            image_filename  = 'workspaceImage__'+company.name+\
-                '__'+workspace.name+'.png'
+            image_filename  = get_image_filename_for_workspace(
+                company, workspace)
             # for now read from a default file
             source_filename = settings.MEDIA_ROOT+\
                 'workspace_images/desktop_background_default.png'
@@ -372,14 +355,14 @@ def dissolve_company(company):
     # DBG
     if settings.AWS:
         # remove company keys and other stuffa
-        remove_company(company.name,get_aws_regions())
+        remove_company(company.name,get_aws_available_regions())
     # and delete the company
     company.delete()
     # don't need to return anything
     return True
 
 
-def console(request):
+def Console(request):
     
     # if the user is not authenticated, then redirect them 
     # to the home page where they can lon in

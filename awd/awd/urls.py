@@ -31,7 +31,7 @@ urlpatterns = patterns(
         'abq.views.RegistrationConfirmation'),
 
     # console
-    url(r'^console/$','abq.views.console'),
+    url(r'^console/$','abq.views.Console'),
 
     # employment confirmation
     url(r'^employment-confirmation/(?P<activation_key>\w+)/$',
