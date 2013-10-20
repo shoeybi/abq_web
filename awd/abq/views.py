@@ -25,6 +25,7 @@ if settings.AWS:
     from interface import get_instance_id, instance_status, \
         terminate_instance, make_company, remove_company
 
+
 @decorators.login_required
 def NxAuth(request):
 
