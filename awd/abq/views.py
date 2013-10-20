@@ -11,7 +11,8 @@ from django.utils import timezone
 from django.conf import settings
 from django.core.files import File
 from django.forms.models import modelformset_factory, modelform_factory
-from abq.misc import login_user_no_credentials, get_aws_region
+from abq.misc import login_user_no_credentials, get_aws_region, \
+    get_pretty_username
 from abq.forms import LoginForm, RegistrationForm, CompanyRegForm, \
     WorkspaceLaunchForm, EmploymentForm, WorkspaceTerminateForm, \
     EmploymentTerminationForm, ContactUsForm, RequestToolForm, \
@@ -25,74 +26,6 @@ if settings.AWS:
     from interface import get_instance_id, instance_status, \
         terminate_instance, make_company, remove_company
 
-
-@decorators.login_required
-def NxAuth(request):
-
-    # get the username
-    username = request.user.username
-    # get the user object
-    user = User.objects.get(username=username)
-    # from user object get the abaqual user
-    abq_user = AbqUser.objects.get(user=user)
-    # build the filename path based on activation key
-    filename = '/static/nxauth/' + abq_user.activation_key + '.js'
-    # redirect to the file
-    return HttpResponseRedirect(filename)
-
-
-def Tools(request):
-
-    hardwares = Hardware.objects.all()
-    oss = OS.objects.all()
-    softwares = Software.objects.all()
-
-    context = {'hardwares': hardwares, 
-               'oss': oss, 
-               'softwares': softwares}
-    return render_to_response('seetools.html',
-                              context,
-                              context_instance=RequestContext(request))
-
-
-def OrderTools(request):
-
-    # if the user is posting  
-    if request.method == 'POST':
-        # populate the form from post
-        form = RequestToolForm(request.POST)
-        # if the form is valid
-        if form.is_valid():
-            # first email the content 
-            email_address = 'shared@abaqual.com'
-            email_subject = 'Abaqual order tool request'
-            email_body = \
-                'Product name: %s\n' \
-                'Product link: %s\n' \
-                'Email address: %s\n' \
-                'comment: %s\n' \
-                %(form.cleaned_data['name'],\
-                      form.cleaned_data['link'],\
-                      form.cleaned_data['email'],\
-                      form.cleaned_data['comment'])
-            thread = threading.Thread(target=send_mail,
-                                      args=(email_subject,email_body,
-                                            settings.EMAIL_HOST_USER,
-                                            [email_address]))
-            thread.start()
-            # redirect them to a thank you page
-            return render_to_response(
-                'ordertool_thankyou.html',
-                context_instance=RequestContext(request)) 
-
-    else:
-        # show them an empty form
-        form = RequestToolForm()
-
-    return render_to_response(
-        'ordertool.html',
-        {'form': form}, 
-        context_instance=RequestContext(request)) 
 
 
     
@@ -285,8 +218,7 @@ def launch_new_workspace(request, company):
             # DBG
             if settings.AWS:
                 workspace.region  = get_aws_region()
-                owner_username = \
-                    (request.user.first_name[0]+request.user.last_name).lower()
+                owner_username = get_pretty_username(request.user.username)
                 # get the abaqual user so we have access to the
                 # activation key used for nx password
                 abq_user = AbqUser.objects.get(user=request.user)
@@ -702,6 +634,7 @@ def EmploymentConfirmation(request,activation_key):
         # redirect employee to his/her profile
         return HttpResponseRedirect('/console/')
 
+
     
 def UserRegistration(request):
     
@@ -722,7 +655,7 @@ def UserRegistration(request):
             user = User.objects.create_user(username=username,
                                             password=password)
             # set first name, last name and email address
-            user.email      = username;
+            user.email      = username
             user.first_name = form.cleaned_data['firstname']
             user.last_name  = form.cleaned_data['lastname']
             # set the user as inactive and wait for confirmation
@@ -739,14 +672,12 @@ def UserRegistration(request):
                 datetime.timedelta(hours=48)
             # save abaqual user into database
             abqUser.save()
-
             # create a file for nx authentication
             filename = settings.STATICFILES_DIRS[0] + \
                 '/nxauth/' + abqUser.activation_key + '.js'
             with open(filename, 'w') as f:
                 myfile = File(f)
-                nx_username = \
-                    (user.first_name[0]+user.last_name).lower()
+                nx_username = get_pretty_username(username)
                 body = 'function user_auth() {\n'\
                     '  var uname = "%s";\n'\
                     '  var pass  = "%s";\n'\
@@ -756,7 +687,6 @@ def UserRegistration(request):
                 myfile.write(body)
             myfile.closed
             f.closed
-
             # email the user activation link
             domain_name = request.build_absolute_uri('/')
             email_subject = 'Your new Abaqual account confirmation'
@@ -833,6 +763,77 @@ def RegistrationConfirmation(request,activation_key):
 
 
 
+@decorators.login_required
+def NxAuth(request):
+    """ Authorization username and password for nx """
+
+    # from user object in the request get the abaqual user
+    abq_user = AbqUser.objects.get(user=request.user)
+    # build the filename path based on activation key
+    filename = '/static/nxauth/' + abq_user.activation_key + '.js'
+    # redirect to the file
+    return HttpResponseRedirect(filename)
+
+
+
+def Tools(request):
+
+    # list of all avaiable hardwares
+    hardwares = Hardware.objects.all()
+    # operating systems
+    oss = OS.objects.all()
+    # and softwares
+    softwares = Software.objects.all()
+    # build the context and return the rendered values
+    context = {'hardwares': hardwares, 
+               'oss': oss, 
+               'softwares': softwares}
+    return render_to_response('seetools.html',
+                              context,
+                              context_instance=RequestContext(request))
+
+
+
+def OrderTools(request):
+
+    # if the user is posting  
+    if request.method == 'POST':
+        # populate the form from post
+        form = RequestToolForm(request.POST)
+        # if the form is valid
+        if form.is_valid():
+            # first email the content 
+            email_address = settings.ORDERTOOL_EMAIL
+            email_subject = 'Abaqual order tool request'
+            email_body = \
+                'Product name: %s\n' \
+                'Product link: %s\n' \
+                'Email address: %s\n' \
+                'comment: %s\n' \
+                %(form.cleaned_data['name'],\
+                      form.cleaned_data['link'],\
+                      form.cleaned_data['email'],\
+                      form.cleaned_data['comment'])
+            thread = threading.Thread(target=send_mail,
+                                      args=(email_subject,email_body,
+                                            settings.EMAIL_HOST_USER,
+                                            [email_address]))
+            thread.start()
+            # redirect them to a thank you page
+            return render_to_response(
+                'ordertool_thankyou.html',
+                context_instance=RequestContext(request)) 
+    else:
+        # show them an empty form
+        form = RequestToolForm()
+    # render the results
+    return render_to_response(
+        'ordertool.html',
+        {'form': form}, 
+        context_instance=RequestContext(request)) 
+
+
+
 def ContactUs(request):
 
     # if the user is posting  
@@ -842,7 +843,7 @@ def ContactUs(request):
         # if the form is valid
         if form.is_valid():
             # first email the content 
-            email_address = 'shared@abaqual.com'
+            email_address = settings.CONTACTUS_EMAIL
             email_subject = 'Abaqual contact us request'
             email_body = \
                 'First name: %s\n' \
@@ -871,6 +872,7 @@ def ContactUs(request):
         'contactus.html',
         {'form': form}, 
         context_instance=RequestContext(request)) 
+
 
 
 def LoginRequest(request):
@@ -913,6 +915,7 @@ def LoginRequest(request):
             'home.html', 
             {'login_form': login_form}, 
             context_instance=RequestContext(request))
+
 
 
 def LogoutRequest(request):
