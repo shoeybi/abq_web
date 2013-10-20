@@ -1,7 +1,16 @@
 from django.conf import settings # for backend ...
 from django.contrib.auth.models import User
 from abq.models import Region, Company, Workspace
-import re
+import re, glob
+
+
+
+def clean_filename(filename):
+
+    for c in r'[] /\;,><&*:%=+@!#^()|?^':
+        filename = filename.replace(c,'_')
+    return filename
+
 
 
 def get_image_filename_for_workspace(company, workspace):
@@ -9,21 +18,23 @@ def get_image_filename_for_workspace(company, workspace):
     # company name is unique but the workspace name inside 
     # a company is not, so we need to append numbers for
     # the ones that there is a conflict
-    # first get a list of all the worksapces in the company 
-    # with the same name
-    ws_set = Workspace.objects.filter(
-        company=company, 
-        name=workspace.name)
-    # NOTE: the new workspace is not saved into database
-    # so uniqueness means that the list is empty
-    index = len(ws_set)
-    # unique name
-    image_filename  = 'workspaceImage__' + company.name + \
-                '__' + workspace.name + '__' + str(index) + '.png'
-    # make the filenames safe
-    for c in r'[] /\;,><&*:%=+@!#^()|?^':
-        image_filename = image_filename.replace(c,'_')
-    # return the filename
+    # first get the list if existing files
+    prefix = 'workspaceImage__' + company.name + \
+                '__' + workspace.name + '__'
+    prefix = clean_filename(prefix)
+    prefix = settings.MEDIA_ROOT + 'workspace_images/' + prefix
+    file_list = glob.glob(prefix+'*.png')
+    # now get the maximum index
+    max_index = 0
+    if len(file_list) > 0:
+        indecies = []
+        for name in file_list:
+            name = name.replace(prefix,'')
+            name = name.replace('.png','')
+            indecies.append(int(name))
+        max_index = max(indecies)
+    # build the filename
+    image_filename  = prefix + str(max_index+1) + '.png'
     return image_filename
 
 
