@@ -20,13 +20,55 @@ from abq.forms import LoginForm, RegistrationForm, CompanyRegForm, \
     SoftwareForm
 from abq.models import AbqUser, Company, OS, Hardware, Employment, \
     Workspace, Software, SoftwareLaunch
-import datetime, random, hashlib, threading, os
+import datetime, random, hashlib, threading, os, time
 threading._DummyThread._Thread__stop = lambda x: 42
 
 if settings.AWS:
     from interface import get_instance_id, instance_status, \
         terminate_instance, make_company, remove_company
 
+
+
+def set_workspace_url_and_bg_image(instance_id, region, company):
+    
+    # first get the workspace
+    workspace = Workspace.objects.get(
+        instance_id=instance_id,
+        region=region)
+    if workspace == None:
+        raise Exception('could not find the workspace')
+    # DBG: this is not thread safe and needs to be changed later
+    # here is the tricky part and not thread safe
+    count = 0
+    while not 'http' in workspace.instance_url:
+        count += 1
+        if count > 100:
+            break;
+        # sleep for 15 seconds
+        time.sleep(15)
+        # get the status
+        output = instance_status(workspace.instance_id,
+                                 workspace.region)
+        if output[0] == 'ready':
+            # get the workspace again
+            # NOTE: there might be another thread that works on the 
+            # data base ---> ???   
+            workspace = Workspace.objects.get(
+                instance_id=instance_id,
+                region=region)
+            if workspace == None:
+                raise Exception('could not find the workspace')
+            workspace.instance_url = output[2]
+            image_filename  = get_image_filename_for_workspace(
+                company, workspace)
+            # for now read from a default file
+            workspace.image.delete()
+            source_filename = settings.MEDIA_ROOT+\
+                'workspace_images/desktop_background_default.png'
+            workspace.set_size_and_save_image(
+                image_filename,source_filename)   
+            workspace.save()
+    
 
     
 def build_workspaces_list(company):
@@ -38,15 +80,6 @@ def build_workspaces_list(company):
     workspaces_list = [] 
     # now for all those workspaces
     for workspace in workspaces:
-        # DBG
-        if settings.AWS:
-            # if workspace does not have an assigned url, update it
-            if not 'http' in workspace.instance_url:
-                output = instance_status(workspace.instance_id,
-                                         workspace.region)
-                if output[0] == 'ready':
-                    workspace.instance_url = output[2]
-                    workspace.save()
         # prepopulate termination form
         workspace_terminate_form = WorkspaceTerminateForm(
             initial={'company_name': company.name, 
@@ -60,6 +93,7 @@ def build_workspaces_list(company):
     # return the list
     return workspaces_list
     
+
     
 def build_employees_list(company):
     """ Build employees and their termination form for a given company """
@@ -212,7 +246,7 @@ def launch_new_workspace(request, company):
                                              uname=owner_username,
                                              pswd=abq_user.activation_key)
                 workspace.instance_id = res1
-                workspace.instance_url = res2
+                workspace.instance_url = '#'
             # otherwise just put something there
             else:
                 workspace.region      = 'west'
@@ -226,11 +260,22 @@ def launch_new_workspace(request, company):
             image_filename  = get_image_filename_for_workspace(
                 company, workspace)
             # for now read from a default file
-            source_filename = settings.MEDIA_ROOT+\
-                'workspace_images/desktop_background_default.png'
+            if settings.AWS:
+                source_filename = settings.MEDIA_ROOT+\
+                    'workspace_images/desktop_background_startup.png'
+            else:
+                source_filename = settings.MEDIA_ROOT+\
+                    'workspace_images/desktop_background_default.png'
             workspace.set_size_and_save_image(
                 image_filename,source_filename)   
             workspace.save()
+            # start a thread to set the url
+            if settings.AWS:
+                thread = threading.Thread(
+                    target=set_workspace_url_and_bg_image,
+                    args=(workspace.instance_id, 
+                          workspace.region, company))
+                thread.start()
             # create an empty from
             workspace_launch_form = WorkspaceLaunchForm(
                 initial={'company_name': company.name, 

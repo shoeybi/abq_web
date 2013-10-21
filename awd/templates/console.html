@@ -66,10 +66,17 @@
 		 class="text_input", value="softwares(+/-)" />
 	  {% endif %}
 	</form>
+	{% if "http" in item.workspace.instance_url %}
 	<a href="{{item.workspace.instance_url}}" 
 	   alt="{{item.workspace.name}}" target="_blank">
 	  <img src="{{item.workspace.image.url}}" alt="">
 	</a>
+	{% else %}
+	<a href="/console/" 
+	   alt="{{item.workspace.name}}">
+	  <img src="{{item.workspace.image.url}}" alt="">
+	</a>
+	{% endif %}
 	<figcaption>
 	  <!-- termiation -->
 	  <form method="post">
