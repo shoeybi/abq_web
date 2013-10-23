@@ -16,7 +16,9 @@ sudo pip install --upgrade setuptools
 
 sudo apt-get install emacs -y
 sudo apt-get install git-core -y
+git clone https://github.com/shoeybi/abq_dev.git
 git clone https://github.com/shoeybi/abq_web.git
 
 cd abq_web
 sudo pip install -r requirements.pip
+
