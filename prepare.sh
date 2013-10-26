@@ -7,6 +7,8 @@ sudo apt-get install gcc -y
 sudo apt-get install build-essential -y
 sudo apt-get install gfortran -y
 
+sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080
+
 sudo curl https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py | sudo python
 rm -f setuptools-*.tar.gz
 sudo apt-get install python-pip -y
