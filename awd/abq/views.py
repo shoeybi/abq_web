@@ -59,10 +59,10 @@ def set_workspace_url_and_bg_image(instance_id, region, company):
             if workspace == None:
                 raise Exception('could not find the workspace')
             workspace.instance_url = output[2]
-            image_filename  = get_image_filename_for_workspace(
-                company, workspace)
             # for now read from a default file
             workspace.image.delete()
+            image_filename  = get_image_filename_for_workspace(
+                company, workspace)
             source_filename = settings.MEDIA_ROOT+\
                 'workspace_images/desktop_background_default.png'
             workspace.set_size_and_save_image(
