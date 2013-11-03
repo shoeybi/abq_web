@@ -3,11 +3,14 @@
 sudo apt-get update
 sudo apt-get upgrade -y
 
+sudo apt-get install apache2 -y
+sudo apt-get install libapache2-mod-wsgi -y
+
 sudo apt-get install gcc -y
 sudo apt-get install build-essential -y
 sudo apt-get install gfortran -y
 
-sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080
+#sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080
 
 sudo curl https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py | sudo python
 rm -f setuptools-*.tar.gz
