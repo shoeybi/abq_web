@@ -701,7 +701,7 @@ def UserRegistration(request):
             # save abaqual user into database
             abqUser.save()
             # create a file for nx authentication
-            filename = settings.STATICFILES_DIRS[0] + \
+            filename =  settings.MEDIA_ROOT + \
                 '/nxauth/' + abqUser.activation_key + '.js'
             with open(filename, 'w') as f:
                 myfile = File(f)
@@ -798,7 +798,7 @@ def NxAuth(request):
     # from user object in the request get the abaqual user
     abq_user = AbqUser.objects.get(user=request.user)
     # build the filename path based on activation key
-    filename = '/static/nxauth/' + abq_user.activation_key + '.js'
+    filename = '/media/nxauth/' + abq_user.activation_key + '.js'
     # redirect to the file
     return HttpResponseRedirect(filename)
 
