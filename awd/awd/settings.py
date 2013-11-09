@@ -17,7 +17,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('Mohammad Shoeybi', 'mohammad@abaqual.com'),
+    ('Abaqual Inc', 'shared@abaqual.com'),
 )
 
 MANAGERS = ADMINS
