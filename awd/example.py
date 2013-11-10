@@ -1,8 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from abq.models import AbqUser, Company, Hardware, OS, Software
-from abq.models import InstallScript, UninstallScript, Workspace, \
-    Project, Region
+from abq.models import InstallScript, UninstallScript, Workspace, Project, Region
 import datetime
 from django.utils import timezone
 

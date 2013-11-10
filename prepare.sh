@@ -26,4 +26,16 @@ git clone https://github.com/shoeybi/abq_web.git
 
 cd abq_web
 sudo pip install -r requirements.pip
+cd awd
+python manage.py syncdb
+python manage.py shell < example.py
+python manage.py collectstatic
+cd ../..
+sudo chown www-data -R abq_web
+
+sudo cp ./abq_web/abq_apache_settings  /etc/apache2/sites-available/
+cd  /etc/apache2/sites-enabled
+sudo rm -f 000-default
+sudo ln -sf ../sites-available/abq_apache_settings ./000-abaqual
+sudo service apache2 restart
 
