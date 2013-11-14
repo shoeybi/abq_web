@@ -551,7 +551,6 @@ def Console(request):
             # check the status
             if settings.AWS:
                 output = instance_status(instance_id,region)
-                print output[0]
                 if output[0] == 'ready':
                     stop_instance(instance_id,region)
                 elif output[0] == 'standby':
