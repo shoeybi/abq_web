@@ -25,7 +25,8 @@ threading._DummyThread._Thread__stop = lambda x: 42
 
 if settings.AWS:
     from interface import get_instance_id, instance_status, \
-        terminate_instance, make_company, remove_company
+        terminate_instance, make_company, remove_company, stop_instance, \
+        start_instance
 
 
 
@@ -537,6 +538,25 @@ def Console(request):
                 return render_to_response(
                     'desktop.html', context,
                     context_instance=RequestContext(request))
+
+
+        # if user is adding software
+        if 'stop_start_workspace' in request.POST:
+            # get the company
+            company_name = request.POST['company_name']
+            company = companies_dict[company_name]['company']
+            # get the region, instace id 
+            region = request.POST['region']
+            instance_id = request.POST['instance_id']
+            # check the status
+            if settings.AWS:
+                output = instance_status(instance_id,region)
+                print output[0]
+                if output[0] == 'ready':
+                    stop_instance(instance_id,region)
+                elif output[0] == 'standby':
+                    start_instance(instance_id,region)
+                    
                              
         # ===================
         # terminate workspace

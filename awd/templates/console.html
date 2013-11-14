@@ -61,14 +61,22 @@
 	  {{item.termination_form.region}}
 	  {{item.termination_form.instance_id}}
 	  {{item.termination_form.company_name}}
+	  <input type="submit" name="stop_start_workspace" 
+		 class="text_input", value="   stop/start" />
+	</form>
+	<form method="post">
+	  {% csrf_token %}
+	  {{item.termination_form.region}}
+	  {{item.termination_form.instance_id}}
+	  {{item.termination_form.company_name}}
 	  {% if abq_user == company_dict.company.owner %} 
 	  <input type="submit" name="go_to_software" 
-		 class="text_input", value="softwares(+/-)" />
+		 class="text_input", value="options(+/-)" />
 	  {% endif %}
 	</form>
 	{% if "http" in item.workspace.instance_url %}
 	<a href="{{item.workspace.instance_url}}" 
-	   alt="{{item.workspace.name}}" target="_blank">
+	   alt="{{item.workspace.name}}" target="">
 	  <img src="{{item.workspace.image.url}}" alt="">
 	</a>
 	{% else %}
