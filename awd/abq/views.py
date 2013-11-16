@@ -69,7 +69,22 @@ def set_workspace_url_and_bg_image(instance_id, region, company):
             workspace.set_size_and_save_image(
                 image_filename,source_filename)   
             workspace.save()
-    
+            # at this point, we need to add all the employees to the company
+            # get the list of active employees who have already accepted
+            employees_accepted = \
+                AbqUser.objects.filter(\
+                employment__company=company, 
+                employment__end_date=None).exclude(
+                    employment__start_date=None)
+            # build the dictionary of usernames and password
+            user_pass_dict = {}
+            for employee in employees_accepted:
+                pretty_username = get_pretty_username(employee.user.username)
+                user_pass_dict[pretty_username] = employee.activation_key
+            # YASER
+            print 'YASER:'
+            print user_pass_dict
+
 
     
 def build_workspaces_list(company):
@@ -672,6 +687,19 @@ def EmploymentConfirmation(request,activation_key):
             employment.start_date = timezone.now()
             # save in the data base
             employment.save()
+            # add user to all the desktops of the company
+            # first get the abq user and buid the username/password dict
+            abq_user = employment.employee
+            pretty_username = get_pretty_username(abq_user.user.username)
+            user_pass_dict = {pretty_username:abq_user.activation_key}
+            # get the workspaces
+            workspaces = Workspace.objects.filter(company=employment.company)
+            # for all the workspaces, the employee should be added
+            for workspace in workspaces:
+                # YASER
+                print 'YASER:'
+                print workspace, user_pass_dict
+
         # log in the user and redirect them to their profile
         if request.user != employment.employee.user: 
             # if employee is logged in as a different user,log him/her out
