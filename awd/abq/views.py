@@ -26,7 +26,7 @@ threading._DummyThread._Thread__stop = lambda x: 42
 if settings.AWS:
     from interface import get_instance_id, instance_status, \
         terminate_instance, make_company, remove_company, stop_instance, \
-        start_instance
+        start_instance, add_users
 
 
 
@@ -48,8 +48,11 @@ def set_workspace_url_and_bg_image(instance_id, region, company):
         # sleep for 15 seconds
         time.sleep(15)
         # get the status
+        # we need the owenr
+        owner = company.owner
+        pretty_username = get_pretty_username(owner.user.username)
         output = instance_status(workspace.instance_id,
-                                 workspace.region)
+                                 workspace.region, pretty_username)
         if output[0] == 'ready':
             # get the workspace again
             # NOTE: there might be another thread that works on the 
@@ -80,12 +83,16 @@ def set_workspace_url_and_bg_image(instance_id, region, company):
             user_pass_dict = {}
             for employee in employees_accepted:
                 pretty_username = get_pretty_username(employee.user.username)
-                user_pass_dict[pretty_username] = employee.activation_key
+                user_pass_dict[pretty_username] = \
+                    (employee.activation_key, False)
             # YASER
             print 'YASER:'
             print user_pass_dict
-
-
+             # add users
+            add_users(user_pass_dict, workspace.instance_id, 
+                      workspace.region)
+            
+            
     
 def build_workspaces_list(company):
     """ Build workspaces and their termination form for a given company """
@@ -258,11 +265,17 @@ def launch_new_workspace(request, company):
                 res1, res2 = get_instance_id(region_name=workspace.region, 
                                              instance_type=hardware.key, 
                                              os=workspace.os.key, 
-                                             company_name=company.name, 
-                                             uname=owner_username,
-                                             pswd=abq_user.activation_key)
+                                             company_name=company.name)
                 workspace.instance_id = res1
                 workspace.instance_url = '#'
+                # we need to add the owner to the sudoers list
+                owner_dict = {owner_username:(abq_user.activation_key,True)}
+                # run in in a thread
+                thread = threading.Thread(
+                    target=add_users,
+                    args=(owner_dict, workspace.instance_id, 
+                          workspace.region))
+                thread.start()
             # otherwise just put something there
             else:
                 workspace.region      = 'west'
@@ -565,7 +578,9 @@ def Console(request):
             instance_id = request.POST['instance_id']
             # check the status
             if settings.AWS:
-                output = instance_status(instance_id,region)
+                # we need the username
+                pretty_username = get_pretty_username(request.user.username)
+                output = instance_status(instance_id,region,pretty_username)
                 if output[0] == 'ready':
                     stop_instance(instance_id,region)
                 elif output[0] == 'standby':
@@ -691,7 +706,8 @@ def EmploymentConfirmation(request,activation_key):
             # first get the abq user and buid the username/password dict
             abq_user = employment.employee
             pretty_username = get_pretty_username(abq_user.user.username)
-            user_pass_dict = {pretty_username:abq_user.activation_key}
+            user_pass_dict = {pretty_username:
+                                  (abq_user.activation_key,False)}
             # get the workspaces
             workspaces = Workspace.objects.filter(company=employment.company)
             # for all the workspaces, the employee should be added
@@ -699,6 +715,12 @@ def EmploymentConfirmation(request,activation_key):
                 # YASER
                 print 'YASER:'
                 print workspace, user_pass_dict
+                # run in in a thread
+                thread = threading.Thread(
+                    target=add_users,
+                    args=(user_pass_dict, workspace.instance_id, 
+                          workspace.region))
+                thread.start()
 
         # log in the user and redirect them to their profile
         if request.user != employment.employee.user: 
