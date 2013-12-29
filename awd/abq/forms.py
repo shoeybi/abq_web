@@ -178,7 +178,7 @@ class WorkspaceLaunchForm(forms.Form):
         initial=1,
         empty_label='Hardware')
     # by default, don't show any os until we know thw hardware
-    hardware_initial = Hardware.objects.get(pk=1)
+    hardware_initial = Hardware.objects.get(pk=2)
     os = forms.ModelChoiceField(
         queryset=OS.objects.filter(hardware=hardware_initial),
         initial=1,
