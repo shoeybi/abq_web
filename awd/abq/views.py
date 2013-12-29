@@ -717,7 +717,7 @@ def UserRegistration(request):
     # redirect them to his/her profile
     if request.user.is_authenticated():
         return HttpResponseRedirect('/console/')
-    # if user is registering
+   # if user is registering
     if request.method == 'POST':
         # get the form they just posted
         form =RegistrationForm(request.POST)

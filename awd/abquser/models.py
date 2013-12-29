@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-class AbqUserMO(models.Model):
+class AbqUser(models.Model):
     """ Abaqual users class 
 
     Abaqual user is a Django User with an activation 
