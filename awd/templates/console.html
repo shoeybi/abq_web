@@ -1,12 +1,33 @@
 {% extends "base.html" %}
 
 {% block extrahead_base %}
+<link rel="stylesheet"
+      href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css">
+<script type="text/javascript" 
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
+</script>
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+<script src="/static/js/launch_workspace.js"> </script>
+
 <title> Console - Abaqual </title>
 {% endblock %}
 
 
 <!-- company registration for the experts -->
 {% block content_base %}
+<!--
+<button id="testb">Create new user</button>
+<div id="testf" title="Radio Dialog">
+  <input type='radio' value='A' name='myRadio'>A
+  <input type='radio' value='B' name='myRadio'>B
+  <input type='radio' value='C' name='myRadio'>C
+</div>
+-->
+
+
+
+
 {% if abq_user.abaqual_status == "EX" %} 
 <div id="company_reg" >
   <form method="post">
@@ -71,7 +92,7 @@
 	  {{item.termination_form.company_name}}
 	  {% if abq_user == company_dict.company.owner %} 
 	  <input type="submit" name="go_to_software" 
-		 class="text_input", value="options(+/-)" />
+		 class="text_input_l", value="options(+/-)" />
 	  {% endif %}
 	</form>
 	{% if "http" in item.workspace.instance_url %}
@@ -103,13 +124,26 @@
       <p class="error"> {{item.termination_form.errors.as_text}}</p>
     </div>
     {% endfor %}
+    
     <!-- launch a new workspace -->
     {% if abq_user == company_dict.company.owner %} 
-    <div id="launch">
+    <div id="workspace">
       <form method="post">
 	{% csrf_token %}
+	{{item.termination_form.region}}
+	{{item.termination_form.instance_id}}
+	{{item.termination_form.company_name}}
+	{% if abq_user == company_dict.company.owner %} 
+	<input type="submit" name="go_to_software" 
+	       class="text_input_l", value="options(+/-)" />
+	{% endif %}
+      </form>
+      
+      <button id="butt" class="addbkg"></button>
+      <form id="testb" method="post">	
+	{% csrf_token %}
 	{{company_dict.workspace_launch_form.company_name}}
-	{{company_dict.workspace_launch_form.name}}
+        {{company_dict.workspace_launch_form.name}}
 	<p class="error_message"> 
 	  {{ company_dict.workspace_launch_form.name.errors.as_text }}
 	</p>
@@ -121,9 +155,37 @@
 	<p class="error_message"> 
 	  {{ company_dict.workspace_launch_form.os.errors.as_text }}
 	</p>
-	<input type="submit" name="workspace_launch" 
-	       class="add20" value="" />
-      </form>
+	<input id="jjj" type="submit" name="workspace_launch" 
+	       class="flamebutton" value="launch"/>
+      </form>      
+    
+      
+      <!--
+      <button id="testb">Create new user</button>
+
+      <div id="testf">
+	
+	<form method="post">
+	  {% csrf_token %}
+	 <input type="submit" name="workspace_launch" 
+		 class="addbkg" value=""/>
+          </br>
+	  {{company_dict.workspace_launch_form.company_name}}
+          {{company_dict.workspace_launch_form.name}}
+	  <p class="error_message"> 
+	    {{ company_dict.workspace_launch_form.name.errors.as_text }}
+	  </p>
+	  {{company_dict.workspace_launch_form.hardware}}
+	  <p class="error_message"> 
+	    {{ company_dict.workspace_launch_form.hardware.errors.as_text }}
+	  </p>
+	  {{company_dict.workspace_launch_form.os}}
+	  <p class="error_message"> 
+	    {{ company_dict.workspace_launch_form.os.errors.as_text }}
+	  </p>
+	</form>
+      </div> 
+      -->
     </div>
     {% endif %}
     <div class="clear"> </div>       

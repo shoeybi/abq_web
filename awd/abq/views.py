@@ -85,10 +85,7 @@ def set_workspace_url_and_bg_image(instance_id, region, company):
                 pretty_username = get_pretty_username(employee.user.username)
                 user_pass_dict[pretty_username] = \
                     (employee.activation_key, False)
-            # YASER
-            print 'YASER:'
-            print user_pass_dict
-             # add users
+            # add users
             add_users(user_pass_dict, workspace.instance_id, 
                       workspace.region)
             
@@ -500,6 +497,7 @@ def Console(request):
                 company_name = request.POST['company_name']
                 companies_dict[company_name]['workspace_launch_form'] = \
                     populate_os(request)
+                
              
 
         # =================================
@@ -712,9 +710,6 @@ def EmploymentConfirmation(request,activation_key):
             workspaces = Workspace.objects.filter(company=employment.company)
             # for all the workspaces, the employee should be added
             for workspace in workspaces:
-                # YASER
-                print 'YASER:'
-                print workspace, user_pass_dict
                 # run in in a thread
                 thread = threading.Thread(
                     target=add_users,

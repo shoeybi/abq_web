@@ -81,6 +81,15 @@ a {
     color: red;
 }
 
+.addbkg {
+    background:url(/static/images/desktop_background_launch.png) no-repeat;
+    border: none !important;
+    border-radius: 0px;
+    padding: 0px;
+    width: 160px;
+    height: 90px;
+}
+
 .add10, .add15, .add20, .add25 {
     background:url(/static/images/plus_sign.png) no-repeat;
     background-color: transparent !important;
@@ -135,6 +144,16 @@ a {
     border: none;
     background: none !important; 
 }
+
+.text_input_l {
+    float: left;
+    padding: 0px;
+    margin: 0px;
+    font-size: 0.9em;
+    border: none;
+    background: none !important; 
+}
+
 .text_input:hover {
     color: blue;
 }
@@ -311,7 +330,7 @@ a {
 }
 
 #company #workspaces #launch {
-    border:2px dashed #708090;
+    //border:2px dashed #708090;
     width: 170px;
     float: left;
     text-align: center;
@@ -321,8 +340,10 @@ a {
     padding: 5px;
 }
 
-#company #workspaces #launch #id_name {
-    width: 110px;
+#company #workspaces #workspace #id_name {
+    width: 120px;
+    height: 20px;
+    margin-top: 2px;
 }
 
 #company #workspaces #launch #id_hardware{
