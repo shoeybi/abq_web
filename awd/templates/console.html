@@ -1,31 +1,13 @@
 {% extends "base.html" %}
 
 {% block extrahead_base %}
-<link rel="stylesheet"
-      href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css">
-<script type="text/javascript" 
-	src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
-</script>
-<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
 <script src="/static/js/launch_workspace.js"> </script>
-
 <title> Console - Abaqual </title>
 {% endblock %}
 
 
 <!-- company registration for the experts -->
 {% block content_base %}
-<!--
-<button id="testb">Create new user</button>
-<div id="testf" title="Radio Dialog">
-  <input type='radio' value='A' name='myRadio'>A
-  <input type='radio' value='B' name='myRadio'>B
-  <input type='radio' value='C' name='myRadio'>C
-</div>
--->
-
-
 
 
 {% if abq_user.abaqual_status == "EX" %} 
@@ -136,27 +118,34 @@
 	{% if abq_user == company_dict.company.owner %} 
 	<input type="submit" name="go_to_software" 
 	       class="text_input_l", value="options(+/-)" />
-	{% endif %}
+	{% endif %} 
       </form>
       
-      <button id="butt" class="addbkg"></button>
-      <form id="testb" method="post">	
+      <button id="ws_launch_butt" class="addbkg"></button>
+      <form id="ws_launch_form" method="post" 
+	    title="Workspace preferences">	
 	{% csrf_token %}
 	{{company_dict.workspace_launch_form.company_name}}
-        {{company_dict.workspace_launch_form.name}}
+        <p> Name: {{company_dict.workspace_launch_form.name}} </p>
 	<p class="error_message"> 
 	  {{ company_dict.workspace_launch_form.name.errors.as_text }}
 	</p>
-	{{company_dict.workspace_launch_form.hardware}}
+	<p> 
+	  Hardware type: 
+	  {{company_dict.workspace_launch_form.hardware}}
+	</p>
 	<p class="error_message"> 
 	  {{ company_dict.workspace_launch_form.hardware.errors.as_text }}
 	</p>
-	{{company_dict.workspace_launch_form.os}}
+	<p> 
+	  Operating system: 
+	  {{company_dict.workspace_launch_form.os}} 
+	</p>
 	<p class="error_message"> 
 	  {{ company_dict.workspace_launch_form.os.errors.as_text }}
 	</p>
-	<input id="jjj" type="submit" name="workspace_launch" 
-	       class="flamebutton" value="launch"/>
+	<input id="launch_butt" type="submit" name="workspace_launch" 
+	       class="flamebutton" value="Launch"/>
       </form>      
     
       

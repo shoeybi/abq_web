@@ -340,18 +340,37 @@ a {
     padding: 5px;
 }
 
-#company #workspaces #workspace #id_name {
-    width: 120px;
+#ws_launch_form #launch_butt {
+    font-size:1.1em;
+    margin-top: 15px; 
+    margin-left: 140px;
+    width: 100px; 
+    height: 30px;
+}
+
+#ws_launch_form p {
+    margin-top: 10px; 
+    font-size:0.95em;
+}
+
+#ws_launch_form input, #ws_launch_form select {
+    margin-left: 20px; 
+    font-size:0.95em;
+}
+
+#ws_launch_form #id_name {
+    font-size:0.95em;
+    width: 205px;
     height: 20px;
     margin-top: 2px;
 }
 
-#company #workspaces #launch #id_hardware{
-    width: 145px;
+#ws_launch_form #id_hardware{
+    width: 195px;
 }
 
-#company #workspaces #launch #id_os{
-    width: 145px;
+#ws_launch_form #id_os{
+    width: 195px;
 }
 
 #company #team {
