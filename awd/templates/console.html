@@ -64,9 +64,16 @@
 	  {{item.termination_form.region}}
 	  {{item.termination_form.instance_id}}
 	  {{item.termination_form.company_name}}
-	  <input type="submit" name="stop_start_workspace" 
-		 class="text_input", value="   stop/start" />
+	  {% if item.workspace.status == 'RN' %}
+	  <input type="submit" name="stop_workspace" 
+		 class="stop_ws" value="" />
+	  {% endif %}
+	  {% if item.workspace.status == 'PA' %}
+	  <input type="submit" name="start_workspace" 
+		 class="start_ws", value="" />
+	  {% endif %}
 	</form>
+	
 	<form method="post">
 	  {% csrf_token %}
 	  {{item.termination_form.region}}

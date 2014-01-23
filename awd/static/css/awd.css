@@ -90,6 +90,28 @@ a {
     height: 90px;
 }
 
+.stop_ws {
+    background:url(/static/images/pause.png) no-repeat;
+    border: none;
+    border-radius: 0px;
+    padding: 0px;
+    float: right;
+    margin: 0px;
+    width: 18px;
+    height: 20px;
+}
+
+.start_ws {
+    background:url(/static/images/play.png) no-repeat;
+    border: none;
+    border-radius: 0px;
+    padding: 0px;
+    float: right;
+    margin: 0px;
+    width: 18px;
+    height: 20px;
+}
+
 .add10, .add15, .add20, .add25 {
     background:url(/static/images/plus_sign.png) no-repeat;
     background-color: transparent !important;

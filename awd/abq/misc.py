@@ -117,4 +117,4 @@ def get_aws_region():
                              'us-west-1'] 
 
     # for now just west
-    return supported_region_list[1]
+    return supported_region_list[0]

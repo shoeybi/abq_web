@@ -150,7 +150,8 @@ class UninstallScript(models.Model):
 
     name     = models.CharField(max_length=100)
     os       = models.ForeignKey(OS,related_name='uninstall_script_os')    
-    software = models.ForeignKey(Software,related_name='uninstall_script_software')    
+    software = models.ForeignKey(
+        Software, related_name='uninstall_script_software')    
 
     def __unicode__(self):
         return self.name
@@ -161,6 +162,16 @@ class UninstallScript(models.Model):
 
 class Workspace(models.Model):
     
+    WORKSPACE_STATUS = (
+        ('NL', 'Not launched'),
+        ('SU', 'Starting up'),
+        ('RN', 'Running'),
+        ('PA', 'Paused'),
+        ('TR', 'Terminated'),
+        )
+    status       = models.CharField(max_length=2,
+                                    choices=WORKSPACE_STATUS,
+                                    default='NL')
     name         = models.CharField(max_length=100)
     company      = models.ForeignKey(Company,related_name='workspace_owner')
     hardware     = models.ForeignKey(Hardware,related_name='workspace_hardware')    
