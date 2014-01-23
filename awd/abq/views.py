@@ -13,7 +13,7 @@ from django.core.files import File
 from django.forms.models import modelformset_factory, modelform_factory
 from abq.misc import login_user_no_credentials, get_aws_region, \
     get_pretty_username, get_aws_available_regions, \
-    get_image_filename_for_workspace
+    get_image_filename_for_workspace, clean_filename
 from abq.forms import LoginForm, RegistrationForm, CompanyRegForm, \
     WorkspaceLaunchForm, EmploymentForm, WorkspaceTerminateForm, \
     EmploymentTerminationForm, ContactUsForm, RequestToolForm, \
@@ -217,7 +217,8 @@ def populate_company_dict(company):
     employees_list = build_employees_list(company)
     # build the dictionary
     company_dict = {
-        'company': company, 
+        'company': company,
+        'cleaned_company_name': clean_filename(company.name),
         'workspace_launch_form': workspace_launch_form, 
         'employment_form': employment_form,
         'workspaces_list': workspaces_list,

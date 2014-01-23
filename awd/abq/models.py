@@ -167,6 +167,7 @@ class Workspace(models.Model):
         ('SU', 'Starting up'),
         ('RN', 'Running'),
         ('PA', 'Paused'),
+        ('ST', 'Stopping'),
         ('TR', 'Terminated'),
         )
     status       = models.CharField(max_length=2,

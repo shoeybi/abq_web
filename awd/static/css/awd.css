@@ -362,7 +362,7 @@ a {
     padding: 5px;
 }
 
-#ws_launch_form #launch_butt {
+.ws_launch #launch_butt {
     font-size:1.1em;
     margin-top: 15px; 
     margin-left: 140px;
@@ -370,28 +370,28 @@ a {
     height: 30px;
 }
 
-#ws_launch_form p {
+.ws_launch p {
     margin-top: 10px; 
     font-size:0.95em;
 }
 
-#ws_launch_form input, #ws_launch_form select {
+.ws_launch input, .ws_launch select {
     margin-left: 20px; 
     font-size:0.95em;
 }
 
-#ws_launch_form #id_name {
+.ws_launch #id_name {
     font-size:0.95em;
     width: 205px;
     height: 20px;
     margin-top: 2px;
 }
 
-#ws_launch_form #id_hardware{
+.ws_launch #id_hardware{
     width: 195px;
 }
 
-#ws_launch_form #id_os{
+.ws_launch #id_os{
     width: 195px;
 }
 

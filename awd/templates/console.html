@@ -128,8 +128,11 @@
 	{% endif %} 
       </form>
       
-      <button id="ws_launch_butt" class="addbkg"></button>
-      <form id="ws_launch_form" method="post" 
+      <button data-id="{{ company_dict.cleaned_company_name }}" 
+	      class="addbkg"></button>
+      <form data-id="{{ company_dict.cleaned_company_name }}" 
+	    id="{{ company_dict.cleaned_company_name }}" 
+	    method="post", class="ws_launch" 
 	    title="Workspace preferences">	
 	{% csrf_token %}
 	{{company_dict.workspace_launch_form.company_name}}
@@ -154,8 +157,7 @@
 	<input id="launch_butt" type="submit" name="workspace_launch" 
 	       class="flamebutton" value="Launch"/>
       </form>      
-    
-      
+          
       <!--
       <button id="testb">Create new user</button>
 
