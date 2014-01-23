@@ -82,9 +82,12 @@ a {
 }
 
 .addbkg {
-    background:url(/static/images/desktop_background_launch.png) no-repeat;
-    border: none !important;
+    background:url(/static/images/plus_sign.png) no-repeat center;
+    border:2px dashed #708090;
+    //border: none;
+    cursor: pointer;
     border-radius: 0px;
+    margin-top: 22px;
     padding: 0px;
     width: 160px;
     height: 90px;

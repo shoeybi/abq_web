@@ -134,6 +134,50 @@ def set_workspace_url(instance_id, region, company):
             workspace.set_size_and_save_image(
                 image_filename,source_filename)   
             workspace.save()
+
+
+def set_workspace_PA(instance_id, region, company):
+    
+    # first get the workspace
+    workspace = Workspace.objects.get(
+        instance_id=instance_id,
+        region=region)
+    if workspace == None:
+        raise Exception('could not find the workspace')
+    # DBG: this is not thread safe and needs to be changed later
+    # here is the tricky part and not thread safe
+    count = 0
+    while workspace.status != 'PA':
+        count += 1
+        if count > 100:
+            break;
+        # sleep for 15 seconds
+        time.sleep(15)
+        # get the status
+        owner = company.owner
+        pretty_username = get_pretty_username(owner.user.username)
+        output = instance_status(workspace.instance_id,
+                                 workspace.region, pretty_username)
+        if output[0] == 'standby':
+            # get the workspace again
+            # NOTE: there might be another thread that works on the 
+            # data base ---> ???   
+            workspace = Workspace.objects.get(
+                instance_id=instance_id,
+                region=region)
+            if workspace == None:
+                raise Exception('could not find the workspace')
+            workspace.instance_url = '#'
+            workspace.status = 'PA'
+            # for now read from a default file
+            workspace.image.delete()
+            image_filename  = get_image_filename_for_workspace(
+                company, workspace)
+            source_filename = settings.MEDIA_ROOT+\
+                'workspace_images/desktop_background_PA.png'
+            workspace.set_size_and_save_image(
+                image_filename,source_filename)   
+            workspace.save()
             
             
     
@@ -632,17 +676,23 @@ def Console(request):
                 output = instance_status(instance_id,region,pretty_username)
                 if output[0] == 'ready':
                     stop_instance(instance_id,region)
-                workspace.status = 'PA'
+                workspace.status = 'ST'
                 # for now read from a default file
                 workspace.image.delete()
                 image_filename  = get_image_filename_for_workspace(
                     company, workspace)
                 source_filename = settings.MEDIA_ROOT+\
-                    'workspace_images/desktop_background_PA.png'
+                    'workspace_images/desktop_background_ST.png'
                 workspace.set_size_and_save_image(
                     image_filename,source_filename)   
                 workspace.save()
                 companies_dict = build_companies_dict(abq_user)
+                thread = threading.Thread(
+                    target=set_workspace_PA,
+                    args=(workspace.instance_id, 
+                          workspace.region, company))
+                thread.start()
+
 
         if 'start_workspace' in request.POST:
             # get the company
