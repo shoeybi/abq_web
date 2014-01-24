@@ -9,13 +9,19 @@
 <div id="software_change">
   <div id="worksapce">
     <h1> {{workspace }} </h1>
+    <p> {{workspace.get_status_display }} </p>
+    <p> {{workspace.hardware }} </p>
+    <p> {{workspace.os }} </p>
   </div>
   <br>
   <div id="form">
   <form method="post">
     {% csrf_token %}
     <div id="list">
-      {{softwares}}
+      {% for item in softwares.software %}
+      <p> {{ item }} </p>
+      <p> {{ item.category }} </p>
+      {% endfor %}
     </div>
     <input type="submit" name="add_remove_software" 
 	   class="flamebutton", value="Update"/>

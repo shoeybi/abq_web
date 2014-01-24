@@ -141,15 +141,25 @@ osC.hardware.add(hardware3,hardware4)
 
 openFoam = Software()
 openFoam.name = 'OpenFoam'
+openFoam.version = '2.2.2'
+openFoam.description = 'This is a general purpose CFD solver that works with unstructured meshes'
+openFoam.software_url = 'http://www.openfoam.com/'
+openFoam.comparable = 'Ansys fluent, StarCD, CFD++'
+openFoam.category = 'CFD, solver, engineering'
 openFoam.price_per_hour = 0.0
 openFoam.save()
 openFoam.supported_os.add(osU,osC)
 
-acuSolve = Software()
-acuSolve.name = 'Paraview'
-acuSolve.price_per_hour = 0.0
-acuSolve.save()
-acuSolve.supported_os.add(osU)
+octave = Software()
+octave.name = 'OToctave'
+octave.version = '3.8.0'
+octave.description = 'Description: Qtoctave is a mathematical, MATLAB like software'
+octave.software_url = 'https://www.gnu.org/software/octave/'
+octave.comparable = 'MATLAB'
+octave.category = 'analysis, engineering'
+octave.price_per_hour = 0.0
+octave.save()
+octave.supported_os.add(osU)
 
 
 # =============================
@@ -171,7 +181,7 @@ insScr.save()
 insScr = InstallScript()
 insScr.name = 'Paraview_Ubuntu_install.sh'
 insScr.os = osU
-insScr.software = acuSolve
+insScr.software = octave
 insScr.save()
 
 uninsScr = UninstallScript()
@@ -189,7 +199,7 @@ uninsScr.save()
 uninsScr = UninstallScript()
 uninsScr.name = 'Paraview_Ubuntu_uninstall.sh'
 uninsScr.os = osU
-uninsScr.software = acuSolve
+uninsScr.software = octave
 uninsScr.save()
 
 
