@@ -79,15 +79,6 @@ abquser.save();
 # add hardware
 # ==============
 
-hardware1                = Hardware()
-hardware1.name           = 'EC2 micro instance'
-hardware1.key            = 't1.micro'
-hardware1.price_per_hour = 0.02
-hardware1.virtual_cpu    = 1
-hardware1.memory_GiB     = 0.615
-hardware1.storage_GiB    = 8.
-hardware1.save()
-
 hardware2                = Hardware()
 hardware2.name           = 'EC2 small instance'
 hardware2.key            = 'm1.small'
@@ -125,7 +116,7 @@ osU.name           = 'Ubuntu 12.04 LTS'
 osU.key            = 'ubuntu12.04'
 osU.price_per_hour = 0.0
 osU.save()
-osU.hardware.add(hardware1, hardware2, hardware3, hardware4)
+osU.hardware.add(hardware2, hardware3, hardware4)
 
 osC                = OS()
 osC.name           = 'CentOs 6.0'
