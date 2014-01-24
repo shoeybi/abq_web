@@ -15,10 +15,10 @@
   </div>
   <br>
   <div id="form">
-  <form method="post">
+    <form method="post">
     {% csrf_token %}
     <div id="list">
-      {% for item in softwares.software %}
+      {% for item in softwares.software.field.choices %}
       <p> {{ item }} </p>
       <p> {{ item.category }} </p>
       {% endfor %}
