@@ -597,6 +597,7 @@ def Console(request):
         # =================================
         if 'add_remove_software' in request.POST:
             software_form = SoftwareForm(request.POST)
+            print software_form
             # get the region, instace id 
             region = request.POST['region']
             instance_id = request.POST['instance_id']

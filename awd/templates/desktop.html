@@ -18,10 +18,33 @@
     <form method="post">
     {% csrf_token %}
     <div id="list">
-      {% for item in softwares.software.field.choices %}
-      <p> {{ item }} </p>
-      <p> {{ item.category }} </p>
-      {% endfor %}
+      {{ softwares.instance_id }}
+      {{ softwares.region }}
+      <ul>
+	{% for software in softwares.software.field.choices.queryset %}
+	<li>
+	  <label>
+	    <p> {{ software.name }} {{software.version }} 
+	    <input id="id_software_{{software.id|add:"-1"}}" 
+		   type="checkbox" value="{{software.id}}" name="software" 
+		{% if software in softwares.software.field.initial %} 
+		   checked="checked" {% endif %} ></input>
+	    </p>
+	    <p> {{software.description }} </p>
+	    <p> {{software.software_url }} </p>
+	    <p> {{software.comparable }} </p>
+	    <p> {{software.category }} </p>
+	    {% if software.price_per_hour == 0.0 %}
+	    free
+	    {% else %}
+	    ${{software.price_per_hour}}/hr
+	    {% endif %}
+	    
+	</label>
+	</li>
+	{% endfor %}
+      </ul>
+
     </div>
     <input type="submit" name="add_remove_software" 
 	   class="flamebutton", value="Update"/>

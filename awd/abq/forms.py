@@ -11,7 +11,7 @@ class SoftwareForm(forms.Form):
 
     software = forms.ModelMultipleChoiceField(
         queryset=Software.objects.all(), 
-        #widget=forms.CheckboxSelectMultiple,
+        widget=forms.CheckboxSelectMultiple,
         required=False)
     region = forms.CharField(widget=forms.HiddenInput())
     instance_id = forms.CharField(widget=forms.HiddenInput())
