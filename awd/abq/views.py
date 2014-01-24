@@ -22,11 +22,11 @@ from abq.models import AbqUser, Company, OS, Hardware, Employment, \
     Workspace, Software, SoftwareLaunch
 import datetime, random, hashlib, threading, os, time
 threading._DummyThread._Thread__stop = lambda x: 42
-
+import os
 if settings.AWS:
     from interface import get_instance_id, instance_status, \
         terminate_instance, make_company, remove_company, stop_instance, \
-        start_instance, add_users
+        start_instance, add_users, create_thumb
 
 
 
@@ -66,13 +66,18 @@ def set_workspace_url_and_bg_image(instance_id, region, company):
             workspace.status = 'RN'
             # for now read from a default file
             workspace.image.delete()
-            image_filename  = get_image_filename_for_workspace(
+            image_filename = get_image_filename_for_workspace(
                 company, workspace)
-            source_filename = settings.MEDIA_ROOT+\
-                'workspace_images/desktop_background_default.png'
+            source_filename = create_thumb(workspace.instance_id,
+                                           workspace.status)
+            #source_filename = settings.MEDIA_ROOT+\
+            #    'workspace_images/desktop_background_default.png'
             workspace.set_size_and_save_image(
                 image_filename,source_filename)   
             workspace.save()
+            # delete the source filename 
+            os.remove(source_filename)
+
             # at this point, we need to add all the employees to the company
             # get the list of active employees who have already accepted
             employees_accepted = \
@@ -129,11 +134,15 @@ def set_workspace_url(instance_id, region, company):
             workspace.image.delete()
             image_filename  = get_image_filename_for_workspace(
                 company, workspace)
-            source_filename = settings.MEDIA_ROOT+\
-                'workspace_images/desktop_background_default.png'
+            source_filename = create_thumb(workspace.instance_id,
+                                           workspace.status)
+            #source_filename = settings.MEDIA_ROOT+\
+            #    'workspace_images/desktop_background_default.png'
             workspace.set_size_and_save_image(
                 image_filename,source_filename)   
             workspace.save()
+            # remove the source filename
+            os.remove(source_filename)
 
 
 def set_workspace_PA(instance_id, region, company):
@@ -173,12 +182,15 @@ def set_workspace_PA(instance_id, region, company):
             workspace.image.delete()
             image_filename  = get_image_filename_for_workspace(
                 company, workspace)
-            source_filename = settings.MEDIA_ROOT+\
-                'workspace_images/desktop_background_PA.png'
+            source_filename = create_thumb(workspace.instance_id,
+                                           workspace.status)
+            #source_filename = settings.MEDIA_ROOT+\
+            #    'workspace_images/desktop_background_PA.png'
             workspace.set_size_and_save_image(
                 image_filename,source_filename)   
             workspace.save()
-            
+            # remove the source filename 
+            os.remove(source_filename)
             
     
 def build_workspaces_list(company):
@@ -379,8 +391,10 @@ def launch_new_workspace(request, company):
                 company, workspace)
             # for now read from a default file
             if settings.AWS:
-                source_filename = settings.MEDIA_ROOT+\
-                    'workspace_images/desktop_background_startup.png'
+                source_filename = create_thumb(workspace.instance_id,
+                                               workspace.status)
+                #source_filename = settings.MEDIA_ROOT+\
+                #    'workspace_images/desktop_background_startup.png'
             else:
                 source_filename = settings.MEDIA_ROOT+\
                     'workspace_images/desktop_background_default.png'
@@ -389,6 +403,7 @@ def launch_new_workspace(request, company):
             workspace.save()
             # start a thread to set the url
             if settings.AWS:
+                os.remove(source_filename)
                 thread = threading.Thread(
                     target=set_workspace_url_and_bg_image,
                     args=(workspace.instance_id, 
@@ -681,11 +696,14 @@ def Console(request):
                 workspace.image.delete()
                 image_filename  = get_image_filename_for_workspace(
                     company, workspace)
-                source_filename = settings.MEDIA_ROOT+\
-                    'workspace_images/desktop_background_ST.png'
+                source_filename = create_thumb(workspace.instance_id,
+                                               workspace.status)
+                #source_filename = settings.MEDIA_ROOT+\
+                #    'workspace_images/desktop_background_ST.png'
                 workspace.set_size_and_save_image(
                     image_filename,source_filename)   
                 workspace.save()
+                os.remove(source_filename)
                 companies_dict = build_companies_dict(abq_user)
                 thread = threading.Thread(
                     target=set_workspace_PA,
@@ -716,11 +734,14 @@ def Console(request):
                 workspace.image.delete()
                 image_filename  = get_image_filename_for_workspace(
                     company, workspace)
-                source_filename = settings.MEDIA_ROOT+\
-                    'workspace_images/desktop_background_SU.png'
+                source_filename = create_thumb(workspace.instance_id,
+                                               workspace.status)
+                #source_filename = settings.MEDIA_ROOT+\
+                #    'workspace_images/desktop_background_SU.png'
                 workspace.set_size_and_save_image(
                     image_filename,source_filename)   
                 workspace.save()
+                os.remove(source_filename)
                 companies_dict = build_companies_dict(abq_user)
                 thread = threading.Thread(
                     target=set_workspace_url,

@@ -18,10 +18,10 @@
        {% if company_reg_form.non_field_errors %} 
        class="error_highlight" 
        {% endif %} > 
-      Company name 
+      Team name 
     </label> 
     {{ company_reg_form.name }} 
-    <input type="submit" name="register_company" value="Start your company"/>
+    <input type="submit" name="register_company" value="Form your team"/>
     {% if company_reg_form.errors %} 
     <p class="error_message">  
       {{company_reg_form.non_field_errors.as_text}} 
@@ -84,20 +84,13 @@
 		 class="text_input_l", value="options(+/-)" />
 	  {% endif %}
 	</form>
-	{% if "http" in item.workspace.instance_url %}
+	{% if item.workspace.status == 'RN' %}
 	<a href="{{item.workspace.instance_url}}" 
 	   alt="{{item.workspace.name}}" target="">
 	  <img src="{{item.workspace.image.url}}" alt="">
 	</a>
 	{% else %}
-	{% if item.workspace.status == 'RN' %}
-	<a href="/console/" 
-	   alt="{{item.workspace.name}}">
-	  <img src="{{item.workspace.image.url}}" alt="">
-	</a>
-	{% else %}
 	<img src="{{item.workspace.image.url}}" alt="">
-	{% endif %}
 	{% endif %}
 	<figcaption>
 	  <!-- termiation -->
@@ -199,7 +192,7 @@
     <!-- team mebers -->
     <div id="owner">
       <p>{{company_dict.company.owner.user.first_name }} 
-	{{company_dict.company.owner.user.last_name }} (owner) 
+	{{company_dict.company.owner.user.last_name }} (lead) 
       </p>
     </div>
     {% for item in company_dict.employees_list %}
