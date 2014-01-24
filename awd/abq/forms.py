@@ -182,8 +182,8 @@ class WorkspaceLaunchForm(forms.Form):
     os = forms.ModelChoiceField(
         queryset=OS.objects.filter(hardware=hardware_initial),
         initial=1,
-        empty_label="Operating system", 
-        required=False)
+        empty_label="Operating system") 
+        #required=False)
 
     # clean the name
     def clean(self):
