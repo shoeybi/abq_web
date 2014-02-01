@@ -502,17 +502,93 @@ a {
 
 
 #software_change {
-    margin-top: 30px;
+    margin-top: 25px;
 }
 
-#software_change ul {
+#software_change h2, h3 {
+    display: inline-block;
+    font-size: 1.05em;
+    font-weight: bold;
+}
+
+#software_change #workspace {
+    width: 480px;
+    float: left;
+    padding-left: 5px;
+}
+
+#software_change #workspace h1 {
+    display: inline;
+}
+
+#software_change #workspace h2 {
+    width: 175px; 
+}
+
+#software_change #workspace .spec {
+    height: 30px;
+    margin-left: 25px;
+}
+
+#software_change #software_update {
+    width: 485px;
+    float: right;
+}
+
+#software_change #software_update input {
+    font-size: 1.30em;
+    height: 35px;
+    float: right;
+    margin-right: 100px;
+}
+
+#software_change #software_list ul {
     list-style-type: none;    
 }
 
+#software_change #software_list {
+    width: 970px;   
+}
+
+#software_change #software_list #soft_box {
+    width: 380px;
+    margin: 15px;
+    padding: 15px;
+    float: left;
+    border: 2px solid #C0C0C0;
+    border-radius: 10px;
+}
+
+#software_change #software_list #soft_box .soft_spec {
+    padding: 0px;
+    margin: 0px;
+}
+
+#software_change #software_list #soft_box h3 {
+    color: #E25822 !important;
+}
+
+#software_change #software_list #soft_box h4 {
+    color: #E25822 !important;
+    display: inline-block;
+}
+
+#software_change #software_list #soft_box input {
+    float: right;
+    display: block;
+    height: 25px;   
+    width: 25px;
+}
+
+
+
+
+/*
+//border-top: 1px solid #C0C0C0;
 #software_change #form {
     margin-left: 20px;
 }
 
 #software_change input[type="submit"] {
     margin-left: 50px;
-}
+}*/
