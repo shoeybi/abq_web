@@ -6,61 +6,59 @@
 
 {% block content_base %}
 
-<div id="software_change">
+<div id="software_center">
+  
   <div id="workspace">
-    <h1> {{workspace }} </h1>
-    ({{workspace.get_status_display }})
-    <div class="spec">
-      <h2> Hardware: </h2> {{workspace.hardware }}
-    </div>
-    <div class="spec">
-      <h2> Operating system: </h2>{{workspace.os }}
-    </div>
-    <div class="spec">
-      <h2> Software tools: </h2>
-    </div>
+    <h1> {{workspace}} </h1> ({{workspace.get_status_display}})
+    <br>
+    <h3> Hardware: </h3> {{workspace.hardware}}
+    <br>
+    <h3> Operating system: </h3> {{workspace.os}}
+    <br>
+    <h3> Software tools: </h3>
+    <br>
   </div>
+  
   <form method="post">
     {% csrf_token %}
-    <div id="software_update">
+
+    <div id="update">
       <input type="submit" name="add_remove_software" 
 	     class="flamebutton", value="Update"/>
     </div>
+
     <div class="clear"></div>
-    <div id="software_list">
+
+    <div id="list">
       {{ softwares.instance_id }}
       {{ softwares.region }}
       <ul>
 	{% for software in softwares.software.field.choices.queryset %}
-	<div id="soft_box">
+	<div id="box">
 	  <li>
 	    <label>
-	      <h3> {{ software.name }} </h3> <h4>{{software.version }}</h4>
+	      <h2> {{ software.name}} </h2> <h3> {{software.version}} </h3>
 	      <input id="id_software_{{software.id|add:"-1"}}" 
 		     type="checkbox" value="{{software.id}}" name="software" 
 		     {% if software in softwares.software.field.initial %} 
 		     checked="checked" {% endif %} />
-	      
-	      <div class="soft_spec">
-	      <h2> Description: </h2> {{software.description }}
+	      <br>
+	      <h4> Description: </h4> {{software.description}}
 	      (<a href="{{software.software_url}}"> 
 		learn more
 	      </a>)
-	      </div>
-	      <div class="soft_spec">
-		<h2> Comparable: </h2> {{software.comparable }}
-	      </div>
-	      <div class="soft_spec">
-		<h2> Category: </h2> {{software.category }}
-	      </div>
-	      <div class="soft_spec">
-		<h2> Price per hour: </h2>
-		{% if software.price_per_hour == 0.0 %}
-		free
-		{% else %}
-		${{software.price_per_hour}}/hr
-		{% endif %}
-	      </div>
+	      <br>
+	      <h4> Comparable: </h4> {{software.comparable}}
+	      <br>
+	      <h4> Category: </h4> {{software.category}}
+	      <br>
+	      <h4> Price per hour: </h4>
+	      {% if software.price_per_hour == 0.0 %}
+	      free
+	      {% else %}
+	      ${{software.price_per_hour}}/hr
+	      {% endif %}
+	      <br>
 	    </label>
 	  </li>
 	</div>
