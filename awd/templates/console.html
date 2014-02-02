@@ -58,7 +58,7 @@
     <!-- workspace -->
     <div id="workspace" >
       <figure>
-	<!-- termiation -->
+	<!-- stop-start workspace -->
 	<form method="post">
 	  {% csrf_token %}
 	  {{item.termination_form.region}}
@@ -84,12 +84,7 @@
 		 class="text_input_l", value="options(+/-)" />
 	  {% endif %}
 	</form>
-	{% if "http" in item.workspace.instance_url %}
-	<a href="{{item.workspace.instance_url}}" 
-	   alt="{{item.workspace.name}}" target="">
-	  <img src="{{item.workspace.image.url}}" alt="">
-	</a>
-	{% else %}
+
 	{% if item.workspace.status == 'RN' %}
 	<a href="/console/" 
 	   alt="{{item.workspace.name}}">
@@ -98,7 +93,7 @@
 	{% else %}
 	<img src="{{item.workspace.image.url}}" alt="">
 	{% endif %}
-	{% endif %}
+
 	<figcaption>
 	  <!-- termiation -->
 	  <form method="post">
@@ -121,18 +116,6 @@
     <!-- launch a new workspace -->
     {% if abq_user == company_dict.company.owner %} 
     <div id="workspace">
-      <!--
-      <form method="post">
-	{% csrf_token %}
-	{{item.termination_form.region}}
-	{{item.termination_form.instance_id}}
-	{{item.termination_form.company_name}}
-	{% if abq_user == company_dict.company.owner %} 
-	<input type="submit" name="go_to_software" 
-	       class="text_input_l", value="options(+/-)" />
-	{% endif %} 
-      </form>
-      -->
       <button data-id="{{ company_dict.cleaned_company_name }}" 
 	      class="addbkg"></button>
       <form data-id="{{ company_dict.cleaned_company_name }}" 
@@ -163,32 +146,6 @@
 	       class="flamebutton" value="Launch"/>
       </form>      
           
-      <!--
-      <button id="testb">Create new user</button>
-
-      <div id="testf">
-	
-	<form method="post">
-	  {% csrf_token %}
-	 <input type="submit" name="workspace_launch" 
-		 class="addbkg" value=""/>
-          </br>
-	  {{company_dict.workspace_launch_form.company_name}}
-          {{company_dict.workspace_launch_form.name}}
-	  <p class="error_message"> 
-	    {{ company_dict.workspace_launch_form.name.errors.as_text }}
-	  </p>
-	  {{company_dict.workspace_launch_form.hardware}}
-	  <p class="error_message"> 
-	    {{ company_dict.workspace_launch_form.hardware.errors.as_text }}
-	  </p>
-	  {{company_dict.workspace_launch_form.os}}
-	  <p class="error_message"> 
-	    {{ company_dict.workspace_launch_form.os.errors.as_text }}
-	  </p>
-	</form>
-      </div> 
-      -->
     </div>
     {% endif %}
     <div class="clear"> </div>       
