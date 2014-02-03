@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from abq.models import AbqUser, Company, Hardware, OS, Software
-from abq.models import InstallScript, UninstallScript, Workspace, Project, Region
+from abq.models import InstallScript, Workspace, Project, Region
 import datetime
 from django.utils import timezone
 
@@ -151,9 +151,9 @@ openFoam.save()
 openFoam.supported_os.add(osU,osC)
 
 octave = Software()
-octave.name = 'OToctave'
+octave.name = 'QToctave'
 octave.version = '3.8.0'
-octave.description = 'Description: Qtoctave is a mathematical, MATLAB like software'
+octave.description = 'Qtoctave is a mathematical, MATLAB like software'
 octave.software_url = 'https://www.gnu.org/software/octave/'
 octave.comparable = 'MATLAB'
 octave.category = 'analysis, engineering'
@@ -161,46 +161,47 @@ octave.price_per_hour = 0.0
 octave.save()
 octave.supported_os.add(osU)
 
+gimp = Software()
+gimp.name = 'Gimp'
+gimp.version = '2.8'
+gimp.description = 'GIMP is the GNU Image Manipulation Program'
+gimp.software_url = 'http://www.gimp.org/'
+gimp.comparable = 'Adobe Photoshop'
+gimp.category = 'photo retouching, image composition, and image authoring'
+gimp.price_per_hour = 0.0
+gimp.save()
+gimp.supported_os.add(osU)
+
 
 # =============================
 # install and uninstall scripts
 # =============================
 
 insScr = InstallScript()
-insScr.name = 'OpenFoam_Ubuntu_install.sh'
+insScr.name = 'OpenFoam_2.2.2_Ubuntu'
 insScr.os = osU
 insScr.software = openFoam
 insScr.save()
 
 insScr = InstallScript()
-insScr.name = 'OpenFoam_Centos_install.sh'
+insScr.name = 'OpenFoam_2.2.2_Centos'
 insScr.os = osC
 insScr.software = openFoam
 insScr.save()
 
 insScr = InstallScript()
-insScr.name = 'Paraview_Ubuntu_install.sh'
+insScr.name = 'Qtoctave_3.8.0_Ubuntu'
 insScr.os = osU
 insScr.software = octave
 insScr.save()
 
-uninsScr = UninstallScript()
-uninsScr.name = 'OpenFoam_Ubuntu_uninstall.sh'
-uninsScr.os = osU
-uninsScr.software = openFoam
-uninsScr.save()
 
-uninsScr = UninstallScript()
-uninsScr.name = 'OpenFoam_Centos_uninstall.sh'
-uninsScr.os = osC
-uninsScr.software = openFoam
-uninsScr.save()
+insScr = InstallScript()
+insScr.name = 'Gimp_2.8_Ubuntu'
+insScr.os = osU
+insScr.software = gimp
+insScr.save()
 
-uninsScr = UninstallScript()
-uninsScr.name = 'Paraview_Ubuntu_uninstall.sh'
-uninsScr.os = osU
-uninsScr.software = octave
-uninsScr.save()
 
 
 # ==========

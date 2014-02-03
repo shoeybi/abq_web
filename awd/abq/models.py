@@ -149,21 +149,6 @@ class InstallScript(models.Model):
 
 
 
-
-class UninstallScript(models.Model):
-
-    name     = models.CharField(max_length=100)
-    os       = models.ForeignKey(OS,related_name='uninstall_script_os')    
-    software = models.ForeignKey(
-        Software, related_name='uninstall_script_software')    
-
-    def __unicode__(self):
-        return self.name
-    
-    class Meta:
-        verbose_name = 'Uninstall script'
-
-
 class Workspace(models.Model):
     
     WORKSPACE_STATUS = (
@@ -214,6 +199,7 @@ class SoftwareLaunch(models.Model):
     software      = models.ForeignKey(Software)
     workspace     = models.ForeignKey(Workspace)
     launched_date = models.DateTimeField()
+    installed     = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.software.name+' at '+self.workspace.name
