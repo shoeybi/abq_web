@@ -141,19 +141,19 @@ osC.hardware.add(hardware3,hardware4)
 
 openFoam = Software()
 openFoam.name = 'OpenFoam'
-openFoam.version = '2.2.2'
-openFoam.description = 'This is a general purpose CFD solver that works with unstructured meshes'
+openFoam.version = '2.2.1'
+openFoam.description = 'OpenFOAM is a free, open source Computational Fluid Dynamics software package'
 openFoam.software_url = 'http://www.openfoam.com/'
-openFoam.comparable = 'Ansys fluent, StarCD, CFD++'
+openFoam.comparable = 'Ansys Fluent, StarCD, CFD++'
 openFoam.category = 'CFD, solver, engineering'
 openFoam.price_per_hour = 0.0
 openFoam.save()
-openFoam.supported_os.add(osU,osC)
+openFoam.supported_os.add(osU)
 
 octave = Software()
-octave.name = 'QToctave'
-octave.version = '3.8.0'
-octave.description = 'Qtoctave is a mathematical, MATLAB like software'
+octave.name = 'Octave'
+octave.version = '3.2.4'
+octave.description = 'Octave is a high-level interpreted language, primarily intended for numerical computations'
 octave.software_url = 'https://www.gnu.org/software/octave/'
 octave.comparable = 'MATLAB'
 octave.category = 'analysis, engineering'
@@ -163,8 +163,8 @@ octave.supported_os.add(osU)
 
 gimp = Software()
 gimp.name = 'Gimp'
-gimp.version = '2.8'
-gimp.description = 'GIMP is the GNU Image Manipulation Program'
+gimp.version = '2.6'
+gimp.description = 'GIMP is a freely distributed piece of software for such tasks as photo retouching, image composition and image authoring'
 gimp.software_url = 'http://www.gimp.org/'
 gimp.comparable = 'Adobe Photoshop'
 gimp.category = 'photo retouching, image composition, and image authoring'
@@ -173,33 +173,45 @@ gimp.save()
 gimp.supported_os.add(osU)
 
 
+paraview = Software()
+paraview.name = 'Paraview'
+paraview.version = '3.12.0'
+paraview.description = 'ParaView is an open-source, multi-platform data analysis and visualization application'
+paraview.software_url = 'http://www.paraview.org/'
+paraview.comparable = 'Tecplot, Ensight, FieldView'
+paraview.category = 'visualization'
+paraview.price_per_hour = 0.0
+paraview.save()
+paraview.supported_os.add(osU)
+
+
 # =============================
 # install and uninstall scripts
 # =============================
 
 insScr = InstallScript()
-insScr.name = 'OpenFoam_2.2.2_Ubuntu'
+insScr.name = 'openfoam_2.2.1_ubuntu12.04'
 insScr.os = osU
 insScr.software = openFoam
 insScr.save()
 
 insScr = InstallScript()
-insScr.name = 'OpenFoam_2.2.2_Centos'
-insScr.os = osC
-insScr.software = openFoam
-insScr.save()
-
-insScr = InstallScript()
-insScr.name = 'Qtoctave_3.8.0_Ubuntu'
+insScr.name = 'octave_3.2.4_ubuntu12.04'
 insScr.os = osU
 insScr.software = octave
 insScr.save()
 
-
 insScr = InstallScript()
-insScr.name = 'Gimp_2.8_Ubuntu'
+insScr.name = 'gimp_2.6_ubuntu12.04'
 insScr.os = osU
 insScr.software = gimp
+insScr.save()
+
+
+insScr = InstallScript()
+insScr.name = 'paraview_3.12.0_ubuntu12.04'
+insScr.os = osU
+insScr.software = paraview
 insScr.save()
 
 
