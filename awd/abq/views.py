@@ -37,7 +37,7 @@ def update_softwares(workspace):
     # from the softwares, get the install scrip
     scripts = []
     for software in softwares:
-        scripts.append(InstallScript.objects.get(software=software,os=workspace.os))
+        scripts.append(InstallScript.objects.get(software=software,os=workspace.os).name)
 
     # get the list of users
     users = []
