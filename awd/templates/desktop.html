@@ -6,22 +6,68 @@
 
 {% block content_base %}
 
-<div id="software_change">
-  <div id="worksapce">
-    <h1> {{workspace }} </h1>
+<div id="software_center">
+  
+  <div id="workspace">
+    <h1> {{workspace}} </h1> ({{workspace.get_status_display}})
+    <br>
+    <h3> Hardware: </h3> {{workspace.hardware}}
+    <br>
+    <h3> Operating system: </h3> {{workspace.os}}
+    <br>
+    <h3> Software tools: </h3>
+    <br>
   </div>
-  <br>
-  <div id="form">
+  
   <form method="post">
     {% csrf_token %}
-    <div id="list">
-      {{softwares}}
-    </div>
-    <input type="submit" name="add_remove_software" 
-	   class="flamebutton", value="Update"/>
-  </form>
-  </div>
 
+    <div id="update">
+      <input type="submit" name="add_remove_software" 
+	     class="flamebutton", value="Update"/>
+    </div>
+
+    <div class="clear"></div>
+
+    <div id="list">
+      {{ softwares.instance_id }}
+      {{ softwares.region }}
+      <ul>
+	{% for software in softwares.software.field.choices.queryset %}
+	<div id="box">
+	  <li>
+	    <label>
+	      <h2> {{ software.name}} </h2> <h3> {{software.version}} </h3>
+	      <input id="id_software_{{software.id|add:"-1"}}" 
+		     type="checkbox" value="{{software.id}}" name="software" 
+		     {% if software in softwares.software.field.initial %} 
+		     checked="checked" {% endif %} />
+	      <br>
+	      <h4> Description: </h4> {{software.description}}
+	      (<a href="{{software.software_url}}" target="_blank"> 
+		learn more
+	      </a>)
+	      <br>
+	      <h4> Comparable: </h4> {{software.comparable}}
+	      <br>
+	      <h4> Category: </h4> {{software.category}}
+	      <br>
+	      <h4> Price per hour: </h4>
+	      {% if software.price_per_hour == 0.0 %}
+	      free
+	      {% else %}
+	      ${{software.price_per_hour}}/hr
+	      {% endif %}
+	      <br>
+	    </label>
+	  </li>
+	</div>
+	{% endfor %}
+      </ul>      
+    </div>
+    
+  </form>
+  
 </div>
 
 {% endblock %}

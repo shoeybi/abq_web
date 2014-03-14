@@ -115,13 +115,17 @@ class OS(models.Model):
 
 
 
-
 class Software(models.Model):
 
     name           = models.CharField(max_length=100)
-    supported_os   = models.ManyToManyField(OS,related_name='software_supported_os')
+    version        = models.CharField(max_length=50)
+    description    = models.CharField(max_length=200)
+    software_url   = models.URLField(max_length=200,default='#')
+    comparable     = models.CharField(max_length=200)
+    category       = models.CharField(max_length=100)
     price_per_hour = models.FloatField()
-    
+    supported_os   = models.ManyToManyField(OS,related_name='software_supported_os')
+       
     def __unicode__(self):
         return self.name
     
@@ -143,21 +147,6 @@ class InstallScript(models.Model):
     class Meta:
         verbose_name = 'Install script'
 
-
-
-
-class UninstallScript(models.Model):
-
-    name     = models.CharField(max_length=100)
-    os       = models.ForeignKey(OS,related_name='uninstall_script_os')    
-    software = models.ForeignKey(
-        Software, related_name='uninstall_script_software')    
-
-    def __unicode__(self):
-        return self.name
-    
-    class Meta:
-        verbose_name = 'Uninstall script'
 
 
 class Workspace(models.Model):
@@ -210,6 +199,7 @@ class SoftwareLaunch(models.Model):
     software      = models.ForeignKey(Software)
     workspace     = models.ForeignKey(Workspace)
     launched_date = models.DateTimeField()
+    installed     = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.software.name+' at '+self.workspace.name

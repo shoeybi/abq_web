@@ -19,16 +19,45 @@ from abq.forms import LoginForm, RegistrationForm, CompanyRegForm, \
     EmploymentTerminationForm, ContactUsForm, RequestToolForm, \
     SoftwareForm
 from abq.models import AbqUser, Company, OS, Hardware, Employment, \
-    Workspace, Software, SoftwareLaunch
+    Workspace, Software, SoftwareLaunch, InstallScript
 import datetime, random, hashlib, threading, os, time
 threading._DummyThread._Thread__stop = lambda x: 42
 import os
 if settings.AWS:
     from interface import get_instance_id, instance_status, \
         terminate_instance, make_company, remove_company, stop_instance, \
-        start_instance, add_users, create_thumb
+        start_instance, add_users, create_thumb, sync_software
 
 
+
+
+def update_softwares(workspace):
+
+    # first we need the list of current softwares
+    softwares = Software.objects.filter(softwarelaunch__workspace=workspace)
+    # from the softwares, get the install scrip
+    scripts = []
+    for software in softwares:
+        scripts.append(InstallScript.objects.get(software=software,os=workspace.os).name)
+
+    # get the list of users
+    users = []
+    # first is the owner
+    users.append(get_pretty_username(workspace.company.owner.user.username))
+    # then employees who have already accepted thier employments
+    employees_accepted = \
+        AbqUser.objects.filter(\
+        employment__company=workspace.company, 
+        employment__end_date=None).exclude(
+        employment__start_date=None)
+    # build the dictionary of usernames and password
+    for employee in employees_accepted:
+        users.append(get_pretty_username(employee.user.username))
+        
+    # if the instance is running, call the sync
+    if workspace.status == 'RN':
+        sync_software(scripts, users, workspace.instance_id, workspace.region)
+       
 
 def set_workspace_url_and_bg_image(instance_id, region, company):
     
@@ -94,6 +123,8 @@ def set_workspace_url_and_bg_image(instance_id, region, company):
             # add users
             add_users(user_pass_dict, workspace.instance_id, 
                       workspace.region)
+            # updare softwares
+            update_softwares(workspace)
 
 
 
@@ -141,9 +172,9 @@ def set_workspace_url(instance_id, region, company):
             workspace.set_size_and_save_image(
                 image_filename,source_filename)   
             workspace.save()
-            # remove the source filename
-            os.remove(source_filename)
-
+            # update the software
+            update_softwares(workspace)
+                            
 
 def set_workspace_PA(instance_id, region, company):
     
@@ -640,6 +671,14 @@ def Console(request):
                                                workspace=workspace,
                                                launched_date=timezone.now())
                             launch.save()
+                    # call the software update
+                    # should be threaded
+                    thread = threading.Thread(
+                        target=update_softwares,
+                        args=(workspace,))
+                    thread.start()
+                    
+
         # if user is adding software
         if 'go_to_software' in request.POST:
             # get the company
